@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct EnvironmentStoreProvidingView<State, Action, Content: View, SomeView: View>: View {
+public struct EnvironmentStoreProvidingView<State, Action, Content: View>: View {
     let store: EnvironmentStore<State, Action>
     let content: () -> Content
 
