@@ -7,21 +7,18 @@
 
 import SwiftUI
 
-public struct EnvironmentProvidingView<State, Action, Content: View, SomeView: View>: View {
-    let environment: Environment<State, Action, Content, SomeView>
-
+public struct EnvironmentStoreProvidingView<State, Action, Content: View, SomeView: View>: View {
+    let store: EnvironmentStore<State, Action>
     let content: () -> Content
 
-    
     public var body: some View {
-        environment
-            .injection(content())
-            .environmentObject(environment.store)
+        content()
+            .environmentObject(store)
     }
     
-    public init(environment: Environment<State, Action, Content, SomeView>,
+    public init(store: EnvironmentStore<State, Action>,
                 content: @escaping () -> Content) {
-        self.environment = environment
+        self.store = store
         self.content = content
     }
 }
