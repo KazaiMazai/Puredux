@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PureduxNetworkOperator",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxNetworkOperator.git",
+        "state": {
+          "branch": "main",
+          "revision": "5043e9ed8f8bb7233b62de9a4155c42c1f525f9b",
+          "version": null
+        }
+      },
+      {
+        "package": "PureduxSideEffects",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxSideEffects.git",
+        "state": {
+          "branch": "main",
+          "revision": "9b9d11e64008c8974dfb9c418b8f24406b67c769",
+          "version": null
+        }
+      },
+      {
+        "package": "PureduxStore",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
+        "state": {
+          "branch": "main",
+          "revision": "5d0d2820685b502a9feb3a317160ba808d2b7b16",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
