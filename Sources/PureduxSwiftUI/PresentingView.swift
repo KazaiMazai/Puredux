@@ -17,7 +17,7 @@ public protocol PresentingView: View {
     func map(props: Props) -> Content
 }
 
-extension PresentingView {
+public extension PresentingView {
     var body: some View {
         ConnectedView<State, Action, Content>(map: map)
     }
