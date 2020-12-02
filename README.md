@@ -8,19 +8,19 @@ Puredux is a lightweight UDF architecture framework for iOS with State-Driven Si
 
 ### PureduxStore
 
-Basic implementation of Store and Observers: [PureduxStore] https://github.com/KazaiMazai/PureduxStore
+Basic implementation of Store and Observers: [PureduxStore](https://github.com/KazaiMazai/PureduxStore)
 
 ### PureduxSideEffects 
 
-Implementation of side effect Drivers and Base Operator: [PureduxSideEffects] https://github.com/KazaiMazai/PureduxSideEffects
+Implementation of side effect Drivers and Base Operator: [PureduxSideEffects](https://github.com/KazaiMazai/PureduxSideEffects)
 
 ### PureduxNetworkOperator
 
-Operator wrapper around URLSession: [PureduxNetworkOperator] https://github.com/KazaiMazai/PureduxNetworkOperator
+Operator wrapper around URLSession: [PureduxNetworkOperator](https://github.com/KazaiMazai/PureduxNetworkOperator)
 
 ### PureduxSwiftUI
 
-Middleman between clean SwiftUI views and Store: [PureduxSwiftUI] https://github.com/KazaiMazai/PureduxSwiftUI
+Middleman between clean SwiftUI views and Store: [PureduxSwiftUI](https://github.com/KazaiMazai/PureduxSwiftUI)
 
 ### PureduxUIKit 
 
