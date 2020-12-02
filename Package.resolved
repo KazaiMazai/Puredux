@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PureduxStore",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
+        "state": {
+          "branch": "main",
+          "revision": "5d0d2820685b502a9feb3a317160ba808d2b7b16",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
