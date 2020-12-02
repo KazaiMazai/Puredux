@@ -3,7 +3,7 @@
 Puredux is a lightweight UDF architecture framework for iOS with State-Driven Side Effects.
 
 <p align="center">
-  <img src="PureduxScheme.svg?raw=true" alt="Sublime's custom image"/>
+  <img src="PureduxSheme.svg?raw=true" alt="Sublime's custom image"/>
 </p>
 
 ### PureduxStore
