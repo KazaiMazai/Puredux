@@ -2,52 +2,35 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 01.12.2020.
+//  Created by Sergey Kazakov on 13.03.2021.
 //
 
 import SwiftUI
 import Combine
 
-
-public protocol PresentingView: View {
-    associatedtype Content: View
-    associatedtype Props
-    associatedtype State
-    associatedtype SubState: Equatable
-    associatedtype Action
-
-    func props(for substate: SubState, on store: EnvironmentStore<State, Action>) -> Props
-    func substate(for state: State) -> SubState
-    func content(for props: Props) -> Content
-}
-
-public extension PresentingView {
-    var body: some View {
-        ConnectedView<State, SubState, Action, Content>(mapToSubstate: substate, content: content)
-    }
-
-    private func content(for substate: SubState, _ store: EnvironmentStore<State, Action>) -> Content {
-        content(for: props(for: substate, on: store))
-    }
-}
-
-private struct ConnectedView<State, SubState, Action, V: View>: View where SubState: Equatable {
+struct PresentingView<State, SubState, Action, Props, V: View>: View where SubState: Equatable {
     @EnvironmentObject private var store: EnvironmentStore<State, Action>
-    @SwiftUI.State private var substate: SubState?
+    @SwiftUI.State private var props: Props?
 
     let mapToSubstate: (_ state: State) -> SubState
-    let content: (_ state: SubState, _ store: EnvironmentStore<State, Action>) -> V
+    let mapToProps: (_ substate: SubState, _ store: EnvironmentStore<State, Action>) -> Props
+    let content: (_ props: Props) -> V
 
-    private var substatePublisher: AnyPublisher<SubState, Never> {
+    var body: some View {
+        content(props ?? propsFor(state: store.state, store: store))
+            .onReceive(propsSubject) { props = $0 }
+    }
+
+    private func propsFor(state: State, store: EnvironmentStore<State, Action>) -> Props {
+        mapToProps(mapToSubstate(state), store)
+    }
+
+    private var propsSubject: AnyPublisher<Props, Never> {
         store.stateSubject
             .map(mapToSubstate)
             .removeDuplicates()
+            .map { mapToProps($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-    }
-
-    var body: some View {
-        content(substate ?? mapToSubstate(store.state), store)
-            .onReceive(substatePublisher) { substate = $0 }
     }
 }
