@@ -11,7 +11,7 @@ public protocol FalseEquatable: Equatable {
 
 }
 
-extension FalseEquatable {
+public extension FalseEquatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         false
     }
