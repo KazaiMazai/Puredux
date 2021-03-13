@@ -18,14 +18,14 @@ struct PresentingView<State, SubState, Action, Props, V: View>: View where SubSt
 
     var body: some View {
         content(props ?? propsFor(state: store.state, store: store))
-            .onReceive(propsSubject) { props = $0 }
+            .onReceive(propsPublisher) { props = $0 }
     }
 
     private func propsFor(state: State, store: EnvironmentStore<State, Action>) -> Props {
         mapToProps(mapToSubstate(state), store)
     }
 
-    private var propsSubject: AnyPublisher<Props, Never> {
+    private var propsPublisher: AnyPublisher<Props, Never> {
         store.stateSubject
             .map(mapToSubstate)
             .removeDuplicates()
