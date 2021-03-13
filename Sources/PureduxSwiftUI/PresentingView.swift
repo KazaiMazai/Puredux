@@ -8,12 +8,12 @@
 import SwiftUI
 import Combine
 
-struct PresentingView<AppState, SubState, Action, Props, Content>: View where Content: View, SubState: Equatable {
+struct PresentingView<AppState, Action, Props, Content>: View where Content: View {
     @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
     @State private var observableProps: Props?
 
-    let substate: (_ state: AppState) -> SubState
-    let props: (_ substate: SubState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let distinctStateBy: Equating<AppState>
+    let props: (_ substate: AppState, _ store: EnvironmentStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
 
     var body: some View {
@@ -22,17 +22,13 @@ struct PresentingView<AppState, SubState, Action, Props, Content>: View where Co
     }
 
     private var latestProps: Props {
-        observableProps ?? propsFor(state: store.state, store: store)
+        observableProps ?? props(store.state, store)
     }
 
-    private func propsFor(state: AppState, store: EnvironmentStore<AppState, Action>) -> Props {
-        props(substate(state), store)
-    }
 
     private var propsPublisher: AnyPublisher<Props, Never> {
         store.stateSubject
-            .map(substate)
-            .removeDuplicates()
+            .removeDuplicates(by: distinctStateBy.equals)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
