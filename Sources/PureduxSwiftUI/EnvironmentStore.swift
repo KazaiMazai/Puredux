@@ -14,11 +14,13 @@ public class EnvironmentStore<State, Action>: ObservableObject {
     var state: State { stateSubject.value }
 
     private(set) var stateSubject: CurrentValueSubject<State, Never>
-    private let queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue", qos: .userInteractive)
+    private let queue: DispatchQueue
 
-    public init(store: PureduxStore.Store<State, Action>) {
+    public init(store: PureduxStore.Store<State, Action>,
+                queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue", qos: .userInteractive)) {
         self.store = store
         self.stateSubject = CurrentValueSubject(store.state)
+        self.queue = queue
 
         store.subscribe(observer: asObserver)
     }
