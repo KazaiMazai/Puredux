@@ -11,12 +11,12 @@ import Combine
 public protocol PresentableView: View {
     associatedtype Content: View
     associatedtype Props
-    associatedtype State
+    associatedtype AppState
     associatedtype SubState: Equatable
     associatedtype Action
 
-    func props(for substate: SubState, on store: EnvironmentStore<State, Action>) -> Props
-    func substate(for state: State) -> SubState
+    func props(for substate: SubState, on store: EnvironmentStore<AppState, Action>) -> Props
+    func substate(for state: AppState) -> SubState
     func content(for props: Props) -> Content
 
     var distinctStateBy: Equating<SubState> { get }
@@ -25,7 +25,7 @@ public protocol PresentableView: View {
 public extension PresentableView {
     var body: some View {
         PresentingView(distinctStateBy: equatingState,
-                       props: propsForState,
+                       props: propsForAppState,
                        content: content)
     }
 
@@ -34,20 +34,20 @@ public extension PresentableView {
     }
 }
 
-public extension PresentableView where State == SubState {
-    func substate(for state: State) -> SubState {
+public extension PresentableView where AppState == SubState {
+    func substate(for state: AppState) -> SubState {
         state
     }
 }
 
 private extension PresentableView {
-    func propsForState(for state: State, on store: EnvironmentStore<State, Action>) -> Props {
+    func propsForAppState(for state: AppState, on store: EnvironmentStore<AppState, Action>) -> Props {
         props(for: substate(for: state), on: store)
     }
 
 
-    var equatingState: Equating<State> {
-        Equating<State> {
+    var equatingState: Equating<AppState> {
+        Equating<AppState> {
             distinctStateBy.equals(substate(for: $0), substate(for: $1))
         }
     }
