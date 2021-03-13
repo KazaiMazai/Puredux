@@ -8,28 +8,32 @@
 import SwiftUI
 import Combine
 
-struct PresentingView<State, SubState, Action, Props, V: View>: View where SubState: Equatable {
-    @EnvironmentObject private var store: EnvironmentStore<State, Action>
-    @SwiftUI.State private var props: Props?
+struct PresentingView<AppState, SubState, Action, Props, Content>: View where Content: View, SubState: Equatable {
+    @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
+    @State private var observableProps: Props?
 
-    let mapToSubstate: (_ state: State) -> SubState
-    let mapToProps: (_ substate: SubState, _ store: EnvironmentStore<State, Action>) -> Props
-    let content: (_ props: Props) -> V
+    let substate: (_ state: AppState) -> SubState
+    let props: (_ substate: SubState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let content: (_ props: Props) -> Content
 
     var body: some View {
-        content(props ?? propsFor(state: store.state, store: store))
-            .onReceive(propsPublisher) { props = $0 }
+        content(latestProps)
+            .onReceive(propsPublisher) { observableProps = $0 }
     }
 
-    private func propsFor(state: State, store: EnvironmentStore<State, Action>) -> Props {
-        mapToProps(mapToSubstate(state), store)
+    private var latestProps: Props {
+        observableProps ?? propsFor(state: store.state, store: store)
+    }
+
+    private func propsFor(state: AppState, store: EnvironmentStore<AppState, Action>) -> Props {
+        props(substate(state), store)
     }
 
     private var propsPublisher: AnyPublisher<Props, Never> {
         store.stateSubject
-            .map(mapToSubstate)
+            .map(substate)
             .removeDuplicates()
-            .map { mapToProps($0, store) }
+            .map { props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
