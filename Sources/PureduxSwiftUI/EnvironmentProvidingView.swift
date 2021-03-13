@@ -15,10 +15,11 @@ public struct EnvironmentStoreProvidingView<State, Action, Content: View>: View 
         content()
             .environmentObject(store)
     }
-    
+
     public init(store: EnvironmentStore<State, Action>,
                 content: @escaping () -> Content) {
         self.store = store
         self.content = content
     }
 }
+
