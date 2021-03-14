@@ -30,7 +30,7 @@ public class EnvironmentStore<AppState, Action>: ObservableObject {
     }
 
     private var asObserver: PureduxStore.Observer<AppState> {
-        PureduxStore.Observer(queue: .main) { [weak self] in
+        PureduxStore.Observer(queue: queue) { [weak self] in
             guard let self = self else {
                 return .dead
             }
