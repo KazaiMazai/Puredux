@@ -2,37 +2,34 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 01.12.2020.
+//  Created by Sergey Kazakov on 13.03.2021.
 //
 
 import SwiftUI
+import Combine
 
-public protocol PresentingView: View {
-    associatedtype Content: View
-    associatedtype Props
-    associatedtype State
-    associatedtype Action
+struct PresentingView<AppState, Action, Props, Content>: View where Content: View {
+    @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
 
-    func props(for state: State, on store: EnvironmentStore<State, Action>) -> Props
-    func map(props: Props) -> Content
-}
+    @State private var latestProps: Props?
+    @State private var propsPublisher: AnyPublisher<Props, Never>?
 
-public extension PresentingView {
+    let props: (_ state: AppState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let content: (_ props: Props) -> Content
+    let stateEquatingPredicate: (AppState, AppState) -> Bool
+
     var body: some View {
-        ConnectedView<State, Action, Content>(map: map)
+        content(latestProps ?? props(store.state, store))
+            .onAppear { propsPublisher = makePropsPublisher() }
+            .onReceive(propsPublisher ?? makePropsPublisher()) { self.latestProps = $0 }
     }
 
-    private func map(_ state: State, _ store: EnvironmentStore<State, Action>) -> Content {
-        map(props: props(for: state, on: store))
-    }
-}
-
-private struct ConnectedView<State, Action, V: View>: View {
-    @EnvironmentObject var store: EnvironmentStore<State, Action>
-
-    let map: (_ state: State, _ store: EnvironmentStore<State, Action>) -> V
-
-    var body: V {
-        map(store.state, store)
+    private func makePropsPublisher() -> AnyPublisher<Props, Never> {
+        store.stateSubject
+            .removeDuplicates(by: stateEquatingPredicate)
+            .map { props($0, store) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 }
+

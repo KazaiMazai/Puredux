@@ -6,16 +6,21 @@
 //
 
 import PureduxStore
+import Combine
 import SwiftUI
 
-public class EnvironmentStore<State, Action>: ObservableObject {
-    let store: PureduxStore.Store<State, Action>
+public class EnvironmentStore<AppState, Action>: ObservableObject {
+    var state: AppState { store.state }
+    let stateSubject: PassthroughSubject<AppState, Never>
 
-    @Published private (set) var state: State
+    private let store: PureduxStore.Store<AppState, Action>
+    private let queue: DispatchQueue
 
-    public init(store: PureduxStore.Store<State, Action>) {
+    public init(store: PureduxStore.Store<AppState, Action>,
+                queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue", qos: .userInteractive)) {
         self.store = store
-        self.state = store.state
+        self.stateSubject = PassthroughSubject()
+        self.queue = queue
 
         store.subscribe(observer: asObserver)
     }
@@ -24,10 +29,15 @@ public class EnvironmentStore<State, Action>: ObservableObject {
         store.dispatch(action: action)
     }
 
-    private var asObserver: PureduxStore.Observer<State> {
-        PureduxStore.Observer(queue: .main) { state in
-            self.state = state
+    private var asObserver: PureduxStore.Observer<AppState> {
+        PureduxStore.Observer(queue: queue) { [weak self] in
+            guard let self = self else {
+                return .dead
+            }
+
+            self.stateSubject.send($0)
             return .active
         }
     }
 }
+
