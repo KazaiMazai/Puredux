@@ -22,6 +22,7 @@ struct PresentingView<AppState, Action, Props, Content>: View where Content: Vie
                 .onReceive(propsPublisher) { observableProps = $0 }
         } else {
             EmptyView()
+                .onReceive(propsPublisher) { observableProps = $0 }
                 .onAppear { observableProps = props(store.state, store) }
         }
     }
