@@ -8,8 +8,8 @@
 import SwiftUI
 
 public struct EnvironmentStoreProvidingView<AppState, Action, Content: View>: View {
-    let store: EnvironmentStore<AppState, Action>
-    let content: () -> Content
+    private let store: EnvironmentStore<AppState, Action>
+    private let content: () -> Content
 
     public var body: some View {
         content().environmentObject(store)
