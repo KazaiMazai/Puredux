@@ -10,30 +10,26 @@ import Combine
 
 struct PresentingView<AppState, Action, Props, Content>: View where Content: View {
     @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
-    @SwiftUI.State private var observableProps: Props?
 
-    let props: (_ substate: AppState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    @State private var latestProps: Props?
+    @State private var propsPublisher: AnyPublisher<Props, Never>?
+
+    let props: (_ state: AppState, _ store: EnvironmentStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
-    let equatingStates: Equating<AppState>
+    let stateEquatingPredicate: (AppState, AppState) -> Bool
 
     var body: some View {
-        if let props = observableProps {
-            content(props)
-                .onReceive(propsPublisher) { observableProps = $0 }
-        } else {
-            EmptyView()
-                .onReceive(propsPublisher) { observableProps = $0 }
-                .onAppear { observableProps = props(store.state, store) }
-        }
+        content(latestProps ?? props(store.state, store))
+            .onAppear { propsPublisher = makePropsPublisher() }
+            .onReceive(propsPublisher ?? makePropsPublisher()) { self.latestProps = $0 }
     }
 
-    private var propsPublisher: AnyPublisher<Props, Never> {
+    private func makePropsPublisher() -> AnyPublisher<Props, Never> {
         store.stateSubject
-            .removeDuplicates(by: equatingStates.predicate)
+            .removeDuplicates(by: stateEquatingPredicate)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        
     }
 }
 

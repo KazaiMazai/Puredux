@@ -10,16 +10,16 @@ import Combine
 import SwiftUI
 
 public class EnvironmentStore<AppState, Action>: ObservableObject {
-    public var state: AppState { stateSubject.value }
+    var state: AppState { store.state }
+    let stateSubject: PassthroughSubject<AppState, Never>
 
     private let store: PureduxStore.Store<AppState, Action>
-    public private(set) var stateSubject: CurrentValueSubject<AppState, Never>
     private let queue: DispatchQueue
 
     public init(store: PureduxStore.Store<AppState, Action>,
                 queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue", qos: .userInteractive)) {
         self.store = store
-        self.stateSubject = CurrentValueSubject(store.state)
+        self.stateSubject = PassthroughSubject()
         self.queue = queue
 
         store.subscribe(observer: asObserver)

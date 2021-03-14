@@ -18,14 +18,18 @@ public protocol PresentableView: View {
 
     func content(for props: Props) -> Content
 
-    var equatingStates: Equating<AppState>? { get }
+    var stateEquating: Equating<AppState> { get }
 }
 
 public extension PresentableView {
     var body: some View {
         PresentingView(props: props,
                        content: content,
-                       equatingStates: equatingStates ?? .neverEqual)
+                       stateEquatingPredicate: stateEquating.predicate)
+    }
+
+    var stateEquating: Equating<AppState> {
+        .neverEqual
     }
 }
 
