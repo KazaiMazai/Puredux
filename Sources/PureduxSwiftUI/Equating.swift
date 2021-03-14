@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Equating<T> {
-    let predicate: (T, T) -> Bool
+    public let predicate: (T, T) -> Bool
 
     public init(predicate: @escaping (T, T) -> Bool) {
         self.predicate = predicate
