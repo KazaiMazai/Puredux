@@ -13,7 +13,7 @@ public class EnvironmentStore<AppState, Action>: ObservableObject {
     public var state: AppState { stateSubject.value }
 
     private let store: PureduxStore.Store<AppState, Action>
-    private(set) var stateSubject: CurrentValueSubject<AppState, Never>
+    public private(set) var stateSubject: CurrentValueSubject<AppState, Never>
     private let queue: DispatchQueue
 
     public init(store: PureduxStore.Store<AppState, Action>,
