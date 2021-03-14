@@ -10,7 +10,7 @@ import Combine
 import SwiftUI
 
 public class EnvironmentStore<AppState, Action>: ObservableObject {
-    var state: AppState { stateSubject.value }
+    public var state: AppState { stateSubject.value }
 
     private let store: PureduxStore.Store<AppState, Action>
     private(set) var stateSubject: CurrentValueSubject<AppState, Never>
