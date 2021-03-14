@@ -30,7 +30,7 @@ struct PresentingView<AppState, Action, Props, Content>: View where Content: Vie
     private var propsPublisher: AnyPublisher<Props, Never> {
         store.stateSubject
             .print("state upd")
-            .removeDuplicates(by: equatingStates.predicate)
+//            .removeDuplicates(by: equatingStates.predicate)
             .map { props($0, store) }
             .print("props upd")
             .receive(on: DispatchQueue.main)
