@@ -15,22 +15,24 @@ struct PresentingView<AppState, Action, Substate, Props, Content>: View where Co
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
     let substate: (_ state: AppState) -> Substate
-    let props: (_ state: Substate, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let props: (_ substate: Substate, _ store: EnvironmentStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
     
     let stateEquatingPredicate: (Substate, Substate) -> Bool
 
     var body: some View {
-        content(latestProps ?? props(substate(store.state), store))
+        content(latestProps ?? makeProps())
             .onAppear { propsPublisher = makePropsPublisher() }
-            .onReceive(propsPublisher ?? makePropsPublisher()) {
-                print("onReceive")
-                self.latestProps = $0
+            .onReceive(propsPublisher ?? makePropsPublisher()) { self.latestProps = $0 }
+    }
+}
 
-            }
+private extension PresentingView {
+    func makeProps() -> Props {
+        props(substate(store.state), store)
     }
 
-    private func makePropsPublisher() -> AnyPublisher<Props, Never> {
+    func makePropsPublisher() -> AnyPublisher<Props, Never> {
         store.stateSubject
             .map(substate)
             .removeDuplicates(by: stateEquatingPredicate)
