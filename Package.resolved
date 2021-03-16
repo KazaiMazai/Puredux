@@ -5,27 +5,27 @@
         "package": "PureduxNetworkOperator",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxNetworkOperator.git",
         "state": {
-          "branch": "1.0.0-beta.1",
+          "branch": null,
           "revision": "a52958becef865c134c2312a5d1370379237a791",
-          "version": null
+          "version": "1.0.0-beta.1"
         }
       },
       {
         "package": "PureduxSideEffects",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxSideEffects.git",
         "state": {
-          "branch": "1.0.0-beta.1",
+          "branch": null,
           "revision": "7c32b0d0723b50880ea38e53cc5d69e445d36b3b",
-          "version": null
+          "version": "1.0.0-beta.1"
         }
       },
       {
         "package": "PureduxStore",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {
-          "branch": "1.0.0-beta.1",
+          "branch": null,
           "revision": "5d0d2820685b502a9feb3a317160ba808d2b7b16",
-          "version": null
+          "version": "1.0.0-beta.1"
         }
       }
     ]
