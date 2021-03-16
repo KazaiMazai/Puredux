@@ -8,24 +8,31 @@
 import SwiftUI
 import Combine
 
-struct PresentingView<AppState, Action, Props, Content>: View where Content: View {
+struct PresentingView<AppState, Action, Substate, Props, Content>: View where Content: View {
     @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
 
     @State private var latestProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
-    let props: (_ state: AppState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let substate: (_ state: AppState) -> Substate
+    let props: (_ state: Substate, _ store: EnvironmentStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
-    let stateEquatingPredicate: (AppState, AppState) -> Bool
+    
+    let stateEquatingPredicate: (Substate, Substate) -> Bool
 
     var body: some View {
-        content(latestProps ?? props(store.state, store))
+        content(latestProps ?? props(substate(store.state), store))
             .onAppear { propsPublisher = makePropsPublisher() }
-            .onReceive(propsPublisher ?? makePropsPublisher()) { self.latestProps = $0 }
+            .onReceive(propsPublisher ?? makePropsPublisher()) {
+                print("onReceive")
+                self.latestProps = $0
+
+            }
     }
 
     private func makePropsPublisher() -> AnyPublisher<Props, Never> {
         store.stateSubject
+            .map(substate)
             .removeDuplicates(by: stateEquatingPredicate)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)
