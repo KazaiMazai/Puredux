@@ -13,32 +13,33 @@ public protocol PresentableView: View {
     associatedtype Props
     associatedtype AppState
     associatedtype Action
-    associatedtype Substate
+    associatedtype SubState
 
-    func props(for state: Substate, on store: EnvironmentStore<AppState, Action>) -> Props
+    func props(for state: SubState, on store: EnvironmentStore<AppState, Action>) -> Props
 
     func content(for props: Props) -> Content
 
-    func substate(for state: AppState) -> Substate
+    func substate(for state: AppState) -> SubState
 
-    var stateEquating: Equating<Substate> { get }
+    var distinctStateChangesBy: Equating<SubState> { get }
 }
 
 public extension PresentableView {
     var body: some View {
-        PresentingView(substate: substate,
-                       props: props,
-                       content: content,
-                       stateEquatingPredicate: stateEquating.predicate)
+        PresentingView(
+            substate: substate,
+            props: props,
+            content: content,
+            distinctStateChangesBy: distinctStateChangesBy.predicate)
     }
 
-    var stateEquating: Equating<Substate> {
+    var distinctStateChangesBy: Equating<SubState> {
         .neverEqual
     }
 }
 
-public extension PresentableView where Substate == AppState {
-    func substate(for state: AppState) -> Substate {
+public extension PresentableView where SubState == AppState {
+    func substate(for state: AppState) -> SubState {
         state
     }
 }
