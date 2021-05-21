@@ -8,22 +8,13 @@
 import Dispatch
 
 public class Observer<State>: Hashable {
-    private let queue: DispatchQueue
     private let observeClosure: (State) -> Status
 
-    func observe(_ state: State, complete: @escaping (Status) -> Void) {
-        queue.async(flags: .barrier) { [weak self] in
-            guard let self = self else {
-                complete(.dead)
-                return
-            }
-            let status = self.observeClosure(state)
-            complete(status)
-        }
+    func observe(_ state: State) -> Status {
+        observeClosure(state)
     }
 
-    public init(queue: DispatchQueue, observe: @escaping (State) -> Status) {
-        self.queue = queue
+    public init(observe: @escaping (State) -> Status) {
         self.observeClosure = observe
     }
 }
