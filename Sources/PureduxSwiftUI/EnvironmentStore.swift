@@ -10,15 +10,24 @@ import Combine
 import SwiftUI
 
 public class EnvironmentStore<AppState, Action>: ObservableObject {
-    var state: AppState { store.state }
-    let stateSubject: PassthroughSubject<AppState, Never>
-
+    private var _state: AppState
     private let store: PureduxStore.Store<AppState, Action>
     private let queue: DispatchQueue
 
+    let stateSubject: PassthroughSubject<AppState, Never>
+
+    var state: AppState {
+        queue.sync {
+            _state
+        }
+    }
+
     public init(store: PureduxStore.Store<AppState, Action>,
-                queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue", qos: .userInteractive)) {
+                queue: DispatchQueue = DispatchQueue(label: "EnvironmentStoreQueue",
+                                                     qos: .userInteractive,
+                                                     attributes: .concurrent)) {
         self.store = store
+        self._state = store.state
         self.stateSubject = PassthroughSubject()
         self.queue = queue
 
@@ -35,6 +44,7 @@ public class EnvironmentStore<AppState, Action>: ObservableObject {
                 return .dead
             }
 
+            self._state = $0
             self.stateSubject.send($0)
             return .active
         }
