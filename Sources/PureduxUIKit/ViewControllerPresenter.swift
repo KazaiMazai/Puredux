@@ -12,5 +12,5 @@ public protocol ViewControllerPresenter {
     associatedtype State
     associatedtype Action
 
-    func map(state: State, store: Store<State, Action>) -> ViewController.Props
+    func props(state: State, store: Store<State, Action>) -> ViewController.Props
 }

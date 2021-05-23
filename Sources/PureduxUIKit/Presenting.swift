@@ -10,36 +10,52 @@ import Dispatch
 import PureduxStore
 
 struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
-    weak var viewController: ViewController?
-    let store: Store<State, Action>
+    private let mainQueue = DispatchQueue.main
+    private let workerQueue = DispatchQueue(label: "PresenterQueue",
+                                            qos: .userInteractive)
 
-    let map: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
-    let uiQueue: DispatchQueue =  DispatchQueue.main
+    private weak var viewController: ViewController?
+    private let store: Store<State, Action>
 
-    private func connect() {
+    private let props: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
+
+    init(viewController: ViewController,
+         store: Store<State, Action>,
+         props: @escaping (State, Store<State, Action>) -> ViewController.Props) {
+
+        self.viewController = viewController
+        self.store = store
+        self.props = props
+    }
+}
+
+extension Presenting: PresenterProtocol {
+    func subscribeToStore() {
+        observe(state: store.state)
         store.subscribe(observer: asObserver)
     }
 }
 
-extension Presenting: Presenter {
+private extension Presenting {
+    var asObserver: Observer<State> {
+        Observer { state in
+            observe(state: state)
+        }
+    }
 
-}
-
-extension Presenting {
-    private func observe(state: State) -> Observer<State>.Status {
+    @discardableResult func observe(state: State) -> Observer<State>.Status {
         guard let viewController = viewController else {
             return .dead
         }
 
-        let props = map(state, store)
-        viewController.render(props: props)
+        workerQueue.async {
+            let newProps = props(state, store)
+
+            mainQueue.async {
+                viewController.setProps(newProps)
+            }
+        }
 
         return .active
-    }
-
-    var asObserver: Observer<State> {
-        Observer(queue: uiQueue) { state in
-            return self.observe(state: state)
-        }
     }
 }
