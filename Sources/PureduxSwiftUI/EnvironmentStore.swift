@@ -34,7 +34,10 @@ public class EnvironmentStore<AppState, Action>: ObservableObject {
         store.dispatch(action: action)
     }
 
-    private var asObserver: PureduxStore.Observer<AppState> {
+}
+
+private extension EnvironmentStore {
+    var asObserver: PureduxStore.Observer<AppState> {
         PureduxStore.Observer { [weak self] state in
             guard let self = self else {
                 return .dead
