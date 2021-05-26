@@ -8,16 +8,18 @@
 import SwiftUI
 import Combine
 
-struct PresentingView<AppState, Action, SubState, Props, Content>: View
-    where Content: View {
+struct PresentingView<Store, SubState, Props, Content>: View
+    where
+    Content: View,
+    Store: StoreProtocol {
 
-    @EnvironmentObject private var store: EnvironmentStore<AppState, Action>
+    @EnvironmentObject private var store: ObservableStore<Store>
 
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
-    let substate: (_ state: AppState) -> SubState
-    let props: (_ substate: SubState, _ store: EnvironmentStore<AppState, Action>) -> Props
+    let substate: (_ state: Store.AppState) -> SubState
+    let props: (_ substate: SubState, _ store: ObservableStore<Store>) -> Props
     let content: (_ props: Props) -> Content
     
     let distinctStateChangesBy: (SubState, SubState) -> Bool

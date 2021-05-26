@@ -12,15 +12,14 @@ import PureduxCommon
 public protocol PresentableView: View {
     associatedtype Content: View
     associatedtype Props
-    associatedtype AppState
-    associatedtype Action
     associatedtype SubState
+    associatedtype Store: StoreProtocol
 
-    func props(for state: SubState, on store: EnvironmentStore<AppState, Action>) -> Props
+    func props(for state: SubState, on store: ObservableStore<Store>) -> Props
 
     func content(for props: Props) -> Content
 
-    func substate(for state: AppState) -> SubState
+    func substate(for state: Store.AppState) -> SubState
 
     var distinctStateChangesBy: Equating<SubState> { get }
 }
@@ -39,8 +38,8 @@ public extension PresentableView {
     }
 }
 
-public extension PresentableView where SubState == AppState {
-    func substate(for state: AppState) -> SubState {
+public extension PresentableView where SubState == Store.AppState {
+    func substate(for state: Store.AppState) -> SubState {
         state
     }
 }
