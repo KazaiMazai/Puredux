@@ -19,14 +19,12 @@ struct LocalStore<Store: ViewStore, AppState, LocalState, LocalAction>: ViewStor
 
     init(store: Store,
          localState: @escaping (AppState) -> LocalState,
-         storeAction: @escaping (LocalAction) -> Store.Action,
-         distinctStateChangesBy: @escaping (LocalState, LocalState) -> Bool) {
+         storeAction: @escaping (LocalAction) -> Store.Action) {
         self.localState = localState
         self.storeAction = storeAction
         self.store = store
         self.statePublisher = store.statePublisher
             .map { localState($0) }
-            .removeDuplicates(by: distinctStateChangesBy)
             .eraseToAnyPublisher()
     }
 
