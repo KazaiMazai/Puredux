@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-public struct EnvironmentStoreProvidingView<Store: StoreProtocol, Content: View>: View {
-    private let store: ObservableStore<Store>
+public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
+    private let store: ObservableStore<AppState, Aciton>
     private let content: () -> Content
 
     public var body: some View {
         content().environmentObject(store)
     }
 
-    public init(store: ObservableStore<Store>,
+    public init(store: ObservableStore<AppState, Aciton>,
                 content: @escaping () -> Content) {
         self.store = store
         self.content = content
