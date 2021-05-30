@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 import PureduxCommon
 
-public protocol LocalStorePresentableView: View {
+public protocol StorePresentableView: View {
     associatedtype Store: ViewStore
 
     associatedtype Content: View
@@ -24,7 +24,7 @@ public protocol LocalStorePresentableView: View {
     var distinctStateChangesBy: Equating<Store.AppState> { get }
 }
 
-public extension LocalStorePresentableView {
+public extension StorePresentableView {
     var body: some View {
         StorePresentingView(
             store: store,
