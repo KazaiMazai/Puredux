@@ -9,18 +9,14 @@ import PureduxStore
 import Combine
 import SwiftUI
 
-public class ObservableStore<AppState, Action>: ObservableObject, ViewStore {
+public final class ObservableStore<AppState, Action>: ObservableObject, ViewStore {
     private let store: Store<AppState, Action>
     private let queue: DispatchQueue
 
     let stateSubject: PassthroughSubject<AppState, Never>
 
-    var statePublisher: AnyPublisher<AppState, Never> {
+    public var statePublisher: AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
-    }
-
-    var state: AppState {
-        store.state
     }
 
     public init(store: Store<AppState, Action>,
