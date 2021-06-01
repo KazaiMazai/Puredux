@@ -11,7 +11,7 @@ import PureduxStore
 
 struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
     private let mainQueue = DispatchQueue.main
-    private let workerQueue = DispatchQueue(label: "PresenterQueue",
+    private let workerQueue = DispatchQueue(label: "com.puredux.presenter",
                                             qos: .userInteractive)
 
     private weak var viewController: ViewController?
@@ -31,31 +31,30 @@ struct Presenting<State, Action, ViewController> where ViewController: Presentab
 
 extension Presenting: PresenterProtocol {
     func subscribeToStore() {
-        observe(state: store.state)
         store.subscribe(observer: asObserver)
     }
 }
 
 private extension Presenting {
     var asObserver: Observer<State> {
-        Observer { state in
-            observe(state: state)
+        Observer { state, handler in
+            observe(state: state, complete: handler)
         }
     }
 
-    @discardableResult func observe(state: State) -> Observer<State>.Status {
-        guard let viewController = viewController else {
-            return .dead
-        }
-
+    func observe(state: State, complete: @escaping (Observer<State>.Status) -> Void) {
         workerQueue.async {
             let newProps = props(state, store)
 
-            mainQueue.async {
+            mainQueue.async { [weak viewController] in
+                guard let viewController = viewController else {
+                    complete(.dead)
+                    return
+                }
+
                 viewController.setProps(newProps)
+                complete(.active)
             }
         }
-
-        return .active
     }
 }
