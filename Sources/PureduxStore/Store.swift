@@ -7,12 +7,12 @@
 
 import Dispatch
 
-public class Store<State, Action> {
+public final class Store<State, Action> {
     public typealias Reducer = (inout State, Action) -> Void
 
     private var state: State
 
-    private let queue = DispatchQueue(label: "StoreQueue", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "com.puredux.store", qos: .userInitiated)
     private let reducer: Reducer
     private var observers: Set<Observer<State>> = []
 
@@ -21,7 +21,7 @@ public class Store<State, Action> {
         self.state = state
     }
 
-    public func dispatch(action: Action) {
+    public func dispatch(_ action: Action) {
         queue.async { [weak self] in
             guard let self = self else {
                 return
