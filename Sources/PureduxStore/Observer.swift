@@ -7,7 +7,7 @@
 
 import Dispatch
 
-public typealias StatusHandler = (Status) -> Void
+public typealias StatusHandler = (ObserverStatus) -> Void
 
 public class Observer<State>: Hashable {
 
@@ -33,7 +33,7 @@ extension Observer {
 
 }
 
-public enum Status {
+public enum ObserverStatus {
     case active
     case dead
 }
