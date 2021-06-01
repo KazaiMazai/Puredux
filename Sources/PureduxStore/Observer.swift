@@ -8,13 +8,14 @@
 import Dispatch
 
 public class Observer<State>: Hashable {
-    private let observeClosure: (State) -> Status
+    public typealias CompleteHandler = (Status) -> Void
+    private let observeClosure: (State, CompleteHandler) -> Void
 
-    func observe(_ state: State) -> Status {
-        observeClosure(state)
+    func observe(_ state: State, complete: @escaping CompleteHandler) {
+        observeClosure(state, complete)
     }
 
-    public init(observe: @escaping (State) -> Status) {
+    public init(observe: @escaping (State, CompleteHandler) -> Void) {
         self.observeClosure = observe
     }
 }

@@ -28,23 +28,37 @@ public final class Store<State, Action> {
             }
 
             self.reducer(&self.state, action)
-            self.observers.forEach { self.notify($0) }
+            self.observers.forEach { self.notify($0, with: self.state) }
         }
     }
 
     public func subscribe(observer: Observer<State>) {
-        queue.async {
+        queue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             self.observers.insert(observer)
-            self.notify(observer)
+            self.notify(observer, with: self.state)
         }
     }
 }
 
 extension Store {
-    private func notify(_ observer: Observer<State>) {
-        let status = observer.observe(state)
-        if status == .dead {
-            observers.remove(observer)
+    private func unsubscribe(observer: Observer<State>) {
+        queue.async { [weak self] in
+            self?.observers.remove(observer)
         }
+    }
+
+    private func notify(_ observer: Observer<State>, with state: State) {
+        observer.observe(state) { [weak self] status in
+            guard status == .dead else {
+                return
+            }
+
+            self?.unsubscribe(observer: observer)
+        }
+
     }
 }
