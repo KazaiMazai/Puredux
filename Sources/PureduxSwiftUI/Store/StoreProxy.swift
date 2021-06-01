@@ -26,7 +26,7 @@ struct StoreProxy<Store: ViewStore, LocalState, LocalAction>: ViewStore {
             .eraseToAnyPublisher()
     }
 
-    func dispatch(action: LocalAction) {
-        store.dispatch(action: fromLocalAction(action))
+    func dispatch(_ action: LocalAction) {
+        store.dispatch(fromLocalAction(action))
     }
 }

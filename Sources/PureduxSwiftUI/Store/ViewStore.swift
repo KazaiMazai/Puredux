@@ -14,7 +14,7 @@ public protocol ViewStore {
 
     var statePublisher: AnyPublisher<AppState, Never> { get }
 
-    func dispatch(action: Action)
+    func dispatch(_ action: Action)
 }
 
 extension ViewStore {

@@ -2,12 +2,21 @@
   "object": {
     "pins": [
       {
+        "package": "PureduxCommon",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxCommon.git",
+        "state": {
+          "branch": "dev",
+          "revision": "2c9f5807dbe8e01c989214baf57669884b9c9ac4",
+          "version": null
+        }
+      },
+      {
         "package": "PureduxStore",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {
-          "branch": null,
-          "revision": "5d0d2820685b502a9feb3a317160ba808d2b7b16",
-          "version": "1.0.0-beta.1"
+          "branch": "dev",
+          "revision": "4a67f8980c263e84b2868f840e2b464f03e5b182",
+          "version": null
         }
       }
     ]

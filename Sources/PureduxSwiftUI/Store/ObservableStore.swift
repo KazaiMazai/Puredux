@@ -30,8 +30,8 @@ public final class ObservableStore<AppState, Action>: ObservableObject, ViewStor
         store.subscribe(observer: asObserver)
     }
 
-    public func dispatch(action: Action) {
-        store.dispatch(action: action)
+    public func dispatch(_ action: Action) {
+        store.dispatch(action)
     }
 }
 
