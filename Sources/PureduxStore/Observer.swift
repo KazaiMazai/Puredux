@@ -11,7 +11,7 @@ public class Observer<State>: Hashable {
     public typealias CompleteHandler = (Status) -> Void
     private let observeClosure: (State, @escaping CompleteHandler) -> Void
 
-    func observe(_ state: State, complete: @escaping CompleteHandler) {
+    public func observe(_ state: State, complete: @escaping CompleteHandler) {
         observeClosure(state, complete)
     }
 
