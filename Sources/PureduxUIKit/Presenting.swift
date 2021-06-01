@@ -17,15 +17,20 @@ struct Presenting<Store: StoreProtocol, ViewController> where ViewController: Pr
     private weak var viewController: ViewController?
     private let store: Store
 
+    private var prevState: Box<Store.AppState?> = Box(value: nil)
+
     private let props: (_ state: Store.AppState, _ store: Store) -> ViewController.Props
+    private let distinctStateChangesBy: (Store.AppState, Store.AppState) -> Bool
 
     init(viewController: ViewController,
          store: Store,
-         props: @escaping (Store.AppState, Store) -> ViewController.Props) {
+         props: @escaping (Store.AppState, Store) -> ViewController.Props,
+         distinctStateChangesBy: @escaping (Store.AppState, Store.AppState) -> Bool) {
 
         self.viewController = viewController
         self.store = store
         self.props = props
+        self.distinctStateChangesBy = distinctStateChangesBy
     }
 }
 
@@ -44,6 +49,12 @@ private extension Presenting {
 
     func observe(state: Store.AppState, complete: @escaping (ObserverStatus) -> Void) {
         workerQueue.async {
+            if isPrevStateEqualTo(state) {
+                complete(.active)
+                return
+            }
+
+            prevState.value = state
             let newProps = props(state, store)
 
             mainQueue.async { [weak viewController] in
@@ -55,6 +66,26 @@ private extension Presenting {
                 viewController.setProps(newProps)
                 complete(.active)
             }
+        }
+    }
+}
+
+private extension Presenting {
+    func isPrevStateEqualTo(_ state: Store.AppState) -> Bool {
+        guard let prevState = prevState.value else {
+            return false
+        }
+
+        return distinctStateChangesBy(prevState, state)
+    }
+}
+
+private extension Presenting {
+    class Box<T> {
+        var value: T
+
+        init(value: T) {
+            self.value = value
         }
     }
 }

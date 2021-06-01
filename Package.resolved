@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "PureduxCommon",
+        "repositoryURL": "https://github.com/KazaiMazai/PureduxCommon.git",
+        "state": {
+          "branch": "dev",
+          "revision": "2c9f5807dbe8e01c989214baf57669884b9c9ac4",
+          "version": null
+        }
+      },
+      {
         "package": "PureduxStore",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {

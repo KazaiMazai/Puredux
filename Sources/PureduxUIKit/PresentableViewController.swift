@@ -7,6 +7,10 @@
 
 import PureduxStore
 
+public protocol PresenterProtocol {
+    func subscribeToStore()
+}
+
 public protocol PresentableViewController: class {
     associatedtype Props
 
@@ -24,7 +28,8 @@ public extension PresentableViewController {
         let presenting = Presenting(
             viewController: self,
             store: store,
-            props: viewControllerPresenter.props)
+            props: viewControllerPresenter.props,
+            distinctStateChangesBy: viewControllerPresenter.distinctStateChangesBy.predicate)
 
         self.presenter = presenting
     }

@@ -16,6 +16,9 @@ let package = Package(
         .package(name: "PureduxStore",
                  url: "https://github.com/KazaiMazai/PureduxStore.git",
                  .branch("dev")),
+        .package(name: "PureduxCommon",
+                 url: "https://github.com/KazaiMazai/PureduxCommon.git",
+                 .branch("dev"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -24,6 +27,7 @@ let package = Package(
             name: "PureduxUIKit",
             dependencies: [
                 .product(name: "PureduxStore", package: "PureduxStore"),
+                .product(name: "PureduxCommon", package: "PureduxCommon"),
             ]),
         .testTarget(
             name: "PureduxUIKitTests",
