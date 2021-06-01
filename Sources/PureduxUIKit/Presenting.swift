@@ -9,19 +9,19 @@ import UIKit
 import Dispatch
 import PureduxStore
 
-struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
+struct Presenting<Store: StoreProtocol, ViewController> where ViewController: PresentableViewController {
     private let mainQueue = DispatchQueue.main
     private let workerQueue = DispatchQueue(label: "com.puredux.presenter",
                                             qos: .userInteractive)
 
     private weak var viewController: ViewController?
-    private let store: Store<State, Action>
+    private let store: Store
 
-    private let props: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
+    private let props: (_ state: Store.AppState, _ store: Store) -> ViewController.Props
 
     init(viewController: ViewController,
-         store: Store<State, Action>,
-         props: @escaping (State, Store<State, Action>) -> ViewController.Props) {
+         store: Store,
+         props: @escaping (Store.AppState, Store) -> ViewController.Props) {
 
         self.viewController = viewController
         self.store = store
@@ -36,13 +36,13 @@ extension Presenting: PresenterProtocol {
 }
 
 private extension Presenting {
-    var asObserver: Observer<State> {
+    var asObserver: Observer<Store.AppState> {
         Observer { state, handler in
             observe(state: state, complete: handler)
         }
     }
 
-    func observe(state: State, complete: @escaping (Observer<State>.Status) -> Void) {
+    func observe(state: Store.AppState, complete: @escaping (ObserverStatus) -> Void) {
         workerQueue.async {
             let newProps = props(state, store)
 

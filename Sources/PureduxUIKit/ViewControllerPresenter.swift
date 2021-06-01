@@ -9,8 +9,7 @@ import PureduxStore
 
 public protocol ViewControllerPresenter {
     associatedtype ViewController: PresentableViewController
-    associatedtype State
-    associatedtype Action
+    associatedtype Store: StoreProtocol
 
-    func props(state: State, store: Store<State, Action>) -> ViewController.Props
+    func props(state: Store.AppState, store: Store) -> ViewController.Props
 }

@@ -16,11 +16,9 @@ public protocol PresentableViewController: class {
 }
 
 public extension PresentableViewController {
-    func use<Presenter: ViewControllerPresenter>(
-        _ viewControllerPresenter: Presenter,
-        connectingTo store: Store<Presenter.State, Presenter.Action>)
-
+    func connect<Presenter>(to store: Presenter.Store, using viewControllerPresenter: Presenter)
         where
+        Presenter: ViewControllerPresenter,
         Presenter.ViewController.Props == Props {
 
         let presenting = Presenting(

@@ -8,15 +8,15 @@
 import Foundation
 import PureduxStore
 
-protocol StoreProtocol {
+public protocol StoreProtocol {
     associatedtype AppState
     associatedtype Action
 
     func dispatch(_ action: Action)
 
-    func subscribe(observer: Observer<State>) 
+    func subscribe(observer: Observer<AppState>) 
 }
 
-extension Srore: StoreProtocol {
+extension PureduxStore.Store: StoreProtocol {
     
 }

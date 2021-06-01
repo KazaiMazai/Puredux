@@ -19,9 +19,6 @@ struct StoreProxy<Store: StoreProtocol, LocalState, LocalAction>: StoreProtocol 
         self.toLocalState = toLocalState
         self.fromLocalAction = fromLocalAction
         self.store = store
-        self.statePublisher = store.statePublisher
-            .map { toLocalState($0) }
-            .eraseToAnyPublisher()
     }
 
     func dispatch(_ action: LocalAction) {
@@ -29,8 +26,10 @@ struct StoreProxy<Store: StoreProtocol, LocalState, LocalAction>: StoreProtocol 
     }
 
     func subscribe(observer: Observer<LocalState>) {
-        store.subscribe(Observer { state, complete in
-            observer.observe(toLocalState(state), complete)
-        })
+        let stateObserver = Observer<Store.AppState> { state, complete in
+            observer.observe(toLocalState(state), complete: complete)
+        }
+
+        store.subscribe(observer: stateObserver)
     }
 }
