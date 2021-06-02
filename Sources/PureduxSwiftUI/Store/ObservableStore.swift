@@ -18,7 +18,7 @@ public final class ObservableStore<AppState, Action>: ObservableObject, ViewStor
         stateSubject.eraseToAnyPublisher()
     }
 
-    public init(store: Store<AppState, Action>,
+    public convenience init(store: Store<AppState, Action>,
                 label: String = "com.puredux.observable-store",
                 qos: DispatchQoS = .userInteractive) {
 
