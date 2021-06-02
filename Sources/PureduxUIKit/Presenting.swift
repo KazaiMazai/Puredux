@@ -9,7 +9,8 @@ import UIKit
 import Dispatch
 import PureduxStore
 
-struct Presenting<Store: StoreProtocol, ViewController> where ViewController: PresentableViewController {
+struct Presenting<Store, ViewController> where ViewController: PresentableViewController,
+                                                              Store: StoreProtocol {
     private let mainQueue = DispatchQueue.main
     private let workerQueue = DispatchQueue(label: "com.puredux.presenter",
                                             qos: .userInteractive)
@@ -17,7 +18,7 @@ struct Presenting<Store: StoreProtocol, ViewController> where ViewController: Pr
     private weak var viewController: ViewController?
     private let store: Store
 
-    private var prevState: Box<Store.AppState?> = Box(value: nil)
+    private var prevState: Ref<Store.AppState?> = Ref(value: nil)
 
     private let props: (_ state: Store.AppState, _ store: Store) -> ViewController.Props
     private let distinctStateChangesBy: (Store.AppState, Store.AppState) -> Bool
@@ -81,7 +82,7 @@ private extension Presenting {
 }
 
 private extension Presenting {
-    class Box<T> {
+    final class Ref<T> {
         var value: T
 
         init(value: T) {
