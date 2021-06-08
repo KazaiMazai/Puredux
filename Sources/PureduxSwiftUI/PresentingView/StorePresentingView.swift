@@ -49,7 +49,7 @@ private extension StorePresentingView {
         if let props = currentProps {
             content(props)
         } else {
-            EmptyView()
+            Color.clear
         }
     }
 
