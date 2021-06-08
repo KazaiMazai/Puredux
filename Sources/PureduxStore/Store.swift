@@ -7,11 +7,12 @@
 
 import Dispatch
 
-public class Store<State, Action> {
+public final class Store<State, Action> {
     public typealias Reducer = (inout State, Action) -> Void
-    public private(set) var state: State
 
-    private let queue = DispatchQueue(label: "Store queue", qos: .userInitiated)
+    private var state: State
+
+    private let queue = DispatchQueue(label: "com.puredux.store", qos: .userInitiated)
     private let reducer: Reducer
     private var observers: Set<Observer<State>> = []
 
@@ -20,33 +21,44 @@ public class Store<State, Action> {
         self.state = state
     }
 
-    public func dispatch(action: Action) {
-        queue.async {
+    public func dispatch(_ action: Action) {
+        queue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             self.reducer(&self.state, action)
-            self.observers.forEach(self.notify)
+            self.observers.forEach { self.notify($0, with: self.state) }
         }
     }
 
     public func subscribe(observer: Observer<State>) {
-        queue.async {
+        queue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             self.observers.insert(observer)
-            self.notify(observer)
+            self.notify(observer, with: self.state)
         }
     }
 }
 
 extension Store {
-    private func notify(_ observer: Observer<State>) {
-        observer.observe(state) { [weak self] in
-            guard let self = self else { return }
+    private func unsubscribe(observer: Observer<State>) {
+        queue.async { [weak self] in
+            self?.observers.remove(observer)
+        }
+    }
 
-            guard $0 == .dead else {
+    private func notify(_ observer: Observer<State>, with state: State) {
+        observer.observe(state) { [weak self] status in
+            guard status == .dead else {
                 return
             }
 
-            self.queue.async {
-                self.observers.remove(observer)
-            }
+            self?.unsubscribe(observer: observer)
         }
+
     }
 }

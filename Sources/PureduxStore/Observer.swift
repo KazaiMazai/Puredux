@@ -7,31 +7,18 @@
 
 import Dispatch
 
+public typealias StatusHandler = (ObserverStatus) -> Void
+
 public class Observer<State>: Hashable {
-    private let queue: DispatchQueue
-    private let observeClosure: (State) -> Status
 
-    func observe(_ state: State, complete: @escaping (Status) -> Void) {
-        queue.async(flags: .barrier) { [weak self] in
-            guard let self = self else {
-                complete(.dead)
-                return
-            }
-            let status = self.observeClosure(state)
-            complete(status)
-        }
+    private let observeClosure: (State, @escaping StatusHandler) -> Void
+
+    public func observe(_ state: State, complete: @escaping StatusHandler) {
+        observeClosure(state, complete)
     }
 
-    public init(queue: DispatchQueue, observe: @escaping (State) -> Status) {
-        self.queue = queue
+    public init(observe: @escaping (State, @escaping StatusHandler) -> Void) {
         self.observeClosure = observe
-    }
-}
-
-extension Observer {
-    public enum Status {
-        case active
-        case dead
     }
 }
 
@@ -44,4 +31,9 @@ extension Observer {
         ObjectIdentifier(self).hash(into: &hasher)
     }
 
+}
+
+public enum ObserverStatus {
+    case active
+    case dead
 }
