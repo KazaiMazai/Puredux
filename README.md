@@ -176,6 +176,9 @@ Demo app implementation with Network, State Persistance and clean SwiftUI views 
 
 [PureduxDemoApp](https://github.com/KazaiMazai/PureduxDemo)
 
+# Licensing
+
+Puredux and all its modules are licensed under MIT license.
 
 
 
