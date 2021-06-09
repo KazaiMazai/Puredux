@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
+</p>
+
 # Puredux
 
 Puredux is a lightweight UDF architecture framework in Swift.
@@ -8,66 +12,86 @@ Puredux is a lightweight UDF architecture framework in Swift.
 Purderux is a minimalistic, but yet poweful library that allows to build iOS application in a clean and consistent way.
 
 - It's tiny and easy to use and understand
-- It's modular. Allows to bring to a project only those depenencies it's really need
+- It's modular. Allows to bring to a project only those depenencies that it really needs
 - It's flexible enough to be as strict as you want
 
 ## Why Puredux
 
-- Make app clean by separating the state from the rest of it
+- Pure state and reducer without side effects
+- Clean UI and Presentation layer
 - No room for unexpected state mutations
-- Independent State-driven side effects 
-- Another level of app testability
+- All async work under control
+- Another level of testability with independent side effects
 
 
+## Special features
 
-## What's it made of
+### Pure state
+
+Modelling app state as a codable struct allows to obtain persistance out of the box.
+
+
+### Threading
+Puredux tries to make as little load on the MainThread's queue as possible.
+PureduxStore is threadsafe and performs dispatching and then reduces the state on a background queue.
+
+By defaut, Puredux presenters would prepare views' props in background as well.
+
+Puredux hides alland async stuff under the hood, leaving only sync things on the surface. Making app layers thin, plain and testable as hell.
+
+
+## What is it made of
 
 <p align="center">
   <img src="Scheme.svg?raw=true" alt="Sublime's custom image"/>
 </p>
 
 
+## Core
+### State
 
-Main components of Puredux are
-
-- State
-- Actions
-- Store
-- Store Observers
-- UI binding
-- Side Effects
-
-
-### State 
 State is supposed to be data struct, representing the state of the whole app, while the rest of the app is supposed to be at most stateless.
 
 ### Actions
-Actions work like transactions describing all events that happen in the app. 
 
-### Reducer
+Actions represent all events that happen in the app. 
+
+## Store
+### Reducer 
 
 Reducer is simply a function, that is supposes to perform mutations on the state, taking current state and action as an input.
 
-### Store
+### Store & Observers
 
 Store is the heart of the whole thing. Taking initial state and reducer as an input, it mutatees the state when new Actions are dispatched to it.
 New state is eventually delivered to its observers.
 
 Basic implementation of Store and Observers can be found here: [PureduxStore](https://github.com/KazaiMazai/PureduxStore)
  
- 
-## PureduxSwiftUI
+## UI Layer
+
+### View Props
+
+Props are the views' input data structs, describing view's state entirely.
+
+### Presenters
+
+Presenters prepares Props for the views.  
+
+### PureduxSwiftUI
 
 PureduxSwiftUI provides a way to subscribe SwiftUI views to the Store without exposing internal details related to state changes delivery.
 It makes SwiftUI very clean and consitent.
 
-To make SwiftUI View work with Puredux it should simply conform to PresentableView protocol.
+To make SwiftUI View work with Puredux it should simply conform to **PresentableView** protocol.
 
 PureduxSwiftUI implementation can be found here: [PureduxSwiftUI](https://github.com/KazaiMazai/PureduxSwiftUI)
 
-## PureduxUIKit
+### PureduxUIKit
 
-PureduxSwiftUI provides a way to connect good old UIViewControllers to the store. To connect it, UIViewController should conform to PresentableViewController
+PureduxUIKit provides a way to bind good old UIViewControllers to the store. 
+
+To make it work UIViewController should conform to **PresentableViewController** protocol
 and call connect method, that allows to bind Store with it, using specified presenter.
 
 PureduxUIKit implementation can be found here: [PureduxUIKit](https://github.com/KazaiMazai/PureduxUIKit)
@@ -82,12 +106,12 @@ In Puredux, all side effects are handled by means of
 - Side Effects state mapping
 - Middleware 
 
-### Operator   
+### Operator 
 
 Puredux's Operator typically has an input of an array of requests.
-It always tries to match its input and the work it performs.
+It always tries to match the work it performs to its inputs.
 
-So it performs only those requests that we pass to it and cancels all the rest. 
+That means that Operator performs only those requests that we pass to it and cancels all the rest. 
 
 Implementation of SideEffect and Base Operator: [PureduxSideEffects](https://github.com/KazaiMazai/PureduxSideEffects)
 
@@ -150,7 +174,7 @@ https://github.com/KazaiMazai/PureduxCommonOperators
 
 Demo app implementation with Network, State Persistance and clean SwiftUI views can be found here:
 
-[PureduxDemoApp] (https://github.com/KazaiMazai/PureduxDemo)
+[PureduxDemoApp](https://github.com/KazaiMazai/PureduxDemo)
 
 
 
