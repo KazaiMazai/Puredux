@@ -11,7 +11,7 @@ public protocol PresenterProtocol {
     func subscribeToStore()
 }
 
-public protocol PresentableViewController: class {
+public protocol PresentableViewController: AnyObject {
     associatedtype Props
 
     var presenter: PresenterProtocol? { get set }
