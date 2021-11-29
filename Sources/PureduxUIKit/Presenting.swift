@@ -18,20 +18,20 @@ struct Presenting<Store, ViewController> where ViewController: PresentableViewCo
     private weak var viewController: ViewController?
     private let store: Store
 
-    private var prevState: Ref<Store.AppState?> = Ref(value: nil)
+    private let prevState: Ref<Store.AppState?> = Ref(value: nil)
 
     private let props: (_ state: Store.AppState, _ store: Store) -> ViewController.Props
-    private let distinctStateChangesBy: (Store.AppState, Store.AppState) -> Bool
+    private let isEqual: (Store.AppState, Store.AppState) -> Bool
 
     init(viewController: ViewController,
          store: Store,
          props: @escaping (Store.AppState, Store) -> ViewController.Props,
-         distinctStateChangesBy: @escaping (Store.AppState, Store.AppState) -> Bool) {
+         distinctStateChangesBy isEqual: @escaping (Store.AppState, Store.AppState) -> Bool) {
 
         self.viewController = viewController
         self.store = store
         self.props = props
-        self.distinctStateChangesBy = distinctStateChangesBy
+        self.isEqual = isEqual
     }
 }
 
@@ -77,7 +77,7 @@ private extension Presenting {
             return false
         }
 
-        return distinctStateChangesBy(prevState, state)
+        return isEqual(prevState, state)
     }
 }
 
