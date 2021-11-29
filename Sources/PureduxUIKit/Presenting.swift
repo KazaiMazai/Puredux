@@ -12,8 +12,7 @@ import PureduxStore
 struct Presenting<Store, ViewController> where ViewController: PresentableViewController,
                                                               Store: StoreProtocol {
     private let mainQueue = DispatchQueue.main
-    private let workerQueue = DispatchQueue(label: "com.puredux.presenter",
-                                            qos: .userInteractive)
+    private let workerQueue: DispatchQueue
 
     private weak var viewController: ViewController?
     private let store: Store
@@ -26,11 +25,13 @@ struct Presenting<Store, ViewController> where ViewController: PresentableViewCo
     init(viewController: ViewController,
          store: Store,
          props: @escaping (Store.AppState, Store) -> ViewController.Props,
+         workerQueue: DispatchQueue,
          distinctStateChangesBy isEqual: @escaping (Store.AppState, Store.AppState) -> Bool) {
 
         self.viewController = viewController
         self.store = store
         self.props = props
+        self.workerQueue = workerQueue
         self.isEqual = isEqual
     }
 }
