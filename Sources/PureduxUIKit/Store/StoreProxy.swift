@@ -8,21 +8,18 @@
 import Foundation
 import PureduxStore
 
-struct StoreProxy<Store: StoreProtocol, LocalState, LocalAction>: StoreProtocol {
+struct StoreProxy<Store: StoreProtocol, LocalState>: StoreProtocol {
     private var store: Store
     private let toLocalState: (Store.AppState) -> LocalState
-    private let fromLocalAction: (LocalAction) -> Store.Action
 
     init(store: Store,
-         toLocalState: @escaping (Store.AppState) -> LocalState,
-         fromLocalAction: @escaping (LocalAction) -> Store.Action) {
+         toLocalState: @escaping (Store.AppState) -> LocalState) {
         self.toLocalState = toLocalState
-        self.fromLocalAction = fromLocalAction
         self.store = store
     }
 
-    func dispatch(_ action: LocalAction) {
-        store.dispatch(fromLocalAction(action))
+    func dispatch(_ action: Store.Action) {
+        store.dispatch(action)
     }
 
     func subscribe(observer: Observer<LocalState>) {

@@ -11,7 +11,7 @@ public protocol PresenterProtocol {
     func subscribeToStore()
 }
 
-public protocol PresentableViewController: class {
+public protocol PresentableViewController: AnyObject {
     associatedtype Props
 
     var presenter: PresenterProtocol? { get set }
@@ -20,7 +20,8 @@ public protocol PresentableViewController: class {
 }
 
 public extension PresentableViewController {
-    func connect<Presenter>(to store: Presenter.Store, using viewControllerPresenter: Presenter)
+    func connect<Presenter>(to store: Presenter.Store,
+                            using viewControllerPresenter: Presenter)
         where
         Presenter: ViewControllerPresenter,
         Presenter.ViewController.Props == Props {
@@ -29,6 +30,7 @@ public extension PresentableViewController {
             viewController: self,
             store: store,
             props: viewControllerPresenter.props,
+            workerQueue: viewControllerPresenter.makePresenterWorkerQueue(),
             distinctStateChangesBy: viewControllerPresenter.distinctStateChangesBy.predicate)
 
         self.presenter = presenting
