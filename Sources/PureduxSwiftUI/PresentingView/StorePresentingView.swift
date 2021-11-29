@@ -8,14 +8,30 @@
 import SwiftUI
 import Combine
 
+
+
 struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     where
     Content: View,
-    Store: ViewStore,
+    Store: ObservableStoreProtocol,
     Store.AppState == AppState,
     Store.Action == Action {
 
+    init(store: Store,
+         props: @escaping (AppState, Store) -> Props,
+         content: @escaping (Props) -> Content,
+         distinctStateChangesBy: @escaping (AppState, AppState) -> Bool,
+         presentationOptions: PresentationOptions) {
+
+        self.store = store
+        self.props = props
+        self.content = content
+        self.distinctStateChangesBy = distinctStateChangesBy
+        self.presentationOptions = presentationOptions
+    }
+
     let store: Store
+    let presentationOptions: PresentationOptions
 
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
@@ -54,7 +70,27 @@ private extension StorePresentingView {
     }
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
+        switch presentationOptions.queue {
+        case .store:
+            return makeStoreQueuePropsPublisher()
+        case .main
+            return makePresentationQueuePropsPublisher(.main)
+        case .queue(let queue):
+            return makePresentationQueuePropsPublisher(queue)
+        }
+    }
+
+    func makeStoreQueuePropsPublisher() -> AnyPublisher<Props, Never> {
         store.statePublisher
+            .removeDuplicates(by: distinctStateChangesBy)
+            .map { props($0, store) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    func makePresentationQueuePropsPublisher(_ queue: DispatchQueue) -> AnyPublisher<Props, Never> {
+        store.statePublisher
+            .receive(on: queue)
             .removeDuplicates(by: distinctStateChangesBy)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)

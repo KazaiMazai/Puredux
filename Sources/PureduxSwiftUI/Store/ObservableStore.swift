@@ -9,7 +9,7 @@ import PureduxStore
 import Combine
 import SwiftUI
 
-public final class ObservableStore<AppState, Action>: ObservableObject, ViewStore {
+public final class ObservableStore<AppState, Action>: ObservableObject, ObservableStoreProtocol {
     private let store: Store<AppState, Action>
     private let queue: DispatchQueue
     private let stateSubject: PassthroughSubject<AppState, Never>

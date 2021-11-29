@@ -10,7 +10,7 @@ import Combine
 import PureduxCommon
 
 public protocol StorePresentableView: View {
-    associatedtype Store: ViewStore
+    associatedtype Store: ObservableStoreProtocol
 
     associatedtype Content: View
     associatedtype Props
@@ -22,6 +22,8 @@ public protocol StorePresentableView: View {
     func content(for props: Props) -> Content
 
     var distinctStateChangesBy: Equating<Store.AppState> { get }
+
+    var presentationOptions: PresentationOptions { get }
 }
 
 public extension StorePresentableView {
@@ -30,10 +32,15 @@ public extension StorePresentableView {
             store: store,
             props: props,
             content: content,
-            distinctStateChangesBy: distinctStateChangesBy.predicate)
+            distinctStateChangesBy: distinctStateChangesBy.predicate,
+            presentationOptions: presentationOptions)
     }
 
     var distinctStateChangesBy: Equating<Store.AppState> {
         .neverEqual
+    }
+
+    var presentationQueue: PresentationOptions {
+        PresentationOptions.default
     }
 }

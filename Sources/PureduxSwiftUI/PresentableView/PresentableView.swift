@@ -20,6 +20,8 @@ public protocol PresentableView: View {
     func content(for props: Props) -> Content
 
     var distinctStateChangesBy: Equating<AppState> { get }
+
+    var presentationOptions: PresentationOptions { get }
 }
 
 public extension PresentableView {
@@ -27,10 +29,17 @@ public extension PresentableView {
         EnvironmentStorePresentingView(
             props: props,
             content: content,
-            distinctStateChangesBy: distinctStateChangesBy.predicate)
+            distinctStateChangesBy: distinctStateChangesBy.predicate,
+            presentationOptions: presentationOptions)
     }
 
     var distinctStateChangesBy: Equating<AppState> {
         .neverEqual
     }
+
+    var presentationOptions: PresentationOptions {
+        PresentationOptions.default
+    }
 }
+
+

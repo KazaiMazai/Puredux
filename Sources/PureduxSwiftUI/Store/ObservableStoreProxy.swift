@@ -8,25 +8,22 @@
 import Foundation
 import Combine
 
-struct StoreProxy<Store: ViewStore, LocalState, LocalAction>: ViewStore {
+struct ObservableStoreProxy<Store: ObservableStoreProtocol, LocalState>: ObservableStoreProtocol {
     private var store: Store
     private let toLocalState: (Store.AppState) -> LocalState
-    private let fromLocalAction: (LocalAction) -> Store.Action
 
     let statePublisher: AnyPublisher<LocalState, Never>
 
     init(store: Store,
-         toLocalState: @escaping (Store.AppState) -> LocalState,
-         fromLocalAction: @escaping (LocalAction) -> Store.Action) {
+         toLocalState: @escaping (Store.AppState) -> LocalState) {
         self.toLocalState = toLocalState
-        self.fromLocalAction = fromLocalAction
         self.store = store
         self.statePublisher = store.statePublisher
             .map { toLocalState($0) }
             .eraseToAnyPublisher()
     }
 
-    func dispatch(_ action: LocalAction) {
-        store.dispatch(fromLocalAction(action))
+    func dispatch(_ action: Store.Action) {
+        store.dispatch(action)
     }
 }
