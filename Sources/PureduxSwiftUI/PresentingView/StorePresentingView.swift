@@ -8,8 +8,6 @@
 import SwiftUI
 import Combine
 
-
-
 struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     where
     Content: View,
@@ -71,9 +69,9 @@ private extension StorePresentingView {
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
         switch presentationOptions.queue {
-        case .store:
+        case .notSpecified:
             return makeStoreQueuePropsPublisher()
-        case .main
+        case .main:
             return makePresentationQueuePropsPublisher(.main)
         case .queue(let queue):
             return makePresentationQueuePropsPublisher(queue)

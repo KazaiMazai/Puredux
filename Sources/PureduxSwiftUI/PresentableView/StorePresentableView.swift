@@ -40,7 +40,7 @@ public extension StorePresentableView {
         .neverEqual
     }
 
-    var presentationQueue: PresentationOptions {
+    var presentationOptions: PresentationOptions {
         PresentationOptions.default
     }
 }

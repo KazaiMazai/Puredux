@@ -26,7 +26,7 @@ public final class ObservableStore<AppState, Action>: ObservableObject, Observab
                   queue: DispatchQueue(label: label, qos: qos))
     }
 
-    public init(store: Store<AppState, Action>,
+    init(store: Store<AppState, Action>,
                 queue: DispatchQueue) {
 
         self.store = store

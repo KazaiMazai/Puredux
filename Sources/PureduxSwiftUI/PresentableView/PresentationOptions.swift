@@ -12,11 +12,15 @@ public struct PresentationOptions {
     public static var `default` = PresentationOptions(queue: .main)
 
     public var queue: PresentationQueue
+
+    public init(queue: PresentationOptions.PresentationQueue) {
+        self.queue = queue
+    }
 }
 
 public extension PresentationOptions {
      enum PresentationQueue {
-        case store
+        case notSpecified
         case main
         case queue(DispatchQueue)
 
@@ -26,7 +30,7 @@ public extension PresentationOptions {
                 return DispatchQueue.main
             case .queue(let queue):
                 return queue
-            case .store:
+            case .notSpecified:
                 return nil
             }
         }
