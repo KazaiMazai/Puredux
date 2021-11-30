@@ -42,8 +42,8 @@ public final class ObservableStore<AppState, Action>: ObservableObject, Observab
 }
 
 private extension ObservableStore {
-    var asObserver: PureduxStore.Observer<AppState> {
-        PureduxStore.Observer { [weak self] state, complete in
+    var asObserver: Observer<AppState> {
+        Observer { [weak self] state, complete in
             guard let self = self else {
                 complete(.dead)
                 return

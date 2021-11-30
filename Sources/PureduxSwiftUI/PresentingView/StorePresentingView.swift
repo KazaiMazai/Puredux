@@ -15,21 +15,8 @@ struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     Store.AppState == AppState,
     Store.Action == Action {
 
-    init(store: Store,
-         props: @escaping (AppState, Store) -> Props,
-         content: @escaping (Props) -> Content,
-         distinctStateChangesBy: @escaping (AppState, AppState) -> Bool,
-         presentationOptions: PresentationOptions) {
-
-        self.store = store
-        self.props = props
-        self.content = content
-        self.distinctStateChangesBy = distinctStateChangesBy
-        self.presentationOptions = presentationOptions
-    }
-
     let store: Store
-    let presentationOptions: PresentationOptions
+
 
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
@@ -38,6 +25,7 @@ struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     let content: (_ props: Props) -> Content
 
     let distinctStateChangesBy: (AppState, AppState) -> Bool
+    let presentationOptions: Options
 
     var body: some View {
         makeContent()
@@ -72,9 +60,9 @@ private extension StorePresentingView {
         case .notSpecified:
             return makeStoreQueuePropsPublisher()
         case .main:
-            return makePresentationQueuePropsPublisher(.main)
+            return makeCustomQueuePropsPublisher(.main)
         case .queue(let queue):
-            return makePresentationQueuePropsPublisher(queue)
+            return makeCustomQueuePropsPublisher(queue)
         }
     }
 
@@ -86,10 +74,10 @@ private extension StorePresentingView {
             .eraseToAnyPublisher()
     }
 
-    func makePresentationQueuePropsPublisher(_ queue: DispatchQueue) -> AnyPublisher<Props, Never> {
+    func makeCustomQueuePropsPublisher(_ queue: DispatchQueue) -> AnyPublisher<Props, Never> {
         store.statePublisher
-            .receive(on: queue)
             .removeDuplicates(by: distinctStateChangesBy)
+            .receive(on: queue)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

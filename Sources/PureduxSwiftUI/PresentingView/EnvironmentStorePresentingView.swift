@@ -8,8 +8,6 @@
 import SwiftUI
 import Combine
 
-//associatedtype MakeProps<AppState, Store, Props> = (_ state: AppState, _ store: Store) -> Props
-
 struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
     where
     Content: View {
@@ -19,7 +17,7 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
     let props: (_ state: AppState, _ store: ObservableStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
     let distinctStateChangesBy: (AppState, AppState) -> Bool
-    let presentationOptions: PresentationOptions
+    let presentationOptions: Options
 
     var body: some View {
         StorePresentingView(
@@ -30,4 +28,6 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
             presentationOptions: presentationOptions)
     }
 }
+
+
 
