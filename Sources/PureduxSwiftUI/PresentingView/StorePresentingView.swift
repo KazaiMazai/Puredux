@@ -24,8 +24,8 @@ struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     let props: (_ state: AppState, _ store: Store) -> Props
     let content: (_ props: Props) -> Content
 
-    let distinctStateChangesBy: (AppState, AppState) -> Bool
-    let presentationOptions: Options
+    let removeDuplicates: (AppState, AppState) -> Bool
+    let queue: PresentationQueue
 
     var body: some View {
         makeContent()
@@ -56,8 +56,8 @@ private extension StorePresentingView {
     }
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
-        switch presentationOptions.queue {
-        case .notSpecified:
+        switch queue {
+        case .storeQueue:
             return makeStoreQueuePropsPublisher()
         case .main:
             return makeCustomQueuePropsPublisher(.main)
@@ -68,7 +68,7 @@ private extension StorePresentingView {
 
     func makeStoreQueuePropsPublisher() -> AnyPublisher<Props, Never> {
         store.statePublisher
-            .removeDuplicates(by: distinctStateChangesBy)
+            .removeDuplicates(by: removeDuplicates)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -76,7 +76,7 @@ private extension StorePresentingView {
 
     func makeCustomQueuePropsPublisher(_ queue: DispatchQueue) -> AnyPublisher<Props, Never> {
         store.statePublisher
-            .removeDuplicates(by: distinctStateChangesBy)
+            .removeDuplicates(by: removeDuplicates)
             .receive(on: queue)
             .map { props($0, store) }
             .receive(on: DispatchQueue.main)

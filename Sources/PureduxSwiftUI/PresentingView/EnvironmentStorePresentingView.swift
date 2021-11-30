@@ -16,16 +16,16 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
 
     let props: (_ state: AppState, _ store: ObservableStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
-    let distinctStateChangesBy: (AppState, AppState) -> Bool
-    let presentationOptions: Options
+    let removeDuplicates: (AppState, AppState) -> Bool
+    let queue: PresentationQueue
 
     var body: some View {
         StorePresentingView(
             store: store,
             props: props,
             content: content,
-            distinctStateChangesBy: distinctStateChangesBy,
-            presentationOptions: presentationOptions)
+            removeDuplicates: removeDuplicates,
+            queue: queue)
     }
 }
 
