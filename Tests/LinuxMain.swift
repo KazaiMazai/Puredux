@@ -3,5 +3,6 @@ import XCTest
 import PureduxSwiftUITests
 
 var tests = [XCTestCaseEntry]()
-tests += PureduxSwiftUITests.allTests()
+tests += ContentViewWithStoreRenderTests.allTests()
+tests += ContentViewEnvStoreRenderTests.allTests()
 XCTMain(tests)
