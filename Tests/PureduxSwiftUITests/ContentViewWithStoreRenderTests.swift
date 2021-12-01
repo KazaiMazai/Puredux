@@ -3,7 +3,6 @@ import XCTest
 import SwiftUI
 import PureduxStore
 import UIKit
-import SnapshotTesting
 
 final class ContentViewWithStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
@@ -56,7 +55,7 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyActionsAndStateNotMutated_ThenViewRenderedOnce() {
+    func test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce() {
         let actionsCount = 100
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
@@ -70,7 +69,7 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyActionsDispatchedWithDelayAndStateMutated_ThenViewRenderedEveryTime() {
+    func test_WhenManyActionsDispatchedWithDelayAndPropsChanged_ThenViewRenderedEveryTime() {
         let actionsCount = 10
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = actionsCount
@@ -87,7 +86,7 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         waitForExpectations(timeout: actionDelay * Double(actionsCount) * 4)
     }
 
-    func test_WhenManyActionsDispatchedWithDelayAndStateNotMutated_ThenViewRenderedOnce() {
+    func test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce() {
         let actionsCount = 10
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
@@ -111,16 +110,15 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         ("test_WhenOneActionDispatchedAfterSetup_ThenContentRenderedOnce",
          test_WhenOneActionDispatchedAfterSetup_ThenContentRenderedOnce),
 
-        ("test_WhenManyActionsAndStateNotMutated_ThenViewRenderedOnce",
-         test_WhenManyActionsAndStateNotMutated_ThenViewRenderedOnce),
+        ("test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce",
+         test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce),
 
-        ("test_WhenManyActionsDispatchedWithDelayAndStateMutated_ThenViewRenderedEveryTime",
-         test_WhenManyActionsDispatchedWithDelayAndStateMutated_ThenViewRenderedEveryTime),
+        ("test_WhenManyActionsDispatchedWithDelayAndPropsChanged_ThenViewRenderedEveryTime",
+         test_WhenManyActionsDispatchedWithDelayAndPropsChanged_ThenViewRenderedEveryTime),
 
-        ("test_WhenManyActionsDispatchedWithDelayAndStateNotMutated_ThenViewRenderedOnce",
-         test_WhenManyActionsDispatchedWithDelayAndStateNotMutated_ThenViewRenderedOnce)
+        ("test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce",
+         test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce)
     ]
-
 }
 
 
