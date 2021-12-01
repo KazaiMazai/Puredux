@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-struct ObservableStoreProxy<Store: ObservableStoreProtocol, LocalState>: ObservableStoreProtocol {
+struct PublishingStoreProxy<Store: PublishingStore, LocalState>: PublishingStore {
     private var store: Store
     private let toLocalState: (Store.AppState) -> LocalState
 

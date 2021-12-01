@@ -11,7 +11,7 @@ import Combine
 struct StorePresentingView<Store, AppState, Action, Props, Content>: View
     where
     Content: View,
-    Store: ObservableStoreProtocol,
+    Store: PublishingStore,
     Store.AppState == AppState,
     Store.Action == Action {
 

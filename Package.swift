@@ -32,8 +32,11 @@ let package = Package(
                 .product(name: "PureduxStore", package: "PureduxStore"),
                 .product(name: "PureduxCommon", package: "PureduxCommon"),
             ]),
+
         .testTarget(
             name: "PureduxSwiftUITests",
-            dependencies: ["PureduxSwiftUI"]),
+            dependencies: [
+                "PureduxSwiftUI",
+            ]),
     ]
 )

@@ -9,7 +9,7 @@ import PureduxStore
 import Combine
 import SwiftUI
 
-public final class ObservableStore<AppState, Action>: ObservableObject, ObservableStoreProtocol {
+public final class ObservableStore<AppState, Action>: ObservableObject, PublishingStore {
     private let store: Store<AppState, Action>
     private let queue: DispatchQueue
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -19,15 +19,15 @@ public final class ObservableStore<AppState, Action>: ObservableObject, Observab
     }
 
     public convenience init(store: Store<AppState, Action>,
-                label: String = "com.puredux.observable-store",
-                qos: DispatchQoS = .userInteractive) {
+                            label: String = "com.puredux.swiftui-store",
+                            qos: DispatchQoS = .userInteractive) {
 
         self.init(store: store,
                   queue: DispatchQueue(label: label, qos: qos))
     }
 
     init(store: Store<AppState, Action>,
-                queue: DispatchQueue) {
+         queue: DispatchQueue) {
 
         self.store = store
         self.stateSubject = PassthroughSubject<AppState, Never>()

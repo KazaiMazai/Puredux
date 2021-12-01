@@ -25,7 +25,7 @@ public enum PresentationQueue {
    }
 }
 
-struct SomeView<Store: ObservableStoreProtocol>: View where Store.AppState == String {
+struct SomeView<Store: PublishingStore>: View where Store.AppState == String {
     let store: Store
 
     var body: some View {
@@ -67,7 +67,7 @@ extension View {
         content: @escaping (Props) -> Self) -> some View
 
     where
-        Store: ObservableStoreProtocol,
+        Store: PublishingStore,
         Store.AppState == AppState,
         Store.Action == Action  {
 
