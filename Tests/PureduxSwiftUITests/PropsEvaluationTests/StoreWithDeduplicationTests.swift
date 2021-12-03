@@ -17,10 +17,10 @@ class ViewEnvStoreDeduplicationTests: ViewWithStoreDeduplicationTests {
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
-            rootView: StoreProvidingView(store: store) {
+            rootView: StoreProvidingView(store: rootStore) {
                 Text.with(
                     removeStateDuplicates: .equal { $0.subStateWithIndex.index },
-                    props: { (state: TestAppState, store: AnyPublishingStore<TestAppState, Action>) -> String in
+                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return state.subStateWithTitle.title
                     },
@@ -41,7 +41,7 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var store: RootEnvStore = {
+    lazy var rootStore: RootEnvStore = {
         RootEnvStore(
             store: Store<TestAppState, Action>(initial: state) { state, action in
                 state.reduce(action)
@@ -49,12 +49,17 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
         )
     }()
 
+
+    lazy var store: PublishingStore = {
+        rootStore.getStore()
+    }()
+
     @discardableResult func setupWindowForTests(
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
             rootView: Text.with(
-                store: store.eraseToAnyStore(),
+                store: store,
                 removeStateDuplicates: .equal { $0.subStateWithIndex.index },
                 props: { (state, store) -> String in
                     propsEvaluatedExpectation.fulfill()

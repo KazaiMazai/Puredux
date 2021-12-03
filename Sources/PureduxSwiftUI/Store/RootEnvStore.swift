@@ -14,10 +14,6 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let queue: DispatchQueue
     private let stateSubject: PassthroughSubject<AppState, Never>
 
-    public var statePublisher: AnyPublisher<AppState, Never> {
-        stateSubject.eraseToAnyPublisher()
-    }
-
     public convenience init(store: Store<AppState, Action>,
                             label: String = "com.puredux.swiftui-store",
                             qos: DispatchQoS = .userInteractive) {
@@ -35,11 +31,27 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
 
         store.subscribe(observer: asObserver)
     }
+}
 
-    public func dispatch(_ action: Action) {
+public extension RootEnvStore {
+    func getStore() -> PublishingStore<AppState, Action>{
+        PublishingStore(
+            statePublisher: statePublisher,
+            dispatch: { [weak self] in self?.dispatch($0) }
+        )
+    }
+}
+
+private extension RootEnvStore {
+    func statePublisher() -> AnyPublisher<AppState, Never> {
+        stateSubject.eraseToAnyPublisher()
+    }
+
+    func dispatch(_ action: Action) {
         store.dispatch(action)
     }
 }
+
 
 private extension RootEnvStore {
     var asObserver: Observer<AppState> {
@@ -62,16 +74,3 @@ private extension RootEnvStore {
     }
 }
 
-extension RootEnvStore {
-    func proxy<LocalState>(
-        localState: @escaping (AppState) -> LocalState) -> AnyPublishingStore<LocalState, Action>  {
-
-        self.eraseToAnyStore().proxy(localState: localState)
-    }
-
-    func eraseToAnyStore() -> AnyPublishingStore<AppState, Action> {
-        AnyPublishingStore(
-            statePublisher: statePublisher,
-            dispatch: { [ weak self] in self?.dispatch($0) })
-    }
-}

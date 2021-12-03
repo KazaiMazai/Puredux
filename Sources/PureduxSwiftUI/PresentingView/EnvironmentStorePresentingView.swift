@@ -14,14 +14,14 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
 
     @EnvironmentObject private var store: RootEnvStore<AppState, Action>
 
-    let props: (_ state: AppState, _ store: AnyPublishingStore<AppState, Action>) -> Props
+    let props: (_ state: AppState, _ store: PublishingStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
     let removeDuplicates: (AppState, AppState) -> Bool
     let queue: PresentationQueue
 
     var body: some View {
         StorePresentingView(
-            store: store.eraseToAnyStore(),
+            store: store.getStore(),
             props: props,
             content: content,
             removeDuplicates: removeDuplicates,

@@ -8,36 +8,12 @@
 import Foundation
 import Combine
 
-public protocol PublishingStore {
-    associatedtype AppState
-    associatedtype Action
-
-    var statePublisher: AnyPublisher<AppState, Never> { get }
-
-    func dispatch(_ action: Action)
-}
-
-extension PublishingStore {
-    func proxy<LocalState>(
-        localState: @escaping (AppState) -> LocalState) -> AnyPublishingStore<LocalState, Action>  {
-
-        PublishingStoreProxy(
-            store: self,
-            toLocalState: localState).eraseToAnyStore()
-    }
-
-    func eraseToAnyStore() -> AnyPublishingStore<AppState, Action> {
-        AnyPublishingStore(statePublisher: statePublisher,
-                           dispatch: self.dispatch)
-    }
-}
-
-public struct AnyPublishingStore<AppState, Action>: PublishingStore {
+public struct PublishingStore<AppState, Action> {
     public let statePublisher: AnyPublisher<AppState, Never>
     private let dispatchClosure: (_ action: Action) -> Void
 
-    init(statePublisher: AnyPublisher<AppState, Never>,
-         dispatch: @escaping (Action) -> Void) {
+    public init(statePublisher: AnyPublisher<AppState, Never>,
+                dispatch: @escaping (Action) -> Void) {
         self.statePublisher = statePublisher
         self.dispatchClosure = dispatch
     }
@@ -45,6 +21,16 @@ public struct AnyPublishingStore<AppState, Action>: PublishingStore {
     public func dispatch(_ action: Action) {
         dispatchClosure(action)
     }
-
 }
 
+extension PublishingStore {
+    func proxy<LocalState>(
+        toLocalState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action>  {
+
+        PublishingStore<LocalState, Action>(
+            statePublisher: statePublisher
+                .map { toLocalState($0) }
+                .eraseToAnyPublisher(),
+            dispatch: dispatch)
+    }
+}

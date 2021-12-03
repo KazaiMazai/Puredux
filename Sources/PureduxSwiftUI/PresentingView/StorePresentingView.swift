@@ -8,19 +8,14 @@
 import SwiftUI
 import Combine
 
-struct StorePresentingView<Store, AppState, Action, Props, Content>: View
-    where
-    Content: View,
-    Store: PublishingStore,
-    Store.AppState == AppState,
-    Store.Action == Action {
+struct StorePresentingView<AppState, Action, Props, Content: View>: View {
 
-    let store: Store
+    let store: PublishingStore<AppState, Action>
 
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
-    let props: (_ state: AppState, _ store: Store) -> Props
+    let props: (_ state: AppState, _ store: PublishingStore<AppState, Action>) -> Props
     let content: (_ props: Props) -> Content
 
     let removeDuplicates: (AppState, AppState) -> Bool

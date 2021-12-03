@@ -10,9 +10,9 @@ final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
         contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
-            rootView: StoreProvidingView(store: store) {
+            rootView: StoreProvidingView(store: rootStore) {
                 Text.with(
-                    props: { (state: TestAppState, store: AnyPublishingStore<TestAppState, Action>) in
+                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) in
                         state.subStateWithTitle.title
                     },
                     content: {
@@ -33,7 +33,7 @@ class ViewWithStoreRenderTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var store: RootEnvStore = {
+    lazy var rootStore: RootEnvStore = {
         RootEnvStore(
             store: Store<TestAppState, Action>(initial: state) { state, action in
                 state.reduce(action)
@@ -41,10 +41,16 @@ class ViewWithStoreRenderTests: XCTestCase {
         )
     }()
 
+
+    lazy var store: PublishingStore = {
+        rootStore.getStore()
+    }()
+
+
     @discardableResult func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
         UIWindow.setupForSwiftUITests(
             rootView: Text.with(
-                store: store.eraseToAnyStore(),
+                store: store,
                 props: { (state, store) in
                     state.subStateWithTitle.title
                 },
@@ -101,8 +107,8 @@ extension ViewWithStoreRenderTests {
 
         (0..<actionsCount).forEach {
             let delay = actionDelay * Double($0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak store] in
-                store?.dispatch(UpdateTitle(title: "\(delay)"))
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                self?.store.dispatch(UpdateTitle(title: "\(delay)"))
             }
         }
 
@@ -118,8 +124,8 @@ extension ViewWithStoreRenderTests {
 
         (0..<actionsCount).forEach {
             let delay = actionDelay * Double($0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak store] in
-                store?.dispatch(NonMutatingStateAction())
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                self?.store.dispatch(NonMutatingStateAction())
             }
         }
 

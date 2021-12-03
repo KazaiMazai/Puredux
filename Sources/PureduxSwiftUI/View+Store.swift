@@ -25,30 +25,11 @@ public enum PresentationQueue {
    }
 }
 
-struct SomeView<Store: PublishingStore>: View where Store.AppState == String {
-    let store: Store
-
-    var body: some View {
-        Text.with(
-            store: store,
-            props: { state, stote in
-                state
-            },
-            queue: .storeQueue,
-            content: content
-        )
-    }
-
-    func content(props: String) -> Text {
-        Text(props)
-    }
-}
-
 extension View {
     
     public static func with<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
-        props: @escaping (AppState, AnyPublishingStore<AppState, Action>) -> Props,
+        props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
         queue: PresentationQueue = .storeQueue,
         content: @escaping (Props) -> Self) -> some View {
 
@@ -59,17 +40,12 @@ extension View {
             queue: queue)
     }
 
-    public static func with<Store, AppState, Action, Props>(
-        store: Store,
+    public static func with<AppState, Action, Props>(
+        store: PublishingStore<AppState, Action>,
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
-        props: @escaping (AppState, Store) -> Props,
+        props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
         queue: PresentationQueue = .storeQueue,
-        content: @escaping (Props) -> Self) -> some View
-
-    where
-        Store: PublishingStore,
-        Store.AppState == AppState,
-        Store.Action == Action  {
+        content: @escaping (Props) -> Self) -> some View {
 
         StorePresentingView(
             store: store,
