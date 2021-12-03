@@ -4,7 +4,27 @@ import SwiftUI
 import PureduxStore
 import UIKit
 
-final class ContentViewWithStoreRenderTests: XCTestCase {
+final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
+
+    @discardableResult override func setupWindowForTests(
+        contentRenderedExpectation: XCTestExpectation) -> UIWindow {
+
+        UIWindow.setupForSwiftUITests(
+            rootView: StoreProvidingView(store: store) {
+                Text.with(
+                    props: { (state: TestAppState, store: AnyPublishingStore<TestAppState, Action>) in
+                        state.subStateWithTitle.title
+                    },
+                    content: {
+                        contentRenderedExpectation.fulfill()
+                        return Text($0)
+                    })
+            }
+        )
+    }
+}
+
+class ViewWithStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
 
@@ -13,8 +33,8 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var store: ObservableStore = {
-        ObservableStore(
+    lazy var store: RootEnvStore = {
+        RootEnvStore(
             store: Store<TestAppState, Action>(initial: state) { state, action in
                 state.reduce(action)
             }
@@ -24,7 +44,7 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
     @discardableResult func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
         UIWindow.setupForSwiftUITests(
             rootView: Text.with(
-                store: store,
+                store: store.eraseToAnyStore(),
                 props: { (state, store) in
                     state.subStateWithTitle.title
                 },
@@ -35,8 +55,11 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
             )
         )
     }
+}
 
-    func test_WhenNoActionDispatchedAfterSetup_ThenContentIsNotRendered() {
+extension ViewWithStoreRenderTests {
+
+    func test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.isInverted = true
 
@@ -45,7 +68,7 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenOneActionDispatchedAfterSetup_ThenContentRenderedOnce() {
+    func test_WhenOneActionDispatchedAfterSetup_ThenViewRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
 
         setupWindowForTests(contentRenderedExpectation: contentRendered)
@@ -103,12 +126,16 @@ final class ContentViewWithStoreRenderTests: XCTestCase {
         waitForExpectations(timeout:  actionDelay * Double(actionsCount) * 4)
     }
 
-    static var allTests = [
-        ("test_WhenNoActionDispatchedAfterSetup_ThenContentIsNotRendered",
-         test_WhenNoActionDispatchedAfterSetup_ThenContentIsNotRendered),
+}
 
-        ("test_WhenOneActionDispatchedAfterSetup_ThenContentRenderedOnce",
-         test_WhenOneActionDispatchedAfterSetup_ThenContentRenderedOnce),
+extension ViewWithStoreRenderTests {
+
+    static var allTests = [
+        ("test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered",
+         test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered),
+
+        ("test_WhenOneActionDispatchedAfterSetup_ThenViewRenderedOnce",
+         test_WhenOneActionDispatchedAfterSetup_ThenViewRenderedOnce),
 
         ("test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce",
          test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce),
