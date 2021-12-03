@@ -27,7 +27,7 @@ public final class RootStore<State, Action> {
             reducer: reducer)
     }
 
-    func getStore() -> Store<State, Action> {
+    public func getStore() -> Store<State, Action> {
         Store(dispatch: { [weak store] in store?.dispatch($0) },
               subscribe: { [weak store] in store?.subscribe(observer: $0) })
     }
