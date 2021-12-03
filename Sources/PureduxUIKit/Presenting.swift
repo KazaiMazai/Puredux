@@ -9,29 +9,29 @@ import UIKit
 import Dispatch
 import PureduxStore
 
-struct Presenting<Store, ViewController> where ViewController: PresentableViewController,
-                                                              Store: StoreProtocol {
+struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
+
     private let mainQueue = DispatchQueue.main
     private let workerQueue: DispatchQueue
 
     private weak var viewController: ViewController?
-    private let store: Store
+    private let store: Store<State, Action>
 
-    private let prevState: Ref<Store.AppState?> = Ref(value: nil)
+    private let prevState: Ref<State?> = Ref(value: nil)
 
-    private let props: (_ state: Store.AppState, _ store: Store) -> ViewController.Props
-    private let isEqual: (Store.AppState, Store.AppState) -> Bool
+    private let props: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
+    private let isEqual: (State, State) -> Bool
 
     init(viewController: ViewController,
-         store: Store,
-         props: @escaping (Store.AppState, Store) -> ViewController.Props,
-         workerQueue: DispatchQueue,
-         distinctStateChangesBy isEqual: @escaping (Store.AppState, Store.AppState) -> Bool) {
+         store: Store<State, Action>,
+         props: @escaping (State, Store<State, Action>) -> ViewController.Props,
+         presentaionOptions: UIKitPresentation,
+         distinctStateChangesBy isEqual: @escaping (State, State) -> Bool) {
 
         self.viewController = viewController
         self.store = store
         self.props = props
-        self.workerQueue = workerQueue
+        self.workerQueue = presentaionOptions.queue.dispatchQueue
         self.isEqual = isEqual
     }
 }
@@ -43,13 +43,13 @@ extension Presenting: PresenterProtocol {
 }
 
 private extension Presenting {
-    var asObserver: Observer<Store.AppState> {
+    var asObserver: Observer<State> {
         Observer { state, handler in
             observe(state: state, complete: handler)
         }
     }
 
-    func observe(state: Store.AppState, complete: @escaping (ObserverStatus) -> Void) {
+    func observe(state: State, complete: @escaping (ObserverStatus) -> Void) {
         workerQueue.async {
             if isPrevStateEqualTo(state) {
                 complete(.active)
@@ -73,7 +73,7 @@ private extension Presenting {
 }
 
 private extension Presenting {
-    func isPrevStateEqualTo(_ state: Store.AppState) -> Bool {
+    func isPrevStateEqualTo(_ state: State) -> Bool {
         guard let prevState = prevState.value else {
             return false
         }

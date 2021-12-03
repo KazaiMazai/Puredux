@@ -6,6 +6,7 @@
 //
 
 import PureduxStore
+import PureduxCommon
 
 public protocol PresenterProtocol {
     func subscribeToStore()
@@ -20,19 +21,35 @@ public protocol PresentableViewController: AnyObject {
 }
 
 public extension PresentableViewController {
-    func connect<Presenter>(to store: Presenter.Store,
-                            using viewControllerPresenter: Presenter)
-        where
-        Presenter: ViewControllerPresenter,
-        Presenter.ViewController.Props == Props {
+
+    func with<State, Action>(store: Store<State, Action>,
+                        props: @escaping (State, Store<State, Action>) -> Self.Props,
+                        presentaionOptions: UIKitPresentation = .default,
+                        distinctStateChangesBy: Equating<State> = .neverEqual) {
 
         let presenting = Presenting(
             viewController: self,
             store: store,
-            props: viewControllerPresenter.props,
-            workerQueue: viewControllerPresenter.makePresenterWorkerQueue(),
-            distinctStateChangesBy: viewControllerPresenter.distinctStateChangesBy.predicate)
+            props: props,
+            presentaionOptions: presentaionOptions,
+            distinctStateChangesBy: distinctStateChangesBy.predicate)
 
         self.presenter = presenting
+    }
+}
+
+extension Presenting {
+
+    init<State, Action>(viewController: ViewController,
+         store: Store<State, Action>,
+         props: @escaping (State, Store<State, Action>) -> ViewController.Props,
+         presentaionOptions: UIKitPresentation,
+         distinctStateChangesBy: Equating<State>) {
+
+        self.init(viewController: viewController,
+                  store: store,
+                  props: props,
+                  presentaionOptions: presentaionOptions,
+                  distinctStateChangesBy: distinctStateChangesBy)
     }
 }

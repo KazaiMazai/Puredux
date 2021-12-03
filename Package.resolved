@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/KazaiMazai/PureduxCommon.git",
         "state": {
           "branch": "dev",
-          "revision": "2c9f5807dbe8e01c989214baf57669884b9c9ac4",
+          "revision": "614b94cd86631f6391b07ca6d1e3fd33d50468e1",
           "version": null
         }
       },
@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {
           "branch": "dev",
-          "revision": "0f5305273fa41e04cb95a6e4ea697eb6345ec917",
+          "revision": "568b67b354baba4803353bcabdc1239ce0c8263c",
           "version": null
         }
       }
