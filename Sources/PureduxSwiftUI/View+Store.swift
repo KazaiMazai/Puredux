@@ -48,11 +48,11 @@ extension View {
     
     public static func with<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
-        props: @escaping (AppState, ObservableStore<AppState, Action>) -> Props,
+        props: @escaping (AppState, AnyPublishingStore<AppState, Action>) -> Props,
         queue: PresentationQueue = .storeQueue,
         content: @escaping (Props) -> Self) -> some View {
 
-        EnvironmentStorePresentingView(
+        EnvironmentStorePresentingView<AppState, Action, Props, Self>(
             props: props,
             content: content,
             removeDuplicates: by.predicate,

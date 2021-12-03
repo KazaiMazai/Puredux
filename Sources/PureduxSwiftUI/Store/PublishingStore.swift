@@ -32,10 +32,9 @@ extension PublishingStore {
     }
 }
 
-struct AnyPublishingStore<AppState, Action>: PublishingStore {
-    let statePublisher: AnyPublisher<AppState, Never>
+public struct AnyPublishingStore<AppState, Action>: PublishingStore {
+    public let statePublisher: AnyPublisher<AppState, Never>
     private let dispatchClosure: (_ action: Action) -> Void
-
 
     init(statePublisher: AnyPublisher<AppState, Never>,
          dispatch: @escaping (Action) -> Void) {
@@ -43,8 +42,7 @@ struct AnyPublishingStore<AppState, Action>: PublishingStore {
         self.dispatchClosure = dispatch
     }
 
-
-    func dispatch(_ action: Action) {
+    public func dispatch(_ action: Action) {
         dispatchClosure(action)
     }
 

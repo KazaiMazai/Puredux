@@ -17,7 +17,6 @@ struct StorePresentingView<Store, AppState, Action, Props, Content>: View
 
     let store: Store
 
-
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
