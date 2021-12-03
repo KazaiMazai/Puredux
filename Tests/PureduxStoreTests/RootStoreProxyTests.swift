@@ -95,6 +95,73 @@ final class RootStoreProxyTests: XCTestCase {
         }
     }
 
+    func test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription() {
+        let initialStateIndex = 1
+
+        let expectation = expectation(description: "Observer state handler")
+        expectation.expectedFulfillmentCount = 3
+
+        let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
+
+        let rootStore = RootStore<TestState, Action>(
+            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        let store = rootStore.getStore().proxy { $0.currentIndex }
+
+        var receivedStatesIndexes: [Int] = []
+        let observer = Observer<Int> { receivedState, complete in
+            expectation.fulfill()
+            receivedStatesIndexes.append(receivedState)
+            complete(.active)
+        }
+
+        store.subscribe(observer: observer)
+        store.subscribe(observer: observer)
+        store.subscribe(observer: observer)
+
+        waitForExpectations(timeout: timeout) { _ in
+            XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
+        }
+    }
+
+    func test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated() {
+        let initialStateIndex = 1
+        let updatedStateIndex = 2
+
+        let expectation = expectation(description: "Observer state handler")
+        expectation.expectedFulfillmentCount = 4
+
+        let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
+
+        let rootStore = RootStore<TestState, Action>(
+            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        let store = rootStore.getStore().proxy { $0.currentIndex }
+
+        var receivedStatesIndexes: [Int] = []
+        let observer = Observer<Int> { receivedState, complete in
+            expectation.fulfill()
+            receivedStatesIndexes.append(receivedState)
+            complete(.active)
+        }
+
+        store.subscribe(observer: observer)
+        store.subscribe(observer: observer)
+        store.subscribe(observer: observer)
+
+        store.dispatch(UpdateIndex(index: updatedStateIndex))
+
+        waitForExpectations(timeout: timeout) { _ in
+            XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
+        }
+    }
+
     func test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
@@ -160,4 +227,29 @@ final class RootStoreProxyTests: XCTestCase {
             XCTAssertEqual(observerLastReceivedStateIndex, initialStateIndex)
         }
     }
+}
+
+extension RootStoreProxyTests {
+    static var allTests = [
+        ("test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved",
+         test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved),
+
+        ("test_WhenSubscribedToProxy_ThenCurrentStateReceived",
+         test_WhenSubscribedToProxy_ThenCurrentStateReceived),
+
+        ("test_WhenActionDispatchedToProxy_ThenStateReceived",
+         test_WhenActionDispatchedToProxy_ThenStateReceived),
+
+        ("test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription",
+         test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription),
+
+        ("test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated",
+         test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated),
+
+        ("test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder",
+         test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder),
+
+        ("test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
+         test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed)
+    ]
 }

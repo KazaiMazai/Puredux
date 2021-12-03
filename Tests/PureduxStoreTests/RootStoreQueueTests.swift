@@ -114,18 +114,20 @@ final class RootStoreQueueTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
+}
 
+extension RootStoreQueueTests {
     static var allTests = [
-        ("test_WhenStoreMainQueue_ThenReducerOnMainThread",
+        ("test_WhenStoreMainQueue_ThenReducerCalledOnMainThread",
          test_WhenStoreMainQueue_ThenReducerCalledOnMainThread),
 
-        ("test_WhenStoreMainQueue_ThenObserverOnMainThread",
+        ("test_WhenStoreMainQueue_ThenObserverCalledOnMainThread",
          test_WhenStoreMainQueue_ThenObserverCalledOnMainThread),
 
-        ("test_WhenStoreDefaultQueue_ThenObserverNotOnMainThread",
+        ("test_WhenStoreDefaultQueue_ThenObserverCalledNotOnMainThread",
          test_WhenStoreDefaultQueue_ThenObserverCalledNotOnMainThread),
 
-        ("test_WhenStoreDefaultQueue_ThenReducerNotOnMainThread",
-         test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread),
+        ("test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread",
+         test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread)
     ]
 }

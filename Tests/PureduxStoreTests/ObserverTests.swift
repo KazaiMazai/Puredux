@@ -27,7 +27,7 @@ final class ObserverTests: XCTestCase {
         wait(for: [expectation], timeout: timeout)
     }
 
-    func test_WhenObserve_ThenObserverStatusReceived() {
+    func test_WhenSendToObserver_ThenObserverStatusReceived() {
         let state = 100
         let extectedStatus = ObserverStatus.active
 
@@ -46,7 +46,10 @@ final class ObserverTests: XCTestCase {
     }
 
     static var allTests = [
-        ("test_WhenObserve_ThenObserverClosureCalledWithState", test_WhenObserve_ThenObserverClosureCalledWithState),
-        ("test_WhenObserve_ThenObserverStatusReceived", test_WhenObserve_ThenObserverStatusReceived),
+        ("test_WhenObserve_ThenObserverClosureCalledWithState",
+         test_WhenObserve_ThenObserverClosureCalledWithState),
+        
+        ("test_WhenObserve_ThenObserverStatusReceived",
+         test_WhenSendToObserver_ThenObserverStatusReceived)
     ]
 }

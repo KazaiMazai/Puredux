@@ -31,7 +31,9 @@ public extension Store {
         Store<LocalState, Action>(
             dispatch: dispatch,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State> { state, complete in
+                subscribe(observer: Observer<State>(
+                    id: localStateObserver.id) { state, complete in
+                    
                     localStateObserver.send(toLocalState(state), complete: complete)
                 })
             })

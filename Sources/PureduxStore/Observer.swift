@@ -11,7 +11,7 @@ import Foundation
 public typealias StatusHandler = (ObserverStatus) -> Void
 
 public struct Observer<State>: Hashable {
-    private let id: UUID
+    let id: UUID
     private let observeClosure: (State, @escaping StatusHandler) -> Void
 
     public func send(_ state: State, complete: @escaping StatusHandler) {
@@ -20,6 +20,11 @@ public struct Observer<State>: Hashable {
 
     public init(observe: @escaping (State, @escaping StatusHandler) -> Void) {
         id = UUID()
+        self.observeClosure = observe
+    }
+
+    init(id: UUID, observe: @escaping (State, @escaping StatusHandler) -> Void) {
+        self.id = id
         self.observeClosure = observe
     }
 }

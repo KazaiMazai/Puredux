@@ -38,3 +38,10 @@ final class RootStoreRefCyclesTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 }
+
+extension RootStoreRefCyclesTests {
+    static var allTests = [
+        ("test_WhenGetStore_ThenNoStrongRefToRootStoreCreatedAndObserversAreUnsubscribed",
+         test_WhenGetStore_ThenNoStrongRefToRootStoreCreatedAndObserversAreUnsubscribed)
+    ]
+}
