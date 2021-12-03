@@ -10,7 +10,7 @@ final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
         contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
-            rootView: StoreProvidingView(store: rootStore) {
+            rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.with(
                     props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) in
                         state.subStateWithTitle.title
@@ -35,7 +35,7 @@ class ViewWithStoreRenderTests: XCTestCase {
 
     lazy var rootStore: RootEnvStore = {
         RootEnvStore(
-            store: Store<TestAppState, Action>(initial: state) { state, action in
+            rootStore: RootStore<TestAppState, Action>(initial: state) { state, action in
                 state.reduce(action)
             }
         )

@@ -9,17 +9,17 @@ import SwiftUI
 import PureduxCommon
 
 public enum PresentationQueue {
-   case storeQueue
+   case sharedPresentationQueue
    case main
-   case queue(DispatchQueue)
+   case serialQueue(DispatchQueue)
 
    var dispatchQueue: DispatchQueue? {
        switch self {
        case .main:
            return DispatchQueue.main
-       case .queue(let queue):
+       case .serialQueue(let queue):
            return queue
-       case .storeQueue:
+       case .sharedPresentationQueue:
            return nil
        }
    }
@@ -30,7 +30,7 @@ extension View {
     public static func with<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
         props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
-        queue: PresentationQueue = .storeQueue,
+        queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
         EnvironmentStorePresentingView<AppState, Action, Props, Self>(
@@ -44,7 +44,7 @@ extension View {
         store: PublishingStore<AppState, Action>,
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
         props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
-        queue: PresentationQueue = .storeQueue,
+        queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
         StorePresentingView(
