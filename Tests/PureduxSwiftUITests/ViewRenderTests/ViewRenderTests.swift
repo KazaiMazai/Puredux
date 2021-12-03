@@ -112,7 +112,7 @@ extension ViewWithStoreRenderTests {
             }
         }
 
-        waitForExpectations(timeout: actionDelay * Double(actionsCount) * 4)
+        waitForExpectations(timeout: max(actionDelay * Double(actionsCount) * 2, 10))
     }
 
     func test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce() {

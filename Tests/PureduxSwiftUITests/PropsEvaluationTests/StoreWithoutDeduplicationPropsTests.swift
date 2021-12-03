@@ -12,7 +12,6 @@ import PureduxStore
 import PureduxCommon
 import UIKit
 
-
 class ViewEnvStoreWithoutDeduplicationPropsTests: ViewWithStoreWithoutDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
