@@ -2,8 +2,10 @@
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
 </p>
 
-Yet another UDF Architecture Store implementation
 
+# Puredux-Store
+
+Yet another UDF Architecture Store implementation
 
 ## Features
 
@@ -61,7 +63,6 @@ let reducer: (inout State, Action) -> Void = { state, action in
 let rootStore = RootStore<AppState, Action>(initialState: initialState, reducer: reducer)
 
 let store = rootStore.getStore()
- 
 ```
 
 5.  Setup `AsyncActions` interceptor:
