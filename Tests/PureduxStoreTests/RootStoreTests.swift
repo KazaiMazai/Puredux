@@ -17,8 +17,6 @@ final class RootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-
-
         let rootStore = RootStore<TestState, Action>(
             initialState: TestState(currentIndex: 0)) { state, action  in
 

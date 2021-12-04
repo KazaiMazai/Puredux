@@ -8,7 +8,6 @@
 import Dispatch
 import Foundation
 
-
 public enum ObserverStatus {
     case active
     case dead
