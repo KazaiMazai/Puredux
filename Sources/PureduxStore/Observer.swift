@@ -10,18 +10,15 @@ import Foundation
 
 public typealias StatusHandler = (ObserverStatus) -> Void
 
+public enum ObserverStatus {
+    case active
+    case dead
+}
+
 public struct Observer<State>: Hashable {
     let id: UUID
+
     private let observeClosure: (State, @escaping StatusHandler) -> Void
-
-    public func send(_ state: State, complete: @escaping StatusHandler) {
-        observeClosure(state, complete)
-    }
-
-    public init(observe: @escaping (State, @escaping StatusHandler) -> Void) {
-        id = UUID()
-        self.observeClosure = observe
-    }
 
     init(id: UUID, observe: @escaping (State, @escaping StatusHandler) -> Void) {
         self.id = id
@@ -29,17 +26,23 @@ public struct Observer<State>: Hashable {
     }
 }
 
-extension Observer {
-    public static func == (lhs: Observer<State>, rhs: Observer<State>) -> Bool {
-        lhs.id == rhs.id
+public extension Observer {
+    init(observe: @escaping (State, @escaping StatusHandler) -> Void) {
+        id = UUID()
+        self.observeClosure = observe
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    func send(_ state: State, complete: @escaping StatusHandler) {
+        observeClosure(state, complete)
     }
 }
 
-public enum ObserverStatus {
-    case active
-    case dead
+public extension Observer {
+    static func == (lhs: Observer<State>, rhs: Observer<State>) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
