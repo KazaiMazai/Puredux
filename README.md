@@ -1,6 +1,3 @@
-# PureduxStore
-
-
 <p align="center">
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
 </p>
