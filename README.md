@@ -31,23 +31,22 @@ ____________
 
 # Quick Start Guide
 
-1. Import
+1. Import:
 ```swift
 import PureduxStore
 
 ```
 
-2. Create initial AppState
+2. Create initial app state:
 
 ```swift
 let initialState = AppState()
 
 ```
 
-3. Create Reducer:
+3. Create reducer:
 
 ```swift 
-
 let reducer: (inout State, Action) -> Void = { state, action in
 
     //mutate state here
@@ -56,10 +55,9 @@ let reducer: (inout State, Action) -> Void = { state, action in
 
 ```
 
-4. Create RootStore with initial AppState and Reducer. Get light-weight Store
+4. Create root store with initial app state and reducer. Get light-weight store:
 
 ```swift
-
 let rootStore = RootStore<AppState, Action>(initialState: initialState, reducer: reducer)
 
 let store = rootStore.getStore()
@@ -69,7 +67,6 @@ let store = rootStore.getStore()
 5.  Setup `AsyncActions` interceptor:
 
 ```swift
-
 rootStore.interceptActions { action in
     guard let action = (action as? AsyncActions) else {
         return
@@ -80,19 +77,17 @@ rootStore.interceptActions { action in
 
 ```
 
-6. Create substate Store Proxy
+6. Create substate store proxy:
 
 ```swift
-
 let storeProxy = store.proxy { appState in appState.subState }
- 
+
 ```
 
-7. Create Store Observer and subscribe to store
+7. Create store observer and subscribe to store:
 
 
 ```swift 
-
 let observer = Observer<SubState> { substate, completeHandler in
     
     // Handle your latest state here and dispatch some actions to the store
