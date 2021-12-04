@@ -18,7 +18,7 @@ final class RootStoreProxyTests: XCTestCase {
         }
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 0)) { state, action  in
+            initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
@@ -41,7 +41,7 @@ final class RootStoreProxyTests: XCTestCase {
         let expectation = expectation(description: "Observer state handler")
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: expectedStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -73,7 +73,7 @@ final class RootStoreProxyTests: XCTestCase {
         let expectedStateIndexValues = [initialStateIndex, updatedStateindex]
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -104,7 +104,7 @@ final class RootStoreProxyTests: XCTestCase {
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -135,9 +135,9 @@ final class RootStoreProxyTests: XCTestCase {
         expectation.expectedFulfillmentCount = 4
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
-
+ 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -169,7 +169,7 @@ final class RootStoreProxyTests: XCTestCase {
         }
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 0)) { state, action  in
+            initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -199,7 +199,7 @@ final class RootStoreProxyTests: XCTestCase {
             description: "Actions and State changes processed for sure")
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 

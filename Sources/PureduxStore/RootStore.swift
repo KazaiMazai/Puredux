@@ -18,24 +18,55 @@ public typealias Reducer<State, Action> = (inout State, Action) -> Void
 public final class RootStore<State, Action> {
     private let store: InternalStore<State, Action>
 
+    /**
+    Initializes a new RootStore with provided queue, initial state and reducer
+
+    - Parameter queue: StoreQueue that defines the DispatchQueue that reducer will be performed on
+    - Parameter initialState: The initial state for the store
+    - Parameter reducer: The function that is called on every dispatched Action and performs state mutations
+
+    - Returns: `RootStore<State, Action>`
+
+    RootStore does not behave like a store. It acts like a factory for light-weight stores that are created as proxies for the internal store.
+
+     */
     public init(queue: StoreQueue = .global(qos: .userInteractive),
-                initial state: State,
+                initialState: State,
                 reducer: @escaping Reducer<State, Action>) {
 
         store = InternalStore(
             queue: queue,
-            initial: state,
+            initial: initialState,
             reducer: reducer)
     }
 }
 
 public extension RootStore {
+    /**
+     Initializes a new light-weight proxy Store as a proxy for the RootStore's internal store
 
+     - Returns: Light-weight Store
+
+     Store is a light-weight proxy for the RootStore's private internal store.
+     All dispatched Actions and subscribtions are forwarded to the private internal store.
+     Internal store is thread safe, the same as its proxies.
+
+     **Important to note** that proxy store only keeps weak reference to the internal store, ensuring that reference cycles will not be created.
+
+     */
     func getStore() -> Store<State, Action> {
         Store(dispatch: { [weak store] in store?.dispatch($0) },
               subscribe: { [weak store] in store?.subscribe(observer: $0) })
     }
 
+    /**
+    Set Store's Actions interceptor
+
+    - Parameter interceptor: interceptor's closure that takes action as a parameter
+
+    Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
+
+     */
     func interceptActions(with interceptor: @escaping Interceptor<Action>) {
         store.interceptActions(with: interceptor)
     }

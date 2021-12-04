@@ -20,7 +20,7 @@ final class RootStoreQueueTests: XCTestCase {
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -44,7 +44,7 @@ final class RootStoreQueueTests: XCTestCase {
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -73,7 +73,7 @@ final class RootStoreQueueTests: XCTestCase {
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -98,7 +98,7 @@ final class RootStoreQueueTests: XCTestCase {
         expectation.expectedFulfillmentCount = 2
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -126,7 +126,7 @@ final class RootStoreQueueTests: XCTestCase {
         expectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -149,7 +149,7 @@ final class RootStoreQueueTests: XCTestCase {
         expectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }

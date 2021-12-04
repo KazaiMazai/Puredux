@@ -20,7 +20,7 @@ final class RootStoreRefCyclesTests: XCTestCase {
         reducerExpectaion.isInverted = true
 
         let store = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 1)) { state, action  in
+            initialState: TestState(currentIndex: 1)) { state, action  in
 
             state.reduce(action: action)
             reducerExpectaion.fulfill()

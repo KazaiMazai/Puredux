@@ -17,8 +17,10 @@ final class RootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
+
+
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 0)) { state, action  in
+            initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
@@ -42,7 +44,7 @@ final class RootStoreTests: XCTestCase {
         }
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 0)) { state, action  in
+            initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -71,7 +73,7 @@ final class RootStoreTests: XCTestCase {
         let expectation = expectation(description: "Observer state handler")
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: expectedStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -103,7 +105,7 @@ final class RootStoreTests: XCTestCase {
         let expectedStateIndexValues = [initialStateIndex, updatedStateIndex]
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -134,7 +136,7 @@ final class RootStoreTests: XCTestCase {
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -167,7 +169,7 @@ final class RootStoreTests: XCTestCase {
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -200,7 +202,7 @@ final class RootStoreTests: XCTestCase {
         }
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: 0)) { state, action  in
+            initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
@@ -228,7 +230,7 @@ final class RootStoreTests: XCTestCase {
         let stateChangesProcessedExpectation = expectation(description: "State changes processed for sure")
 
         let rootStore = RootStore<TestState, Action>(
-            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
