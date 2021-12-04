@@ -8,16 +8,17 @@
 import Dispatch
 
 final class InternalStore<State, Action> {
-    public typealias Reducer = (inout State, Action) -> Void
+    private static var queueLabel: String { "com.puredux.store" }
 
     private var state: State
 
     private let queue: DispatchQueue
-    private let reducer: Reducer
+    private var willReduce: Interceptor<Action>?
+    private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
     init(queue: StoreQueue,
-         initial state: State, reducer: @escaping Reducer) {
+         initial state: State, reducer: @escaping Reducer<State, Action>) {
 
         self.reducer = reducer
         self.state = state
@@ -25,15 +26,20 @@ final class InternalStore<State, Action> {
         switch queue {
         case .main:
             self.queue = DispatchQueue.main
-        case let .backgroundQueue(label, qos):
-            self.queue = DispatchQueue(label: label, qos: qos)
+        case let .global(qos):
+            self.queue = DispatchQueue(label: Self.queueLabel, qos: qos)
         }
     }
 }
 
 extension InternalStore {
-    
-    func unsubscribe(observer: Observer<State>) {
+    func interceptActions(with interceptor: @escaping Interceptor<Action>) {
+        queue.async { [weak self] in
+            self?.willReduce = interceptor
+        }
+    }
+
+    private func unsubscribe(observer: Observer<State>) {
         queue.async { [weak self] in
             self?.observers.remove(observer)
         }
@@ -46,7 +52,7 @@ extension InternalStore {
             }
 
             self.observers.insert(observer)
-            self.notify(observer, with: self.state)
+            self.send(self.state, to: observer)
         }
     }
 }
@@ -58,12 +64,13 @@ extension InternalStore {
                 return
             }
 
+            self.willReduce?(action)
             self.reducer(&self.state, action)
-            self.observers.forEach { self.notify($0, with: self.state) }
+            self.observers.forEach { self.send(self.state, to: $0) }
         }
     }
 
-    func notify(_ observer: Observer<State>, with state: State) {
+    private func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in
             guard status == .dead else {
                 return

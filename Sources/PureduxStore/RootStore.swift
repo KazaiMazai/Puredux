@@ -9,26 +9,34 @@ import Foundation
 
 public enum StoreQueue {
     case main
-    case backgroundQueue(label: String = "com.puredux.store", qos: DispatchQoS = .userInteractive)
+    case global(qos: DispatchQoS = .userInteractive)
 }
 
-public final class RootStore<State, Action> {
-    public typealias Reducer = (inout State, Action) -> Void
+public typealias Interceptor<Action> = (Action) -> Void
+public typealias Reducer<State, Action> = (inout State, Action) -> Void
 
+public final class RootStore<State, Action> {
     private let store: InternalStore<State, Action>
 
-    public init(queue: StoreQueue = .backgroundQueue(label: "com.puredux.store", qos: .userInteractive),
+    public init(queue: StoreQueue = .global(qos: .userInteractive),
                 initial state: State,
-                reducer: @escaping Reducer) {
+                reducer: @escaping Reducer<State, Action>) {
 
         store = InternalStore(
             queue: queue,
             initial: state,
             reducer: reducer)
     }
+}
 
-    public func getStore() -> Store<State, Action> {
+public extension RootStore {
+
+    func getStore() -> Store<State, Action> {
         Store(dispatch: { [weak store] in store?.dispatch($0) },
               subscribe: { [weak store] in store?.subscribe(observer: $0) })
+    }
+
+    func interceptActions(with interceptor: @escaping Interceptor<Action>) {
+        store.interceptActions(with: interceptor)
     }
 }
