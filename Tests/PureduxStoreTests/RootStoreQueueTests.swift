@@ -64,6 +64,32 @@ final class RootStoreQueueTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 
+    func test_WhenStoreMainQueue_ThenInterceptorCalledOnMainThread() {
+        let initialStateIndex = 1
+        let stateIndex = 2
+
+        let expectation = expectation(description: "Reducer")
+        expectation.expectedFulfillmentCount = 1
+
+        let rootStore = RootStore<TestState, Action>(
+            queue: .main,
+            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        rootStore.interceptActions { _ in
+            XCTAssertTrue(Thread.isMainThread)
+            expectation.fulfill()
+        }
+
+        let store = rootStore.getStore()
+
+        store.dispatch(UpdateIndex(index: stateIndex))
+
+        waitForExpectations(timeout: timeout)
+    }
+
     func test_WhenStoreDefaultQueue_ThenObserverCalledNotOnMainThread() {
         let initialStateIndex = 1
         let stateIndex = 2
@@ -114,6 +140,31 @@ final class RootStoreQueueTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
+
+    func test_WhenStoreDefaultQueue_ThenInterceptorCalledNotOnMainThread() {
+        let initialStateIndex = 1
+        let stateIndex = 2
+
+        let expectation = expectation(description: "Reducer")
+        expectation.expectedFulfillmentCount = 1
+
+        let rootStore = RootStore<TestState, Action>(
+            initial: TestState(currentIndex: initialStateIndex)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        rootStore.interceptActions { _ in
+            XCTAssertFalse(Thread.isMainThread)
+            expectation.fulfill()
+        }
+
+        let store = rootStore.getStore()
+
+        store.dispatch(UpdateIndex(index: stateIndex))
+
+        waitForExpectations(timeout: timeout)
+    }
 }
 
 extension RootStoreQueueTests {
@@ -124,10 +175,16 @@ extension RootStoreQueueTests {
         ("test_WhenStoreMainQueue_ThenObserverCalledOnMainThread",
          test_WhenStoreMainQueue_ThenObserverCalledOnMainThread),
 
+        ("test_WhenStoreMainQueue_ThenInterceptorCalledOnMainThread",
+         test_WhenStoreMainQueue_ThenInterceptorCalledOnMainThread),
+
         ("test_WhenStoreDefaultQueue_ThenObserverCalledNotOnMainThread",
          test_WhenStoreDefaultQueue_ThenObserverCalledNotOnMainThread),
 
         ("test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread",
-         test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread)
+         test_WhenStoreDefaultQueue_ThenReducerCalledNotOnMainThread),
+
+        ("test_WhenStoreDefaultQueue_ThenInterceptorCalledNotOnMainThread",
+         test_WhenStoreDefaultQueue_ThenInterceptorCalledNotOnMainThread)
     ]
 }

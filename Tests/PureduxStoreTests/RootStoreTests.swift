@@ -35,6 +35,36 @@ final class RootStoreTests: XCTestCase {
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
+    func test_WhenActionsDiptached_ThenInterceptorOrderPreserved() {
+        let actionsCount = 100
+        let expectations = (0..<actionsCount).map {
+            XCTestExpectation(description: "index \($0)")
+        }
+
+        let rootStore = RootStore<TestState, Action>(
+            initial: TestState(currentIndex: 0)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        let store = rootStore.getStore()
+
+        rootStore.interceptActions { action in
+            guard let action = (action as? UpdateIndex) else {
+                return
+            }
+            expectations[action.index].fulfill()
+        }
+
+        let actions = (0..<actionsCount).map {
+            UpdateIndex(index: $0)
+        }
+
+        actions.forEach { store.dispatch($0) }
+
+        wait(for: expectations, timeout: timeout, enforceOrder: true)
+    }
+
     func test_WhenSubscribed_ThenCurrentStateReceived() {
         let expectedStateIndex = 100
 
@@ -233,6 +263,9 @@ extension RootStoreTests {
     static var allTests = [
         ("test_WhenActionsDiptached_ThenReduceOrderPreserved",
          test_WhenActionsDiptached_ThenReduceOrderPreserved),
+
+        ("test_WhenActionsDiptached_ThenInterceptorOrderPreserved",
+         test_WhenActionsDiptached_ThenInterceptorOrderPreserved),
 
         ("test_WhenSubscribed_ThenCurrentStateReceived",
          test_WhenSubscribed_ThenCurrentStateReceived),
