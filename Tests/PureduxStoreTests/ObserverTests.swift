@@ -14,35 +14,35 @@ final class ObserverTests: XCTestCase {
     func test_WhenObserve_ThenObserverClosureCalledWithState() {
         let extectedState = 100
 
-        let expectation = XCTestExpectation(description: "Observer handler")
+        let asyncExpectation = expectation(description: "Observer handler")
 
         let observer = Observer<Int> { state, complete in
-            expectation.fulfill()
+            asyncExpectation.fulfill()
             XCTAssertEqual(state, extectedState)
             complete(.active)
         }
 
         observer.send(extectedState) { _  in }
 
-        wait(for: [expectation], timeout: timeout)
+        waitForExpectations(timeout: timeout)
     }
 
     func test_WhenSendToObserver_ThenObserverStatusReceived() {
         let state = 100
         let extectedStatus = ObserverStatus.active
 
-        let expectation = XCTestExpectation(description: "Observer status handler")
+        let asyncExpectation = expectation(description: "Observer status handler")
 
         let observer = Observer<Int> { _, complete in
             complete(extectedStatus)
         }
 
         observer.send(state) { receivedStatus  in
-            expectation.fulfill()
+            asyncExpectation.fulfill()
             XCTAssertEqual(extectedStatus, receivedStatus)
         }
 
-        wait(for: [expectation], timeout: timeout)
+        waitForExpectations(timeout: timeout)
     }
 
     static var allTests = [

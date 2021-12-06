@@ -68,7 +68,7 @@ final class RootStoreTests: XCTestCase {
     func test_WhenSubscribed_ThenCurrentStateReceived() {
         let expectedStateIndex = 100
 
-        let expectation = expectation(description: "Observer state handler")
+        let asyncExpectation = expectation(description: "Observer state handler")
 
         let rootStore = RootStore<TestState, Action>(
             initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
@@ -83,7 +83,7 @@ final class RootStoreTests: XCTestCase {
         let observer = Observer<TestState> { receivedState, complete in
             receivedStateIndex = receivedState.currentIndex
             complete(.active)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         store.subscribe(observer: observer)
@@ -97,8 +97,8 @@ final class RootStoreTests: XCTestCase {
         let initialStateIndex = 1
         let updatedStateIndex = 2
 
-        let expectation = expectation(description: "Observer state handler")
-        expectation.expectedFulfillmentCount = 2
+        let asyncExpectation = expectation(description: "Observer state handler")
+        asyncExpectation.expectedFulfillmentCount = 2
 
         let expectedStateIndexValues = [initialStateIndex, updatedStateIndex]
 
@@ -112,7 +112,7 @@ final class RootStoreTests: XCTestCase {
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
-            expectation.fulfill()
+            asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }
@@ -128,8 +128,8 @@ final class RootStoreTests: XCTestCase {
     func test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription() {
         let initialStateIndex = 1
 
-        let expectation = expectation(description: "Observer state handler")
-        expectation.expectedFulfillmentCount = 3
+        let asyncExpectation = expectation(description: "Observer state handler")
+        asyncExpectation.expectedFulfillmentCount = 3
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
@@ -143,7 +143,7 @@ final class RootStoreTests: XCTestCase {
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
-            expectation.fulfill()
+            asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }
@@ -161,8 +161,8 @@ final class RootStoreTests: XCTestCase {
         let initialStateIndex = 1
         let updatedStateIndex = 2
 
-        let expectation = expectation(description: "Observer state handler")
-        expectation.expectedFulfillmentCount = 4
+        let asyncExpectation = expectation(description: "Observer state handler")
+        asyncExpectation.expectedFulfillmentCount = 4
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
@@ -176,7 +176,7 @@ final class RootStoreTests: XCTestCase {
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
-            expectation.fulfill()
+            asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }

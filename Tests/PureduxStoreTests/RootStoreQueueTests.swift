@@ -15,8 +15,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Reducer")
-        expectation.expectedFulfillmentCount = 1
+        let asyncExpectation = expectation(description: "Reducer")
+        asyncExpectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
@@ -25,7 +25,7 @@ final class RootStoreQueueTests: XCTestCase {
             state.reduce(action: action)
 
             XCTAssertTrue(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         let store = rootStore.store()
@@ -39,8 +39,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Observer state handler")
-        expectation.expectedFulfillmentCount = 2
+        let asyncExpectation = expectation(description: "Observer state handler")
+        asyncExpectation.expectedFulfillmentCount = 2
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
@@ -55,7 +55,7 @@ final class RootStoreQueueTests: XCTestCase {
             complete(.active)
 
             XCTAssertTrue(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         store.subscribe(observer: observer)
@@ -68,8 +68,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Reducer")
-        expectation.expectedFulfillmentCount = 1
+        let asyncExpectation = expectation(description: "Reducer")
+        asyncExpectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
             queue: .main,
@@ -80,7 +80,7 @@ final class RootStoreQueueTests: XCTestCase {
 
         rootStore.interceptActions { _ in
             XCTAssertTrue(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         let store = rootStore.store()
@@ -94,8 +94,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Observer state handler")
-        expectation.expectedFulfillmentCount = 2
+        let asyncExpectation = expectation(description: "Observer state handler")
+        asyncExpectation.expectedFulfillmentCount = 2
 
         let rootStore = RootStore<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
@@ -109,7 +109,7 @@ final class RootStoreQueueTests: XCTestCase {
             complete(.active)
 
             XCTAssertFalse(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         store.subscribe(observer: observer)
@@ -122,8 +122,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Reducer")
-        expectation.expectedFulfillmentCount = 1
+        let asyncExpectation = expectation(description: "Reducer")
+        asyncExpectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
@@ -131,7 +131,7 @@ final class RootStoreQueueTests: XCTestCase {
             state.reduce(action: action)
 
             XCTAssertFalse(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         let store = rootStore.store()
@@ -145,8 +145,8 @@ final class RootStoreQueueTests: XCTestCase {
         let initialStateIndex = 1
         let stateIndex = 2
 
-        let expectation = expectation(description: "Reducer")
-        expectation.expectedFulfillmentCount = 1
+        let asyncExpectation = expectation(description: "Reducer")
+        asyncExpectation.expectedFulfillmentCount = 1
 
         let rootStore = RootStore<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
@@ -156,7 +156,7 @@ final class RootStoreQueueTests: XCTestCase {
 
         rootStore.interceptActions { _ in
             XCTAssertFalse(Thread.isMainThread)
-            expectation.fulfill()
+            asyncExpectation.fulfill()
         }
 
         let store = rootStore.store()
