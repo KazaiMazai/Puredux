@@ -62,7 +62,7 @@ let reducer: (inout State, Action) -> Void = { state, action in
 ```swift
 let rootStore = RootStore<AppState, Action>(initialState: initialState, reducer: reducer)
 
-let store = rootStore.getStore()
+let store = rootStore.store()
 ```
 
 5.  Setup `AsyncActions` interceptor:
