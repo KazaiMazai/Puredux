@@ -1,11 +1,17 @@
 <p align="center">
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
-</p>
+ </p>
+ 
 
 
 # Puredux-Store
 
 Yet another UDF Architecture Store implementation
+<p align="left">
+    <a href="https://github.com/KazaiMazai/PureduxStore/actions">
+        <img src="https://github.com/KazaiMazai/PureduxStore/workflows/Tests/badge.svg" alt="Continuous Integration">
+    </a>
+</p>
 
 ## Features
 
