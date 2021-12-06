@@ -39,7 +39,7 @@ public struct Store<State, Action> {
 
      Generally, Store has no reason to be Initialized directly with this initializer unless you want to mock the Store completely or provide your own implementation.
 
-     For all other cases, RootStore's getStore() method should be used to create viable light-weight Store.
+     For all other cases, RootStore's store() method should be used to create viable light-weight Store.
      */
     public init(dispatch: @escaping Dispatch,
                 subscribe: @escaping Subscribe) {
@@ -52,7 +52,7 @@ public extension Store {
     /**
      Initializes a new light-weight proxy Store with state mapping to local substate.
 
-     - Returns: Light-weight Store with local substate state
+     - Returns: Light-weight Store with local substate
 
      Store is a light-weight proxy for the RootStore's private internal store.
      All dispatched Actions and subscribtions are forwarded to the private internal store.

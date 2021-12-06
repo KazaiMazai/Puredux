@@ -28,7 +28,7 @@ final class RootStoreQueueTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 
@@ -49,7 +49,7 @@ final class RootStoreQueueTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let observer = Observer<TestState> { receivedState, complete in
             complete(.active)
@@ -83,7 +83,7 @@ final class RootStoreQueueTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 
@@ -103,7 +103,7 @@ final class RootStoreQueueTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let observer = Observer<TestState> { receivedState, complete in
             complete(.active)
@@ -134,7 +134,7 @@ final class RootStoreQueueTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 
@@ -159,7 +159,7 @@ final class RootStoreQueueTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 

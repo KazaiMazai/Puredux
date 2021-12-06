@@ -16,7 +16,7 @@ public typealias Interceptor<Action> = (Action) -> Void
 public typealias Reducer<State, Action> = (inout State, Action) -> Void
 
 public final class RootStore<State, Action> {
-    private let store: InternalStore<State, Action>
+    private let internalStore: InternalStore<State, Action>
 
     /**
     Initializes a new RootStore with provided queue, initial state and reducer
@@ -34,7 +34,7 @@ public final class RootStore<State, Action> {
                 initialState: State,
                 reducer: @escaping Reducer<State, Action>) {
 
-        store = InternalStore(
+        internalStore = InternalStore(
             queue: queue,
             initial: initialState,
             reducer: reducer)
@@ -51,12 +51,12 @@ public extension RootStore {
      All dispatched Actions and subscribtions are forwarded to the private internal store.
      Internal store is thread safe, the same as its proxies.
 
-     **Important to note** that proxy store only keeps weak reference to the internal store, ensuring that reference cycles will not be created.
+     **Important to note:** Proxy store only keeps weak reference to the internal store, ensuring that reference cycles will not be created.
 
      */
-    func getStore() -> Store<State, Action> {
-        Store(dispatch: { [weak store] in store?.dispatch($0) },
-              subscribe: { [weak store] in store?.subscribe(observer: $0) })
+    func store() -> Store<State, Action> {
+        Store(dispatch: { [weak internalStore] in internalStore?.dispatch($0) },
+              subscribe: { [weak internalStore] in internalStore?.subscribe(observer: $0) })
     }
 
     /**
@@ -68,6 +68,6 @@ public extension RootStore {
 
      */
     func interceptActions(with interceptor: @escaping Interceptor<Action>) {
-        store.interceptActions(with: interceptor)
+        internalStore.interceptActions(with: interceptor)
     }
 }

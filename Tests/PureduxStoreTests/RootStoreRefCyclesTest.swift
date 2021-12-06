@@ -25,7 +25,7 @@ final class RootStoreRefCyclesTests: XCTestCase {
             state.reduce(action: action)
             reducerExpectaion.fulfill()
 
-        }.getStore()
+        }.store()
 
         let observer = Observer<TestState> { receivedState, complete in
             complete(.active)

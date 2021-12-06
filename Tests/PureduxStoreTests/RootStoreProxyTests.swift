@@ -24,7 +24,7 @@ final class RootStoreProxyTests: XCTestCase {
             expectations[state.currentIndex].fulfill()
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -46,7 +46,7 @@ final class RootStoreProxyTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         var receivedStateIndex: Int? = nil
 
@@ -78,7 +78,7 @@ final class RootStoreProxyTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -109,7 +109,7 @@ final class RootStoreProxyTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -142,7 +142,7 @@ final class RootStoreProxyTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -174,7 +174,7 @@ final class RootStoreProxyTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         let observer = Observer<Int> { receivedState, complete in
             expectations[receivedState].fulfill()
@@ -208,7 +208,7 @@ final class RootStoreProxyTests: XCTestCase {
             }
         }
 
-        let store = rootStore.getStore().proxy { $0.currentIndex }
+        let store = rootStore.store().proxy { $0.currentIndex }
 
         var observerLastReceivedStateIndex: Int? = nil
         let observer = Observer<Int> { receivedState, complete in
