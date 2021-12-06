@@ -48,7 +48,8 @@ public extension Observer {
     /**
      Initializes a new store Observer
 
-     - Parameter observe:Is a closure that receive state and StatusHandler as parameters. When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
+     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
+     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
 
      - Returns: Observer
 

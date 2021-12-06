@@ -27,7 +27,8 @@ public final class RootStore<State, Action> {
 
     - Returns: `RootStore<State, Action>`
 
-    RootStore does not behave like a store. It acts like a factory for light-weight stores that are created as proxies for the internal store.
+    RootStore does not behave like a store.
+    It acts like a factory for light-weight stores that are created as proxies for the internal store.
 
      */
     public init(queue: StoreQueue = .global(qos: .userInteractive),
@@ -51,7 +52,8 @@ public extension RootStore {
      All dispatched Actions and subscribtions are forwarded to the private internal store.
      Internal store is thread safe, the same as its proxies.
 
-     **Important to note:** Proxy store only keeps weak reference to the internal store, ensuring that reference cycles will not be created.
+     **Important to note:** Proxy store only keeps weak reference to the internal store,
+     ensuring that reference cycles will not be created.
 
      */
     func store() -> Store<State, Action> {

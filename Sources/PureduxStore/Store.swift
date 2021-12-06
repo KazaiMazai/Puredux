@@ -36,7 +36,8 @@ public struct Store<State, Action> {
      - Parameter subscribe: Closure that handles Store's subscription
      - Returns: Light-weight Store
 
-     Generally, Store has no reason to be Initialized directly with this initializer unless you want to mock the Store completely or provide your own implementation.
+     Generally, Store has no reason to be Initialized directly with this initializer
+     unless you want to mock the Store completely or provide your own implementation.
 
      For all other cases, RootStore's store() method should be used to create viable light-weight Store.
      */
@@ -57,7 +58,8 @@ public extension Store {
      All dispatched Actions and subscribtions are forwarded to the private internal store.
      Internal store is thread safe, the same as its proxies.
 
-     **Important to note** that proxy store only keeps weak reference to the RootStore's internal store, ensuring that reference cycles will not be created.
+     **Important to note** that proxy store only keeps weak reference to the RootStore's
+     internal store, ensuring that reference cycles will not be created.
 
      */
 
