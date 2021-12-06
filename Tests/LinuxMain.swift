@@ -3,5 +3,9 @@ import XCTest
 import PureduxStoreTests
 
 var tests = [XCTestCaseEntry]()
-tests += PureduxStoreTests.allTests()
+tests += ObserverTests.allTests()
+tests += RootStoreProxyTests.allTests()
+tests += RootStoreQueueTests.allTests()
+tests += RootStoreRefCyclesTests.allTests()
+tests += RootStoreTests.allTests()
 XCTMain(tests)
