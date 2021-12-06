@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "PureduxStore",
-            targets: ["PureduxStore"]),
+            targets: ["PureduxStore"])
     ],
     dependencies: [
 
@@ -22,6 +22,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "PureduxStoreTests",
-            dependencies: ["PureduxStore"]),
+            dependencies: ["PureduxStore"])
     ]
 )

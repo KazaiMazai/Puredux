@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxStore
 
 final class TestStateTests: XCTestCase {
-    
+
     func test_WhenStateInitWithValue_ThenIndexEquals() {
         let initialValue = 1
         let state = TestState(currentIndex: initialValue)

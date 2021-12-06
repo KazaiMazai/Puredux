@@ -27,7 +27,7 @@ final class RootStoreRefCyclesTests: XCTestCase {
 
         }.store()
 
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { _, complete in
             complete(.active)
             observerExpectation.fulfill()
         }

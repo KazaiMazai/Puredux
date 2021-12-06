@@ -29,7 +29,6 @@ public struct Store<State, Action> {
         subscribe(observer)
     }
 
-
     /**
      Initializes a new light-weight Store
 
@@ -68,11 +67,9 @@ public extension Store {
             subscribe: { localStateObserver in
                 subscribe(observer: Observer<State>(
                     id: localStateObserver.id) { state, complete in
-                    
+
                     localStateObserver.send(toLocalState(state), complete: complete)
                 })
             })
     }
 }
-
-

@@ -78,7 +78,7 @@ final class RootStoreTests: XCTestCase {
 
         let store = rootStore.store()
 
-        var receivedStateIndex: Int? = nil
+        var receivedStateIndex: Int?
 
         let observer = Observer<TestState> { receivedState, complete in
             receivedStateIndex = receivedState.currentIndex
@@ -187,7 +187,6 @@ final class RootStoreTests: XCTestCase {
 
         store.dispatch(UpdateIndex(index: updatedStateIndex))
 
-
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
         }
@@ -239,7 +238,7 @@ final class RootStoreTests: XCTestCase {
 
         let store = rootStore.store()
 
-        var observerLastReceivedStateIndex: Int? = nil
+        var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in
 
             observerLastReceivedStateIndex = receivedState.currentIndex
