@@ -17,11 +17,11 @@ final class ViewControllerTests: XCTestCase {
         let initialTitle = "hello"
         let state = TestVCState(title: initialTitle)
 
-        let rootStore = RootStore<TestVCState, Action>(initial: state) { state, action in
+        let rootStore = RootStore<TestVCState, Action>(initialState: state) { state, action in
             state.reduce(action)
         }
 
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let didSetProps = expectation(description: "didSetProps")
         let didMakeProps = expectation(description: "didMakeProps")
@@ -47,10 +47,10 @@ final class ViewControllerTests: XCTestCase {
         let initialTitle = "hello"
         let state = TestAppState(vcState: TestVCState(title: initialTitle))
 
-        let rootStore = RootStore<TestAppState, Action>(initial: state) { state, action in
+        let rootStore = RootStore<TestAppState, Action>(initialState: state) { state, action in
             state.reduce(action)
         }
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let didSetProps = expectation(description: "didSetProps")
         let didMakeProps = expectation(description: "didMakeProps")
@@ -77,10 +77,10 @@ final class ViewControllerTests: XCTestCase {
         let initialTitle = "hello"
         let state = TestVCState(title: initialTitle)
 
-        let rootStore = RootStore<TestVCState, Action>(initial: state) { state, action in
+        let rootStore = RootStore<TestVCState, Action>(initialState: state) { state, action in
             state.reduce(action)
         }
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let didSetProps = expectation(description: "didSetProps")
         let didMakeProps = expectation(description: "didMakeProps")
@@ -112,10 +112,10 @@ final class ViewControllerTests: XCTestCase {
         let initialTitle = "hello"
         let state = TestAppState(vcState: TestVCState(title: initialTitle))
 
-        let rootStore = RootStore<TestAppState, Action>(initial: state) { state, action in
+        let rootStore = RootStore<TestAppState, Action>(initialState: state) { state, action in
             state.reduce(action)
         }
-        let store = rootStore.getStore()
+        let store = rootStore.store()
 
         let didSetProps = expectation(description: "didSetProps")
         let didMakeProps = expectation(description: "didMakeProps")

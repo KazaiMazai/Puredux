@@ -14,8 +14,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(name: "PureduxStore",
-                 url: "https://github.com/KazaiMazai/PureduxStore.git",
-                 .branch("dev")),
+                 url: "https://github.com/KazaiMazai/PureduxStore.git", from: "1.0.0"),
         .package(name: "PureduxCommon",
                  url: "https://github.com/KazaiMazai/PureduxCommon.git",
                  .branch("dev"))
