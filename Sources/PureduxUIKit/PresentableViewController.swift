@@ -24,32 +24,17 @@ public extension PresentableViewController {
 
     func with<State, Action>(store: Store<State, Action>,
                         props: @escaping (State, Store<State, Action>) -> Self.Props,
-                        presentaionOptions: UIKitPresentation = .default,
+                        presentationQueue: PresentationQueue = .sharedPresentationQueue,
                         distinctStateChangesBy: Equating<State> = .neverEqual) {
 
         let presenting = Presenting(
             viewController: self,
             store: store,
             props: props,
-            presentaionOptions: presentaionOptions,
+            presentationQueue: presentationQueue,
             distinctStateChangesBy: distinctStateChangesBy.predicate)
 
         self.presenter = presenting
     }
 }
 
-extension Presenting {
-
-    init<State, Action>(viewController: ViewController,
-         store: Store<State, Action>,
-         props: @escaping (State, Store<State, Action>) -> ViewController.Props,
-         presentaionOptions: UIKitPresentation,
-         distinctStateChangesBy: Equating<State>) {
-
-        self.init(viewController: viewController,
-                  store: store,
-                  props: props,
-                  presentaionOptions: presentaionOptions,
-                  distinctStateChangesBy: distinctStateChangesBy)
-    }
-}

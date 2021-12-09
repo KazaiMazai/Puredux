@@ -7,33 +7,28 @@
 
 import Dispatch
 
-public struct UIKitPresentation {
-    public static var `default` = UIKitPresentation(queue: .main)
-
-    public var queue: PresentationQueue
-
-    public init(queue: UIKitPresentation.PresentationQueue) {
-        self.queue = queue
-    }
+public enum PresentationQueue {
+   case sharedPresentationQueue
+   case main
+   case serialQueue(DispatchQueue)
 }
 
-public extension UIKitPresentation {
-     enum PresentationQueue {
-        case notSpecified
-        case main
-        case queue(DispatchQueue)
-
-        var dispatchQueue: DispatchQueue {
-            switch self {
-            case .main:
-                return DispatchQueue.main
-            case .queue(let queue):
-                return queue
-            case .notSpecified:
-                return DispatchQueue(
-                    label: "com.puredux.presenter",
-                    qos: .userInteractive)
-            }
+extension PresentationQueue {
+    var dispatchQueue: DispatchQueue {
+        switch self {
+        case .main:
+            return DispatchQueue.main
+        case .serialQueue(let queue):
+            return queue
+        case .sharedPresentationQueue:
+         return DispatchQueue.sharedPresentationQueue
         }
     }
 }
+
+fileprivate extension DispatchQueue {
+    static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.uikit.presentation",
+                                                       qos: .userInteractive)
+}
+
+ 

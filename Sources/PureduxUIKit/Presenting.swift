@@ -25,13 +25,13 @@ struct Presenting<State, Action, ViewController> where ViewController: Presentab
     init(viewController: ViewController,
          store: Store<State, Action>,
          props: @escaping (State, Store<State, Action>) -> ViewController.Props,
-         presentaionOptions: UIKitPresentation,
+         presentationQueue: PresentationQueue,
          distinctStateChangesBy isEqual: @escaping (State, State) -> Bool) {
 
         self.viewController = viewController
         self.store = store
         self.props = props
-        self.workerQueue = presentaionOptions.queue.dispatchQueue
+        self.workerQueue = presentationQueue.dispatchQueue
         self.isEqual = isEqual
     }
 }

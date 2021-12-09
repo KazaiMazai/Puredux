@@ -10,8 +10,6 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-typealias Store = PureduxStore.RootStore
-
 final class ViewControllerTests: XCTestCase {
     let timeout: TimeInterval = 10
 
