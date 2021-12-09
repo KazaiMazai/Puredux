@@ -9,7 +9,7 @@ import UIKit
 import Dispatch
 import PureduxStore
 
-struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
+struct Presenter<State, Action, ViewController> where ViewController: PresentableViewController {
 
     private let mainQueue = DispatchQueue.main
     private let workerQueue: DispatchQueue
@@ -26,7 +26,7 @@ struct Presenting<State, Action, ViewController> where ViewController: Presentab
          store: Store<State, Action>,
          props: @escaping (State, Store<State, Action>) -> ViewController.Props,
          presentationQueue: PresentationQueue,
-         distinctStateChangesBy isEqual: @escaping (State, State) -> Bool) {
+         removeStateDuplicates isEqual: @escaping (State, State) -> Bool) {
 
         self.viewController = viewController
         self.store = store
@@ -36,13 +36,13 @@ struct Presenting<State, Action, ViewController> where ViewController: Presentab
     }
 }
 
-extension Presenting: PresenterProtocol {
+extension Presenter: PresenterProtocol {
     func subscribeToStore() {
         store.subscribe(observer: asObserver)
     }
 }
 
-private extension Presenting {
+private extension Presenter {
     var asObserver: Observer<State> {
         Observer { state, handler in
             observe(state: state, complete: handler)
@@ -72,7 +72,7 @@ private extension Presenting {
     }
 }
 
-private extension Presenting {
+private extension Presenter {
     func isPrevStateEqualTo(_ state: State) -> Bool {
         guard let prevState = prevState.value else {
             return false
@@ -82,7 +82,7 @@ private extension Presenting {
     }
 }
 
-private extension Presenting {
+private extension Presenter {
     final class Ref<T> {
         var value: T
 
