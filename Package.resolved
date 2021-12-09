@@ -5,9 +5,9 @@
         "package": "PureduxCommon",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxCommon.git",
         "state": {
-          "branch": "dev",
-          "revision": "614b94cd86631f6391b07ca6d1e3fd33d50468e1",
-          "version": null
+          "branch": null,
+          "revision": "7bae87ba5b9dc17b79b35c4fde5da020be3f7d62",
+          "version": "1.0.0"
         }
       },
       {
