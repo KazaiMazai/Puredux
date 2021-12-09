@@ -1,9 +1,8 @@
-# PureduxUIKit
-
 <p align="center">
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
  </p>
  
+# PureduxUIKit
 
 UIKit bindings to connect UI to PureduxSrore
 
@@ -108,12 +107,16 @@ viewController.with(store: fancyFeatureStore,
 
 ### What is PureduxStore?
 
-- It's minilistic store implementation, More details can be found [here] (https://github.com/KazaiMazai/PureduxStore)
-
+- It's minilistic UDF architecture store implementation. More details can be found [here](https://github.com/KazaiMazai/PureduxStore)
 
 ### Which DispatchQueue is used to prepare props?
 
 - By default, it works on a shared PresentationQueue. It is a global serial queue with user interactive quality of service. The purpose is to do as little as possible on the main thread queue.
+  
+  
+### Is it safe at all?
+  
+- PureduxUIKit hops to the main dispatch queue to update UIViewController. So yes, it's safe. Unless you try to do UIKit related things (you should not) during your `Props` preparation.  
 
 ### How to change  presentation queue that is used to prepare props?
 
@@ -131,7 +134,7 @@ or standalone queue:
               
 ```swift       
 
-let queue: DispatchQueue(label: "some queue", qos: .userInteractive)
+let queue = DispatchQueue(label: "some.queue", qos: .userInteractive)
 
 viewController.with(store: fancyFeatureStore,
                     props: presenter.makeProps,
@@ -178,16 +181,16 @@ secondViewController.with(store: fancyFeatureStore,
 
 ### Any other `Equating<State>`  details ?
 
-- Equating is a protocol witness for Equtable. It answers the question: Are these states equal? 
+- Equating is a protocol witness for Equtable. It answers the question: "Are these states equal?" 
 - With the help of it, deduplication happens.
 
 Here is the definition:
 
 ```swift
+  
     Equating<T> { (lhs: T, rhs: T) -> Bool
         //compare here
     }
-}
 
 ```
 
@@ -211,4 +214,4 @@ viewController.with(store: fancyFeatureStore,
 
 ## Licensing
 
-PureduxStore is licensed under MIT license.
+PureduxUIKit is licensed under MIT license.
