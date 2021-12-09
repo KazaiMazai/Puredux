@@ -25,16 +25,16 @@ public extension PresentableViewController {
     func with<State, Action>(store: Store<State, Action>,
                         props: @escaping (State, Store<State, Action>) -> Self.Props,
                         presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                        distinctStateChangesBy: Equating<State> = .neverEqual) {
+                        removeStateDuplicates by: Equating<State> = .neverEqual) {
 
-        let presenting = Presenting(
+        let Presenter = Presenter(
             viewController: self,
             store: store,
             props: props,
             presentationQueue: presentationQueue,
-            distinctStateChangesBy: distinctStateChangesBy.predicate)
+            removeStateDuplicates: by.predicate)
 
-        self.presenter = presenting
+        self.presenter = Presenter
     }
 }
 
