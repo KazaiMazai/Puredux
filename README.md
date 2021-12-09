@@ -1,3 +1,3 @@
 # PureduxUIKit
 
-A description of this package.
+Description of this package is coming soon.

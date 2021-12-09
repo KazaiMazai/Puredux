@@ -10,36 +10,84 @@ import Dispatch
 import PureduxStore
 
 struct Presenting<State, Action, ViewController> where ViewController: PresentableViewController {
-    weak var viewController: ViewController?
-    let store: Store<State, Action>
 
-    let map: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
-    let uiQueue: DispatchQueue =  DispatchQueue.main
+    private let mainQueue = DispatchQueue.main
+    private let workerQueue: DispatchQueue
 
-    private func connect() {
+    private weak var viewController: ViewController?
+    private let store: Store<State, Action>
+
+    private let prevState: Ref<State?> = Ref(value: nil)
+
+    private let props: (_ state: State, _ store: Store<State, Action>) -> ViewController.Props
+    private let isEqual: (State, State) -> Bool
+
+    init(viewController: ViewController,
+         store: Store<State, Action>,
+         props: @escaping (State, Store<State, Action>) -> ViewController.Props,
+         presentationQueue: PresentationQueue,
+         distinctStateChangesBy isEqual: @escaping (State, State) -> Bool) {
+
+        self.viewController = viewController
+        self.store = store
+        self.props = props
+        self.workerQueue = presentationQueue.dispatchQueue
+        self.isEqual = isEqual
+    }
+}
+
+extension Presenting: PresenterProtocol {
+    func subscribeToStore() {
         store.subscribe(observer: asObserver)
     }
 }
 
-extension Presenting: Presenter {
-
-}
-
-extension Presenting {
-    private func observe(state: State) -> Observer<State>.Status {
-        guard let viewController = viewController else {
-            return .dead
+private extension Presenting {
+    var asObserver: Observer<State> {
+        Observer { state, handler in
+            observe(state: state, complete: handler)
         }
-
-        let props = map(state, store)
-        viewController.render(props: props)
-
-        return .active
     }
 
-    var asObserver: Observer<State> {
-        Observer(queue: uiQueue) { state in
-            return self.observe(state: state)
+    func observe(state: State, complete: @escaping (ObserverStatus) -> Void) {
+        workerQueue.async {
+            if isPrevStateEqualTo(state) {
+                complete(.active)
+                return
+            }
+
+            prevState.value = state
+            let newProps = props(state, store)
+
+            mainQueue.async { [weak viewController] in
+                guard let viewController = viewController else {
+                    complete(.dead)
+                    return
+                }
+
+                viewController.setProps(newProps)
+                complete(.active)
+            }
+        }
+    }
+}
+
+private extension Presenting {
+    func isPrevStateEqualTo(_ state: State) -> Bool {
+        guard let prevState = prevState.value else {
+            return false
+        }
+
+        return isEqual(prevState, state)
+    }
+}
+
+private extension Presenting {
+    final class Ref<T> {
+        var value: T
+
+        init(value: T) {
+            self.value = value
         }
     }
 }

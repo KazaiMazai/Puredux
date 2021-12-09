@@ -6,24 +6,35 @@
 //
 
 import PureduxStore
+import PureduxCommon
 
-public protocol Presenter { }
+public protocol PresenterProtocol {
+    func subscribeToStore()
+}
 
-public protocol PresentableViewController: class {
+public protocol PresentableViewController: AnyObject {
     associatedtype Props
 
-    var presenter: Presenter { get set }
-    func render(props: Props)
+    var presenter: PresenterProtocol? { get set }
+
+    func setProps(_ props: Props)
 }
 
 public extension PresentableViewController {
-    func connect<VCPresenter: ViewControllerPresenter>(with presenter: VCPresenter,
-                                                     to store: Store<VCPresenter.State, VCPresenter.Action>)
-    where
-        VCPresenter.ViewController.Props == Props {
 
-        let presenter = Presenting(viewController: self, store: store, map: presenter.map)
-        self.presenter = presenter
-        store.subscribe(observer: presenter.asObserver)
+    func with<State, Action>(store: Store<State, Action>,
+                        props: @escaping (State, Store<State, Action>) -> Self.Props,
+                        presentationQueue: PresentationQueue = .sharedPresentationQueue,
+                        distinctStateChangesBy: Equating<State> = .neverEqual) {
+
+        let presenting = Presenting(
+            viewController: self,
+            store: store,
+            props: props,
+            presentationQueue: presentationQueue,
+            distinctStateChangesBy: distinctStateChangesBy.predicate)
+
+        self.presenter = presenting
     }
 }
+
