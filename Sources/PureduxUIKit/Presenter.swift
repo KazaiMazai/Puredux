@@ -9,7 +9,7 @@ import UIKit
 import Dispatch
 import PureduxStore
 
-struct Presenter<State, Action, ViewController> where ViewController: PresentableViewController {
+struct Presenter<State, Action, ViewController> where ViewController: Presentable {
 
     private let mainQueue = DispatchQueue.main
     private let workerQueue: DispatchQueue

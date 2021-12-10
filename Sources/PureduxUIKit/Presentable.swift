@@ -12,7 +12,7 @@ public protocol PresenterProtocol {
     func subscribeToStore()
 }
 
-public protocol PresentableViewController: AnyObject {
+public protocol Presentable: AnyObject {
     associatedtype Props
 
     var presenter: PresenterProtocol? { get set }
@@ -20,7 +20,7 @@ public protocol PresentableViewController: AnyObject {
     func setProps(_ props: Props)
 }
 
-public extension PresentableViewController {
+public extension Presentable {
 
     func with<State, Action>(store: Store<State, Action>,
                         props: @escaping (State, Store<State, Action>) -> Self.Props,
