@@ -37,11 +37,11 @@ import PureduxUIKit
 
 ```
 
-2. Implement view controller and conform it to `PresentableViewController`
+2. Implement view controller and conform it to `Presentable`
 
 ```swift
 
-final class FancyViewController: UIViewController, PresentableViewController {
+final class FancyViewController: UIViewController, Presentable {
     var presenter: PresenterProtocol? { get set }
 
     func setProps(_ props: Props) {

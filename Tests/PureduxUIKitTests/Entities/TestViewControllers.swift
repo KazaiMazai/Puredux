@@ -15,7 +15,7 @@ extension StubViewController {
     }
 }
 
-class StubViewController: PresentableViewController {
+class StubViewController: Presentable {
     var presenter: PresenterProtocol?
 
     private(set) var props: Props?
@@ -31,16 +31,3 @@ class StubViewController: PresentableViewController {
         presenter?.subscribeToStore()
     }
 }
-//
-//class StubViewContollerPresenter<Action> {
-//
-//    typealias ViewController = StubViewController
-//
-//    var didMakeProps: (() -> Void)?
-//
-//    func props(state:TestVCState, store: Store<TestVCState, Action>) -> StubViewController.Props {
-//        let props = StubViewController.Props(title: state.title)
-//        didMakeProps?()
-//        return props
-//    }
-//}
