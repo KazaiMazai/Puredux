@@ -16,10 +16,10 @@ Yet another UDF Architecture Store implementation
 ## Features
 
 - Minimalistic 
-- Operates on Main or Background queue
-- Light-weight Store proxies
-- Thread Safe 
-- Actions Interceptor 
+- Operates on main or background queue
+- Light-weight store proxies
+- Thread safe 
+- Simple actions interceptor for side effects
 ____________
 
 
@@ -52,11 +52,15 @@ import PureduxStore
 
 ```
 
-2. Create initial app state and Action type:
+2. Create initial app state:
 
 ```swift
 let initialState = AppState()
+```
 
+and `Action` protocol:
+
+```swift
 
 protocol Action {
 
@@ -67,7 +71,7 @@ protocol Action {
 3. Create reducer:
 
 ```swift 
-let reducer: (inout State, Action) -> Void = { state, action in
+let reducer: (inout AppState, Action) -> Void = { state, action in
 
     //mutate state here
 
@@ -83,15 +87,49 @@ let rootStore = RootStore<AppState, Action>(initialState: initialState, reducer:
 let store = rootStore.store()
 ```
 
-5.  Setup `AsyncAction` interceptor:
+5. Setup actions interceptor for side effects:
+
+Let's have an `AsyncAction` protocol defined as:
 
 ```swift
+
+protocol AsyncAction: Action {
+    func execute(completeHandler: @escaping (Action) -> Void)
+}
+```
+
+and some long running action that with injected service:
+
+```swift
+struct SomeAsyncAction: AsyncAction {
+    @DI var service: SomeInjectedService
+
+    func execute(completeHandler: @escaping (Action) -> Void) {  
+        service.doTheWork {
+            switch $0 {
+            case .success(let result):
+                completeHandler(SomeResultAction(result))
+            case .success(let error):
+                completeHandler(SomeErrorAction(error))
+            }
+        }
+    }
+}
+
+```
+
+Execute side effect:
+
+```swift
+
 rootStore.interceptActions { action in
-    guard let action = (action as? AsyncAction) else {
+    guard let action = ($0 as? AsyncAppAction) else  {
         return
     }
     
-    action.execute(with: store)
+    DispatchQueue.main.async {
+        action.execute { store.dispatch($0) }
+    }   
 }
 
 ```
@@ -152,9 +190,24 @@ It allows to dispatch actions, subscribe and unsubscribe from any distpach queue
 - It keeps weak reference to the real store, that allows to avoid creating reference cycles accidentally.
 
 
-### What's the substate proxy Store?
+### What's the Proxy Store?
 
-With Store it's possible to create substate proxies that allows to scope app features effectively.
+- With Store it's possible to create substate proxies that allows to scope app features effectively.
+  
+### Does Proxy Store deduplicate state changes somehow?
+- No, Proxy Store observers are triggered at every root store state change. Store proxy is only for scopeing state to app features
+  
+### How to unsubscribe from store?
+ 
+- Call store observer's complete handler with dead status:
+  
+```swift 
+let observer = Observer<State> { state, completeHandler in
+    //
+    completeHandler(.dead)
+}
+ 
+``` 
 
 
 </p>
