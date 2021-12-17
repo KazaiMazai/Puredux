@@ -195,7 +195,7 @@ It allows to dispatch actions, subscribe and unsubscribe from any distpach queue
 - With Store it's possible to create substate proxies that allows to scope app features effectively.
   
 ### Does Proxy Store deduplicate state changes somehow?
-- No, Proxy Store observers are triggered at every root store state change. Store proxy is only for scopeing state to app features
+- No, Proxy Store observers are triggered at every root store state change. The only store proxy purpose is to scope entire app state to app features
   
 ### How to unsubscribe from store?
  
