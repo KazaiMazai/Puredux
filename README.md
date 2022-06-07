@@ -2,14 +2,13 @@
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
  </p>
  
-# PureduxUIKit
 
 UIKit bindings to connect UI to PureduxSrore
 
 
 ## Features
 
-- Simple way to data-driven UIViewControllers
+- Clear path to data-driven UIViewControllers
 - Presentation data model aka. 'Props' can be prepared on Main or Background queue
 - State updates deduplication to avoid unnecessary UI refresh
 
@@ -121,7 +120,7 @@ viewController.with(store: fancyFeatureStore,
 ### How to change  presentation queue that is used to prepare props?
 
 
-- PureduxUIKit allows to use main queue user-provided queue. The only requirement for the queue is to be **serial** one.
+- PureduxUIKit allows to use main queue or user-provided custom queue. The only requirement for the custom queue is to be **serial** one.
 
 ```swift 
 viewController.with(store: fancyFeatureStore,
