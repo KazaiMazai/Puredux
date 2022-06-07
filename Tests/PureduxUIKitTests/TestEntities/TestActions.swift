@@ -11,6 +11,15 @@ protocol Action {
 
 }
 
-struct TestAction: Action {
+
+struct NonMutatingStateAction: Action {
+
+}
+
+struct UpdateTitle: Action {
     let title: String
+}
+
+struct UpdateIndex: Action {
+    let index: Int
 }

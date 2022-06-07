@@ -5,7 +5,7 @@
 //  Created by Sergey Kazakov on 29.11.2021.
 //
 
-import UIKit
+
 @testable import PureduxUIKit
 @testable import PureduxStore
 
