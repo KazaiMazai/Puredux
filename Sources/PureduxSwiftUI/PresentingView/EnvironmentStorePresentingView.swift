@@ -21,7 +21,7 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
 
     var body: some View {
         StorePresentingView(
-            store: store.getStore(),
+            store: store.store(),
             props: props,
             content: content,
             removeDuplicates: removeDuplicates,

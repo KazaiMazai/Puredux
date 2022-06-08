@@ -27,7 +27,7 @@ public enum PresentationQueue {
 
 extension View {
     
-    public static func with<AppState, Action, Props>(
+    public static func withEnvStore<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
         props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
         queue: PresentationQueue = .sharedPresentationQueue,

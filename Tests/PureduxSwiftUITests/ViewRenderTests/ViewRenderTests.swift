@@ -11,7 +11,7 @@ final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreProvidingView(rootStore: rootStore) {
-                Text.with(
+                Text.withEnvStore(
                     props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) in
                         state.subStateWithTitle.title
                     },
@@ -43,7 +43,7 @@ class ViewWithStoreRenderTests: XCTestCase {
 
 
     lazy var store: PublishingStore = {
-        rootStore.getStore()
+        rootStore.store()
     }()
 
 

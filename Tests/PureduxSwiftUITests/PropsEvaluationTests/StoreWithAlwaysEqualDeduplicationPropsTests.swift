@@ -18,7 +18,7 @@ class ViewEnvStoreWithAlwaysEqualDeduplicationPropsTests: ViewWithStoreWithAlway
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreProvidingView(rootStore: rootStore) {
-                Text.with(
+                Text.withEnvStore(
                     removeStateDuplicates: .alwaysEqual,
                     props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
@@ -50,7 +50,7 @@ class ViewWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     }()
 
     lazy var store: PublishingStore = {
-        rootStore.getStore()
+        rootStore.store()
     }()
 
     @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
