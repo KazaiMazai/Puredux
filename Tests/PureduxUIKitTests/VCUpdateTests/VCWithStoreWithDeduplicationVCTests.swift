@@ -28,11 +28,11 @@ final class VCWithStoreWithDeduplicationVCTests: XCTestCase {
     }()
 
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
-        let vc = StubViewController()
+        let testVC= StubViewController()
 
         vc.with(
             store: store,
-            props: { state, store in
+            props: { state, _ in
                 .init(title: state.subStateWithTitle.title)
             },
             removeStateDuplicates: .equal { $0.subStateWithIndex.index }
@@ -46,14 +46,13 @@ final class VCWithStoreWithDeduplicationVCTests: XCTestCase {
     }
 }
 
-
 extension VCWithStoreWithDeduplicationVCTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribed_ThenVCNotUpdated() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
         expectation.isInverted = true
 
-        let _ = setupVCForTests(vcUpdatedExpectation: expectation)
+        _ = setupVCForTests(vcUpdatedExpectation: expectation)
 
         (0..<actionsCount).forEach { _ in
             store.dispatch(NonMutatingStateAction())
@@ -67,7 +66,7 @@ extension VCWithStoreWithDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
@@ -82,7 +81,7 @@ extension VCWithStoreWithDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach {
@@ -97,7 +96,7 @@ extension VCWithStoreWithDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach {
@@ -116,7 +115,7 @@ extension VCWithStoreWithDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach {
@@ -130,7 +129,6 @@ extension VCWithStoreWithDeduplicationVCTests {
         waitForExpectations(timeout: timeout)
     }
 }
-
 
 extension VCWithStoreWithDeduplicationVCTests {
 

@@ -11,7 +11,6 @@ protocol Action {
 
 }
 
-
 struct NonMutatingStateAction: Action {
 
 }

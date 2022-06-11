@@ -27,14 +27,13 @@ public extension Presentable {
                         presentationQueue: PresentationQueue = .sharedPresentationQueue,
                         removeStateDuplicates by: Equating<State> = .neverEqual) {
 
-        let Presenter = Presenter(
+        let presenter = Presenter(
             viewController: self,
             store: store,
             props: props,
             presentationQueue: presentationQueue,
             removeStateDuplicates: by.predicate)
 
-        self.presenter = Presenter
+        self.presenter = presenter
     }
 }
-

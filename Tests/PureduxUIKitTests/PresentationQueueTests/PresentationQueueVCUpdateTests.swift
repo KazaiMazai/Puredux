@@ -30,11 +30,11 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
     }()
 
     func setupVCForTests(queue: PresentationQueue) -> StubViewController {
-        let vc = StubViewController()
+        let testVC= StubViewController()
 
         vc.with(
             store: store,
-            props: { state, store in
+            props: { state, _ in
                 .init(title: state.subStateWithTitle.title)
             },
             presentationQueue: queue
@@ -50,7 +50,7 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let vc = setupVCForTests(queue: .main)
+        let testVC= setupVCForTests(queue: .main)
         vc.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -65,7 +65,7 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let vc = setupVCForTests(queue: .sharedPresentationQueue)
+        let testVC= setupVCForTests(queue: .sharedPresentationQueue)
         vc.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -81,7 +81,7 @@ extension PresentationQueueVCUpdateTests {
         expectation.expectedFulfillmentCount = 1
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let vc = setupVCForTests(queue: .serialQueue(queue))
+        let testVC= setupVCForTests(queue: .serialQueue(queue))
         vc.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -96,7 +96,7 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let vc = setupVCForTests(queue: .serialQueue(.main))
+        let testVC= setupVCForTests(queue: .serialQueue(.main))
         vc.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -120,6 +120,6 @@ extension PresentationQueueVCUpdateTests {
          test_WhenCustomGlobalQueueProvided_ThenVCUpdatedOnMainThread),
 
         ("test_WhenMainQueueProvidedAsCustom_ThenVCUpdatedOnMainThread",
-         test_WhenMainQueueProvidedAsCustom_ThenVCUpdatedOnMainThread),
+         test_WhenMainQueueProvidedAsCustom_ThenVCUpdatedOnMainThread)
     ]
 }

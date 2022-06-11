@@ -27,12 +27,11 @@ final class VCWithStoreWithoutDeduplicationVCTests: XCTestCase {
         rootStore.store()
     }()
 
-
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
-        let vc = StubViewController()
+        let testVC= StubViewController()
 
         vc.with(store: store,
-                props: { state, store in
+                props: { state, _ in
                     .init(title: state.subStateWithTitle.title)
                 })
 
@@ -50,7 +49,7 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.isInverted = true
 
-        let _ = setupVCForTests(vcUpdatedExpectation: expectation)
+        _ = setupVCForTests(vcUpdatedExpectation: expectation)
 
         waitForExpectations(timeout: timeout)
     }
@@ -59,7 +58,7 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
         waitForExpectations(timeout: timeout)
     }
@@ -69,7 +68,7 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
@@ -84,7 +83,7 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let vc = setupVCForTests(vcUpdatedExpectation: expectation)
+        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
         vc.viewDidLoad()
 
         (0..<actionsCount).forEach {

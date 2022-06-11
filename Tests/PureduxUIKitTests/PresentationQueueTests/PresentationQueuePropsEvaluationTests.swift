@@ -28,11 +28,11 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
     }()
 
     func setupVCForTests(queue: PresentationQueue, makeProps: @escaping () -> Void) -> StubViewController {
-        let vc = StubViewController()
+        let testVC= StubViewController()
 
         vc.with(
             store: store,
-            props: { state, store in
+            props: { state, _ in
                 makeProps()
                 return .init(title: state.subStateWithTitle.title)
             },
@@ -54,7 +54,7 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let vc = setupVCForTests(queue: .main, makeProps: makeProps)
+        let testVC= setupVCForTests(queue: .main, makeProps: makeProps)
         vc.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
@@ -70,7 +70,7 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let vc = setupVCForTests(queue: .sharedPresentationQueue, makeProps: makeProps)
+        let testVC= setupVCForTests(queue: .sharedPresentationQueue, makeProps: makeProps)
         vc.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
@@ -87,7 +87,7 @@ extension PresentationQueuePropsEvaluationTests {
         }
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let vc = setupVCForTests(queue: .serialQueue(queue), makeProps: makeProps)
+        let testVC= setupVCForTests(queue: .serialQueue(queue), makeProps: makeProps)
         vc.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
@@ -103,7 +103,7 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let vc = setupVCForTests(queue: .serialQueue(.main), makeProps: makeProps)
+        let testVC= setupVCForTests(queue: .serialQueue(.main), makeProps: makeProps)
         vc.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
@@ -123,8 +123,7 @@ extension PresentationQueuePropsEvaluationTests {
          test_WhenCustomGlobalQueueProvided_ThenPropsEvaluatedNotOnMainThread),
 
         ("test_WhenMainQueueProvidedAsCustom_ThenPropsEvaluatedOnMainThread",
-         test_WhenMainQueueProvidedAsCustom_ThenPropsEvaluatedOnMainThread),
+         test_WhenMainQueueProvidedAsCustom_ThenPropsEvaluatedOnMainThread)
 
     ]
 }
-
