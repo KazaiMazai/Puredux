@@ -1,4 +1,7 @@
-# PureduxSwiftUI
+<p align="center">
+  <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
+ </p>
+ 
 
 SwiftUI bindings to connect UI to PureduxStore
 
