@@ -28,15 +28,15 @@ final class VCWithStoreWithoutDeduplicationPropsTests: XCTestCase {
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(store: store,
+        testVC.with(store: store,
                 props: { state, _ in
                     propsEvaluatedExpectation.fulfill()
             return .init(title: state.subStateWithTitle.title)
                 })
 
-        return vc
+        return testVC
     }
 }
 
@@ -55,8 +55,8 @@ extension VCWithStoreWithoutDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
         waitForExpectations(timeout: timeout)
     }
 
@@ -65,8 +65,8 @@ extension VCWithStoreWithoutDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
             store.dispatch(NonMutatingStateAction())
@@ -80,8 +80,8 @@ extension VCWithStoreWithoutDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))
