@@ -28,7 +28,6 @@ struct TestAppState1 {
     }
 }
 
-
 struct SubStateWithTitle {
     var title: String = ""
 

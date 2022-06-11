@@ -30,5 +30,3 @@ fileprivate extension DispatchQueue {
     static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.uikit.presentation",
                                                        qos: .userInteractive)
 }
-
- 
