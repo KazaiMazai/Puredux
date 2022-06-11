@@ -8,16 +8,16 @@
 import SwiftUI
 
 public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
-    private let store: ObservableStore<AppState, Aciton>
+    private let rootStore: RootEnvStore<AppState, Aciton>
     private let content: () -> Content
 
     public var body: some View {
-        content().environmentObject(store)
+        content().environmentObject(rootStore)
     }
 
-    public init(store: ObservableStore<AppState, Aciton>,
+    public init(rootStore: RootEnvStore<AppState, Aciton>,
                 content: @escaping () -> Content) {
-        self.store = store
+        self.rootStore = rootStore
         self.content = content
     }
 }

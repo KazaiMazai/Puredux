@@ -9,7 +9,7 @@ import Foundation
 import PureduxCommon
 
 public extension Equating where T: Identifiable {
-    static var equalId: Equating {
+    static var asIdentifiable: Equating {
         Equating {
             $0.id == $1.id
         }
