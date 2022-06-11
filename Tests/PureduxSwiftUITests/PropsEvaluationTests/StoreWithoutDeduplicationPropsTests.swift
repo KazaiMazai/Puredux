@@ -43,7 +43,7 @@ class ViewWithStoreWithoutDeduplicationPropsTests: XCTestCase {
 
     lazy var rootStore: RootEnvStore = {
         RootEnvStore(
-            rootStore: RootStore<TestAppState, Action>(initial: state) { state, action in
+            rootStore: RootStore<TestAppState, Action>(initialState: state) { state, action in
                 state.reduce(action)
             }
         )

@@ -17,7 +17,7 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
 
         self.rootStore = rootStore
         self.stateSubject = PassthroughSubject<AppState, Never>()
-        rootStore.getStore().subscribe(observer: asObserver)
+        rootStore.store().subscribe(observer: asObserver)
     }
 }
 
@@ -36,7 +36,7 @@ private extension RootEnvStore {
     }
 
     func dispatch(_ action: Action) {
-        rootStore.getStore().dispatch(action)
+        rootStore.store().dispatch(action)
     }
 }
 
