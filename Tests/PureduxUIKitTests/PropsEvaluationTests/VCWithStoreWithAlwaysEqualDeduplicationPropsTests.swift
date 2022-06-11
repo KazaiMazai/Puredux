@@ -28,9 +28,9 @@ final class VCWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(
+        testVC.with(
             store: store,
             props: { state, _ in
                 propsEvaluatedExpectation.fulfill()
@@ -39,7 +39,7 @@ final class VCWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
             removeStateDuplicates: .alwaysEqual
         )
 
-        return vc
+        return testVC
     }
 }
 
@@ -63,8 +63,8 @@ extension VCWithStoreWithAlwaysEqualDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
             store.dispatch(NonMutatingStateAction())
@@ -78,8 +78,8 @@ extension VCWithStoreWithAlwaysEqualDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))

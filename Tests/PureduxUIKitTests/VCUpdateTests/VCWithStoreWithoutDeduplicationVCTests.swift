@@ -28,18 +28,18 @@ final class VCWithStoreWithoutDeduplicationVCTests: XCTestCase {
     }()
 
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(store: store,
+        testVC.with(store: store,
                 props: { state, _ in
                     .init(title: state.subStateWithTitle.title)
                 })
 
-        vc.didSetProps = {
+        testVC.didSetProps = {
             vcUpdatedExpectation.fulfill()
         }
 
-        return vc
+        return testVC
     }
 }
 
@@ -58,8 +58,8 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(vcUpdatedExpectation: expectation)
+        testVC.viewDidLoad()
         waitForExpectations(timeout: timeout)
     }
 
@@ -68,8 +68,8 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(vcUpdatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
             store.dispatch(NonMutatingStateAction())
@@ -83,8 +83,8 @@ extension VCWithStoreWithoutDeduplicationVCTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount + 1
 
-        let testVC= setupVCForTests(vcUpdatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(vcUpdatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))

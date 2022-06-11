@@ -28,9 +28,9 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
     }()
 
     func setupVCForTests(queue: PresentationQueue, makeProps: @escaping () -> Void) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(
+        testVC.with(
             store: store,
             props: { state, _ in
                 makeProps()
@@ -39,7 +39,7 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
             presentationQueue: queue
         )
 
-        return vc
+        return testVC
     }
 }
 
@@ -54,8 +54,8 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let testVC= setupVCForTests(queue: .main, makeProps: makeProps)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(queue: .main, makeProps: makeProps)
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -70,8 +70,8 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let testVC= setupVCForTests(queue: .sharedPresentationQueue, makeProps: makeProps)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(queue: .sharedPresentationQueue, makeProps: makeProps)
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -87,8 +87,8 @@ extension PresentationQueuePropsEvaluationTests {
         }
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let testVC= setupVCForTests(queue: .serialQueue(queue), makeProps: makeProps)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(queue: .serialQueue(queue), makeProps: makeProps)
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -103,8 +103,8 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let testVC= setupVCForTests(queue: .serialQueue(.main), makeProps: makeProps)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(queue: .serialQueue(.main), makeProps: makeProps)
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }

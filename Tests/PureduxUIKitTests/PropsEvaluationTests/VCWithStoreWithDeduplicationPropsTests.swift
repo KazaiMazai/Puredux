@@ -28,9 +28,9 @@ final class VCWithStoreWithDeduplicationPropsTests: XCTestCase {
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(
+        testVC.with(
             store: store,
             props: { state, _ in
 
@@ -40,7 +40,7 @@ final class VCWithStoreWithDeduplicationPropsTests: XCTestCase {
             removeStateDuplicates: .equal { $0.subStateWithIndex.index }
         )
 
-        return vc
+        return testVC
     }
 }
 
@@ -64,8 +64,8 @@ extension VCWithStoreWithDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach { _ in
             store.dispatch(NonMutatingStateAction())
@@ -79,8 +79,8 @@ extension VCWithStoreWithDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))
@@ -94,8 +94,8 @@ extension VCWithStoreWithDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))
@@ -113,8 +113,8 @@ extension VCWithStoreWithDeduplicationPropsTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
-        let testVC= setupVCForTests(propsEvaluatedExpectation: expectation)
-        vc.viewDidLoad()
+        let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
+        testVC.viewDidLoad()
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))

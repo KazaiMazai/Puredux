@@ -30,9 +30,9 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
     }()
 
     func setupVCForTests(queue: PresentationQueue) -> StubViewController {
-        let testVC= StubViewController()
+        let testVC = StubViewController()
 
-        vc.with(
+        testVC.with(
             store: store,
             props: { state, _ in
                 .init(title: state.subStateWithTitle.title)
@@ -40,7 +40,7 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
             presentationQueue: queue
         )
 
-        return vc
+        return testVC
     }
 }
 
@@ -50,12 +50,12 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(queue: .main)
-        vc.didSetProps = {
+        let testVC = setupVCForTests(queue: .main)
+        testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
         }
-        vc.viewDidLoad()
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -65,12 +65,12 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(queue: .sharedPresentationQueue)
-        vc.didSetProps = {
+        let testVC = setupVCForTests(queue: .sharedPresentationQueue)
+        testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
         }
-        vc.viewDidLoad()
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -81,12 +81,12 @@ extension PresentationQueueVCUpdateTests {
         expectation.expectedFulfillmentCount = 1
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let testVC= setupVCForTests(queue: .serialQueue(queue))
-        vc.didSetProps = {
+        let testVC = setupVCForTests(queue: .serialQueue(queue))
+        testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
         }
-        vc.viewDidLoad()
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
@@ -96,12 +96,12 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC= setupVCForTests(queue: .serialQueue(.main))
-        vc.didSetProps = {
+        let testVC = setupVCForTests(queue: .serialQueue(.main))
+        testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
         }
-        vc.viewDidLoad()
+        testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
     }
