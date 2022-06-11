@@ -5,18 +5,18 @@
         "package": "PureduxCommon",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxCommon.git",
         "state": {
-          "branch": "dev",
-          "revision": "614b94cd86631f6391b07ca6d1e3fd33d50468e1",
-          "version": null
+          "branch": null,
+          "revision": "7bae87ba5b9dc17b79b35c4fde5da020be3f7d62",
+          "version": "1.0.0"
         }
       },
       {
         "package": "PureduxStore",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {
-          "branch": "dev",
-          "revision": "568b67b354baba4803353bcabdc1239ce0c8263c",
-          "version": null
+          "branch": null,
+          "revision": "878edc2e1885f0fd313c7caf2c397db7415a983c",
+          "version": "1.0.1"
         }
       }
     ]
