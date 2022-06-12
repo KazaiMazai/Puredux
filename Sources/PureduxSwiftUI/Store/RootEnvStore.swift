@@ -13,8 +13,22 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let rootStore: RootStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
 
-    public init(rootStore: RootStore<AppState, Action>) {
+    /**
+    Initializes a new RootEnvStore with provided RootStore.
+    RootEnvStore is an `ObservableObject` wrap around Puredux's RootStore to be used in SwiftUI.
 
+    - Parameter rootStore: Puredux's root store
+
+    - Returns: `RootEnvStore<AppState, Action>`
+
+     `RootEnvStore` acts like a factory for light-weight  `PublishingStores`.
+
+     `RootEnvStore` and `PublishingStore` are SwiftUI-friendly counterparts for Puredux's RootStore and Store.
+     RootEnvStore is what we have on top. PublishingStore are lightweight proxies that we are to connect our views to.
+
+     */
+
+    public init(rootStore: RootStore<AppState, Action>) {
         self.rootStore = rootStore
         self.stateSubject = PassthroughSubject<AppState, Never>()
         rootStore.store().subscribe(observer: asObserver)
@@ -22,7 +36,23 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
 }
 
 public extension RootEnvStore {
+
+    /**
+     Initializes a new light-weight proxy PublishingStore as a proxy for the RootEnvStore's internal root store
+
+     - Returns: Light-weight `PublishingStore`
+
+     `PublishingStore` is a light-weight proxy for the RootEnvStore's private root store.
+     All dispatched Actions are forwarded to the private root store.
+     `PublishingStore` is thread safe, the same as its proxies. Actions can be safely dispatched from any thread.
+
+     **Important to note:** Proxy store only keeps weak reference to the internal root store,
+     ensuring that reference cycles will not be created.
+
+     */
+
     func store() -> PublishingStore<AppState, Action> {
+
         PublishingStore(
             statePublisher: statePublisher(),
             dispatch: { [weak self] in self?.dispatch($0) }
