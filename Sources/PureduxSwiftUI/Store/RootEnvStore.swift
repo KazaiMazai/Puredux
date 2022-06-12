@@ -22,7 +22,7 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
 }
 
 public extension RootEnvStore {
-    func store() -> PublishingStore<AppState, Action>{
+    func store() -> PublishingStore<AppState, Action> {
         PublishingStore(
             statePublisher: statePublisher(),
             dispatch: { [weak self] in self?.dispatch($0) }
@@ -53,4 +53,3 @@ private extension RootEnvStore {
         }
     }
 }
-

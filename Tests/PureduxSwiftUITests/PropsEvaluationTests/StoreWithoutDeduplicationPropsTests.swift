@@ -20,7 +20,7 @@ class ViewEnvStoreWithoutDeduplicationPropsTests: ViewWithStoreWithoutDeduplicat
             rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.withEnvStore(
                     removeStateDuplicates: .neverEqual,
-                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) -> String in
+                    props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return state.subStateWithTitle.title
                     },
@@ -59,7 +59,7 @@ class ViewWithStoreWithoutDeduplicationPropsTests: XCTestCase {
             rootView: Text.with(
                 store: store,
                 removeStateDuplicates: .neverEqual,
-                props: { (state, store) -> String in
+                props: { (state, _) -> String in
                     propsEvaluatedExpectation.fulfill()
                     return state.subStateWithTitle.title
                 },
@@ -124,5 +124,3 @@ extension ViewWithStoreWithoutDeduplicationPropsTests {
          test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction)
     ]
 }
-
-

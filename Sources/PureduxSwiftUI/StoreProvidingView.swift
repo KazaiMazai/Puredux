@@ -21,4 +21,3 @@ public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
         self.content = content
     }
 }
-

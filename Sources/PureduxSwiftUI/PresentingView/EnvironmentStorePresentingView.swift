@@ -28,6 +28,3 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View
             queue: queue)
     }
 }
-
-
-

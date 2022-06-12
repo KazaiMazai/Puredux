@@ -25,7 +25,7 @@ public struct PublishingStore<AppState, Action> {
 
 extension PublishingStore {
     func proxy<LocalState>(
-        toLocalState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action>  {
+        toLocalState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action> {
 
         PublishingStore<LocalState, Action>(
             statePublisher: statePublisher

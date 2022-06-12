@@ -12,7 +12,7 @@ final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
         UIWindow.setupForSwiftUITests(
             rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.withEnvStore(
-                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) in
+                    props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) in
                         state.subStateWithTitle.title
                     },
                     content: {
@@ -41,17 +41,15 @@ class ViewWithStoreRenderTests: XCTestCase {
         )
     }()
 
-
     lazy var store: PublishingStore = {
         rootStore.store()
     }()
-
 
     @discardableResult func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
         UIWindow.setupForSwiftUITests(
             rootView: Text.with(
                 store: store,
-                props: { (state, store) in
+                props: { (state, _) in
                     state.subStateWithTitle.title
                 },
                 content: {
@@ -129,7 +127,7 @@ extension ViewWithStoreRenderTests {
             }
         }
 
-        waitForExpectations(timeout:  actionDelay * Double(actionsCount) * 4)
+        waitForExpectations(timeout: actionDelay * Double(actionsCount) * 4)
     }
 
 }
@@ -153,5 +151,3 @@ extension ViewWithStoreRenderTests {
          test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce)
     ]
 }
-
-
