@@ -9,9 +9,9 @@ import PureduxStore
 import Combine
 import SwiftUI
 
-public final class RootEnvStore<State, Action>: ObservableObject {
-    private let rootStore: RootStore<State, Action>
-    private let stateSubject: PassthroughSubject<State, Never>
+public final class RootEnvStore<AppState, Action>: ObservableObject {
+    private let rootStore: RootStore<AppState, Action>
+    private let stateSubject: PassthroughSubject<AppState, Never>
 
     /**
     Initializes a new RootEnvStore with provided RootStore.
@@ -19,7 +19,7 @@ public final class RootEnvStore<State, Action>: ObservableObject {
 
     - Parameter rootStore: Puredux's root store
 
-    - Returns: `RootEnvStore<State, Action>`
+    - Returns: `RootEnvStore<AppState, Action>`
 
      `RootEnvStore` acts like a factory for light-weight  `PublishingStores`.
 
@@ -28,9 +28,9 @@ public final class RootEnvStore<State, Action>: ObservableObject {
 
      */
 
-    public init(rootStore: RootStore<State, Action>) {
+    public init(rootStore: RootStore<AppState, Action>) {
         self.rootStore = rootStore
-        self.stateSubject = PassthroughSubject<State, Never>()
+        self.stateSubject = PassthroughSubject<AppState, Never>()
         rootStore.store().subscribe(observer: asObserver)
     }
 }
@@ -51,7 +51,7 @@ public extension RootEnvStore {
 
      */
 
-    func store() -> PublishingStore<State, Action> {
+    func store() -> PublishingStore<AppState, Action> {
 
         PublishingStore(
             statePublisher: statePublisher(),
@@ -61,7 +61,7 @@ public extension RootEnvStore {
 }
 
 private extension RootEnvStore {
-    func statePublisher() -> AnyPublisher<State, Never> {
+    func statePublisher() -> AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
     }
 
@@ -71,7 +71,7 @@ private extension RootEnvStore {
 }
 
 private extension RootEnvStore {
-    var asObserver: Observer<State> {
+    var asObserver: Observer<AppState> {
         Observer { [weak self] state, complete in
             guard let self = self else {
                 complete(.dead)
