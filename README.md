@@ -5,6 +5,11 @@
 
 SwiftUI bindings to connect UI to PureduxStore
 
+<p align="left">
+    <a href="https://github.com/KazaiMazai/PureduxSwiftUI/actions">
+        <img src="https://github.com/KazaiMazai/PureduxSwiftUI/workflows/Tests/badge.svg" alt="Continuous Integration">
+    </a>
+</p>
 
 ## Features
 

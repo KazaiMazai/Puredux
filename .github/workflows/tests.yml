@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Lint
+      run: swiftlint
+    - name: Build for iOS
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild build-for-testing -scheme PureduxSwiftUI -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" | xcpretty
+    - name: Run iOS tests
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme PureduxSwiftUI -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" | xcpretty
+
+
+
