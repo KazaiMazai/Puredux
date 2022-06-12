@@ -9,7 +9,6 @@ import PureduxStore
 import Combine
 import SwiftUI
 
-
 public final class RootEnvStore<State, Action>: ObservableObject {
     private let rootStore: RootStore<State, Action>
     private let stateSubject: PassthroughSubject<State, Never>
@@ -37,7 +36,7 @@ public final class RootEnvStore<State, Action>: ObservableObject {
 }
 
 public extension RootEnvStore {
- 
+
     /**
      Initializes a new light-weight proxy PublishingStore as a proxy for the RootEnvStore's internal root store
 
@@ -84,4 +83,3 @@ private extension RootEnvStore {
         }
     }
 }
-

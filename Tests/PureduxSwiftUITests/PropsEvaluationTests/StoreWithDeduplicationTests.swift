@@ -20,7 +20,7 @@ class ViewEnvStoreDeduplicationTests: ViewWithStoreDeduplicationTests {
             rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.withEnvStore(
                     removeStateDuplicates: .equal { $0.subStateWithIndex.index },
-                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) -> String in
+                    props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return state.subStateWithTitle.title
                     },
@@ -49,7 +49,6 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
         )
     }()
 
-
     lazy var store: PublishingStore = {
         rootStore.store()
     }()
@@ -61,7 +60,7 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
             rootView: Text.with(
                 store: store,
                 removeStateDuplicates: .equal { $0.subStateWithIndex.index },
-                props: { (state, store) -> String in
+                props: { (state, _) -> String in
                     propsEvaluatedExpectation.fulfill()
                     return state.subStateWithTitle.title
                 },
@@ -74,7 +73,7 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
 }
 
 extension ViewWithStoreDeduplicationTests {
-    
+
     func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
@@ -141,7 +140,7 @@ extension ViewWithStoreDeduplicationTests {
 }
 
 extension ViewWithStoreDeduplicationTests {
-    
+
     static var allTests = [
         ("test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce",
          test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce),
@@ -153,6 +152,6 @@ extension ViewWithStoreDeduplicationTests {
          test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation),
 
         ("test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation",
-         test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation),
+         test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation)
     ]
 }

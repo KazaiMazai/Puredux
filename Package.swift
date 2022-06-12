@@ -11,7 +11,7 @@ let package = Package(
 
         .library(
             name: "PureduxSwiftUI",
-            targets: ["PureduxSwiftUI"]),
+            targets: ["PureduxSwiftUI"])
     ],
     dependencies: [
         // The heart of Puredux
@@ -27,13 +27,13 @@ let package = Package(
             name: "PureduxSwiftUI",
             dependencies: [
                 .product(name: "PureduxStore", package: "PureduxStore"),
-                .product(name: "PureduxCommon", package: "PureduxCommon"),
+                .product(name: "PureduxCommon", package: "PureduxCommon")
             ]),
 
         .testTarget(
             name: "PureduxSwiftUITests",
             dependencies: [
-                "PureduxSwiftUI",
-            ]),
+                "PureduxSwiftUI"
+            ])
     ]
 )

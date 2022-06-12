@@ -26,7 +26,7 @@ public enum PresentationQueue {
 }
 
 extension View {
-    
+
     /**
     Initializes a View with `ContentView` connected  to the implicitly provided`RootEnvStore`.
 
