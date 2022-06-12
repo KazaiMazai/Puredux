@@ -13,7 +13,7 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(ViewWithStoreDeduplicationTests.allTests),
 
         testCase(ViewEnvStoreWithoutDeduplicationPropsTests.allTests),
-        testCase(ViewWithStoreWithoutDeduplicationPropsTests.allTests),
+        testCase(ViewWithStoreWithoutDeduplicationPropsTests.allTests)
     ]
 }
 #endif

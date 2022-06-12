@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 fileprivate extension DispatchQueue {
     static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.swiftui.presentation",
                                                        qos: .userInteractive)
@@ -36,7 +35,7 @@ struct StorePresentingView<AppState, Action, Props, Content: View>: View {
 
 private extension View {
     @ViewBuilder
-    func onReceive<P>(_ publisher: P?, perform action: @escaping (P.Output) -> Void) -> some View where P : Publisher, P.Failure == Never {
+    func onReceive<P>(_ publisher: P?, perform action: @escaping (P.Output) -> Void) -> some View where P: Publisher, P.Failure == Never {
         if let publisher = publisher {
             onReceive(publisher, perform: action)
         } else {

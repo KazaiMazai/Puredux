@@ -20,7 +20,7 @@ class ViewEnvStoreWithAlwaysEqualDeduplicationPropsTests: ViewWithStoreWithAlway
             rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.withEnvStore(
                     removeStateDuplicates: .alwaysEqual,
-                    props: { (state: TestAppState, store: PublishingStore<TestAppState, Action>) -> String in
+                    props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return state.subStateWithTitle.title
                     },
@@ -59,7 +59,7 @@ class ViewWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
             rootView: Text.with(
                 store: store,
                 removeStateDuplicates: .alwaysEqual,
-                props: { (state, store) -> String in
+                props: { (state, _) -> String in
                     propsEvaluatedExpectation.fulfill()
                     return state.subStateWithTitle.title
                 },

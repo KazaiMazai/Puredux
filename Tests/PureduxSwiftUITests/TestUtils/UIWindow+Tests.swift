@@ -32,7 +32,7 @@ extension UIWindow {
                 viewController.view.topAnchor.constraint(equalTo: rootViewController.view.topAnchor),
                 viewController.view.bottomAnchor.constraint(equalTo: rootViewController.view.bottomAnchor),
                 viewController.view.leadingAnchor.constraint(equalTo: rootViewController.view.leadingAnchor),
-                viewController.view.trailingAnchor.constraint(equalTo: rootViewController.view.trailingAnchor),
+                viewController.view.trailingAnchor.constraint(equalTo: rootViewController.view.trailingAnchor)
             ])
         }
         rootViewController.addChild(viewController)

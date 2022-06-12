@@ -15,4 +15,3 @@ public extension Equating where T: Identifiable {
         }
     }
 }
-
