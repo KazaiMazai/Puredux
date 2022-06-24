@@ -27,26 +27,26 @@ final class InternalStore<State, Action> {
         case .main:
             self.queue = DispatchQueue.main
         case let .global(qos):
-            self.queue = DispatchQueue(label: Self.queueLabel, qos: qos)
+            self.queue = DispatchQueue(label: Self.queueLabel, qos: qos, attributes: .concurrent)
         }
     }
 }
 
 extension InternalStore {
     func interceptActions(with interceptor: @escaping Interceptor<Action>) {
-        queue.async { [weak self] in
+        queue.async(flags: .barrier) { [weak self] in
             self?.willReduce = interceptor
         }
     }
 
     private func unsubscribe(observer: Observer<State>) {
-        queue.async { [weak self] in
+        queue.async(flags: .barrier) { [weak self] in
             self?.observers.remove(observer)
         }
     }
 
     func subscribe(observer: Observer<State>) {
-        queue.async { [weak self] in
+        queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
                 return
             }
@@ -55,11 +55,17 @@ extension InternalStore {
             self.send(self.state, to: observer)
         }
     }
+
+    var currentState: State {
+        queue.sync {
+            state
+        }
+    }
 }
 
 extension InternalStore {
     func dispatch(_ action: Action) {
-        queue.async { [weak self] in
+        queue.async(flags: .barrier){ [weak self] in
             guard let self = self else {
                 return
             }
