@@ -154,7 +154,7 @@ final class RootStoreQueueTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        rootStore.interceptActions { _ in
+        rootStore.interceptActions { _  in
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
         }

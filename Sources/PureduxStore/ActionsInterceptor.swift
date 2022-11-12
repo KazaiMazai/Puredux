@@ -7,16 +7,21 @@
 
 import Foundation
 
+struct ScopedAction<Action> {
+    let storeId: StoreID
+    let action: Action
+}
+
 struct ActionsInterceptor<Action> {
-    let sourceId: UUID
+    let storeId: StoreID
     let handler: (Action, @escaping Dispatch<Action>) -> Void
 
-    func intercept(_ action: SourcedAction<Action>, dispatch: @escaping Dispatch<Action>) -> Void {
-        guard action.sourceId == sourceId else { return }
+    func interceptIfNeeded(_ action: ScopedAction<Action>, dispatch: @escaping Dispatch<Action>) -> Void {
+        guard action.storeId == storeId else { return }
         handler(action.action, dispatch)
     }
 
     func interceptor(with sourceId: UUID) -> ActionsInterceptor<Action> {
-        ActionsInterceptor(sourceId: sourceId, handler: handler)
+        ActionsInterceptor(storeId: sourceId, handler: handler)
     }
 }

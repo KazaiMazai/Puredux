@@ -6,14 +6,25 @@
 //
 
 import Dispatch
+import Foundation
+
+
+public typealias Dispatch<Action> = (_ action: Action) -> Void
+public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> Void
+
+typealias StoreID = UUID
+
 
 final class InternalStore<State, Action> {
+
+    let id: StoreID = StoreID()
+
     private static var queueLabel: String { "com.puredux.store" }
 
     private var state: State
 
     private let queue: DispatchQueue
-    private var willReduce: Interceptor<Action>?
+    private(set) var interceptor: ActionsInterceptor<Action>?
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
@@ -33,13 +44,30 @@ final class InternalStore<State, Action> {
 }
 
 extension InternalStore {
-    func interceptActions(with interceptor: @escaping Interceptor<Action>) {
+    func setInterceptor(with handler: @escaping Interceptor<Action>) {
         queue.async(flags: .barrier) { [weak self] in
-            self?.willReduce = interceptor
+            guard let self = self else {
+                return
+            }
+
+            self.interceptor = ActionsInterceptor(storeId: self.id, handler: handler)
         }
     }
 
-    private func unsubscribe(observer: Observer<State>) {
+    func dispatch(_ action: Action) {
+        scopeAndDispatch(action)
+    }
+
+    var currentState: State {
+        queue.sync {
+            state
+        }
+    }
+}
+
+extension InternalStore {
+
+    func unsubscribe(observer: Observer<State>) {
         queue.async(flags: .barrier) { [weak self] in
             self?.observers.remove(observer)
         }
@@ -55,26 +83,34 @@ extension InternalStore {
             self.send(self.state, to: observer)
         }
     }
-
-    var currentState: State {
-        queue.sync {
-            state
-        }
-    }
 }
 
 extension InternalStore {
-    func dispatch(_ action: Action) {
+    func scopeAction(_ action: Action) -> ScopedAction<Action> {
+        ScopedAction(storeId: id, action: action)
+    }
+
+    private func scopeAndDispatch(_ action: Action) {
+        dispatch(scopeAction(action))
+    }
+
+    func dispatch(_ scopedAction: ScopedAction<Action>) {
         queue.async(flags: .barrier){ [weak self] in
             guard let self = self else {
                 return
             }
 
-            self.willReduce?(action)
-            self.reducer(&self.state, action)
+            self.interceptor?.interceptIfNeeded(scopedAction, dispatch: { [weak self] createdAction in
+                self?.scopeAndDispatch(createdAction)
+            })
+
+            self.reducer(&self.state, scopedAction.action)
             self.observers.forEach { self.send(self.state, to: $0) }
         }
     }
+}
+
+extension InternalStore {
 
     private func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in
@@ -86,3 +122,4 @@ extension InternalStore {
         }
     }
 }
+ 

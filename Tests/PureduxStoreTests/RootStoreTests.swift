@@ -49,7 +49,7 @@ final class RootStoreTests: XCTestCase {
 
         let store = rootStore.store()
 
-        rootStore.interceptActions { action in
+        rootStore.interceptActions { action  in
             guard let action = (action as? UpdateIndex) else {
                 return
             }

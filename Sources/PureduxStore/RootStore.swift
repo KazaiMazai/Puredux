@@ -11,8 +11,7 @@ public enum StoreQueue {
     case main
     case global(qos: DispatchQoS = .userInteractive)
 }
-
-public typealias Interceptor<Action> = (Action) -> Void
+ 
 public typealias Reducer<State, Action> = (inout State, Action) -> Void
 
 public final class RootStore<State, Action> {
@@ -61,6 +60,7 @@ public extension RootStore {
               subscribe: { [weak internalStore] in internalStore?.subscribe(observer: $0) })
     }
 
+
     /**
     Set Store's Actions interceptor
 
@@ -69,7 +69,10 @@ public extension RootStore {
     Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
 
      */
-    func interceptActions(with interceptor: @escaping Interceptor<Action>) {
-        internalStore.interceptActions(with: interceptor)
+    func interceptActions(with interceptor: @escaping (Action) -> Void ) {
+        internalStore.setInterceptor { action, _ in
+            interceptor(action)
+        }
     }
 }
+
