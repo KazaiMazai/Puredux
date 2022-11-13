@@ -19,17 +19,8 @@ public struct Store<State, Action> {
     public typealias Subscribe = (_ observer: Observer<State>) -> Void
 
     private let dispatch: (_ action: Action) -> Void
+
     private let subscribe: (_ observer: Observer<State>) -> Void
-    let interceptor: ActionsInterceptor<Action>?
-
-    init(dispatch: @escaping Dispatch,
-         subscribe: @escaping Subscribe,
-         interceptor: ActionsInterceptor<Action>?) {
-
-        self.dispatch = dispatch
-        self.subscribe = subscribe
-        self.interceptor = interceptor
-    }
 
     public func dispatch(_ action: Action) {
         dispatch(action)
@@ -55,7 +46,6 @@ public struct Store<State, Action> {
                 subscribe: @escaping Subscribe) {
         self.dispatch = dispatch
         self.subscribe = subscribe
-        self.interceptor = nil
     }
 }
 
