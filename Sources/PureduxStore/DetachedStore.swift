@@ -24,16 +24,24 @@ public class DetachedStore<RootState, LocalState, State, Action> {
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<LocalState, Action>) {
 
+        queue = DispatchQueue(label: Self.queueLabel, qos: qos)
+
         self.stateMapping = stateMapping
+        self.rootStore = rootStore
+
         localStore = InternalStore(queue: .global(qos: qos),
                                    initial: initialState,
                                    reducer: reducer)
-        self.rootStore = rootStore
-        if let interceptor = rootStore.interceptor {
-            localStore.setInterceptor(with: interceptor.handler)
-        }
 
-        queue = DispatchQueue(label: Self.queueLabel, qos: qos)
+        if let rootInterceptor = rootStore.actionsInterceptor {
+            let interceptor = ActionsInterceptor(
+                storeId: localStore.id,
+                handler: rootInterceptor.handler,
+                dispatcher: { [weak self] action in self?.dispatch(action) }
+            )
+
+            localStore.setInterceptor(interceptor)
+        }
 
         localStore.subscribe(observer: localStoreObserver)
         self.rootStore.subscribe(observer: rootStoreObserver)
@@ -127,3 +135,5 @@ private extension DetachedStore {
         }
     }
 }
+
+

@@ -24,7 +24,7 @@ final class InternalStore<State, Action> {
     private var state: State
 
     private let queue: DispatchQueue
-    private(set) var interceptor: ActionsInterceptor<Action>?
+    private var interceptor: ActionsInterceptor<Action>?
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
@@ -44,14 +44,23 @@ final class InternalStore<State, Action> {
 }
 
 extension InternalStore {
-    func setInterceptor(with handler: @escaping Interceptor<Action>) {
+    func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
         queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
                 return
             }
 
-            self.interceptor = ActionsInterceptor(storeId: self.id, handler: handler)
+            self.interceptor = interceptor
         }
+    }
+
+    func setInterceptor(with handler: @escaping Interceptor<Action>) {
+        let interceptor = ActionsInterceptor(
+            storeId: self.id,
+            handler: handler,
+            dispatcher: { [weak self] in self?.dispatch($0) })
+
+        setInterceptor(interceptor)
     }
 
     func dispatch(_ action: Action) {
@@ -61,6 +70,12 @@ extension InternalStore {
     var currentState: State {
         queue.sync {
             state
+        }
+    }
+
+    var actionsInterceptor: ActionsInterceptor<Action>? {
+        queue.sync {
+            interceptor
         }
     }
 }
@@ -86,23 +101,21 @@ extension InternalStore {
 }
 
 extension InternalStore {
-    func scopeAction(_ action: Action) -> ScopedAction<Action> {
-        ScopedAction(storeId: id, action: action)
+    func scopeAction(_ action: Action) -> InterceptableAction<Action> {
+        InterceptableAction(storeId: id, action: action)
     }
 
     private func scopeAndDispatch(_ action: Action) {
         dispatch(scopeAction(action))
     }
 
-    func dispatch(_ scopedAction: ScopedAction<Action>) {
+    func dispatch(_ scopedAction: InterceptableAction<Action>) {
         queue.async(flags: .barrier){ [weak self] in
             guard let self = self else {
                 return
             }
 
-            self.interceptor?.interceptIfNeeded(scopedAction, dispatch: { [weak self] createdAction in
-                self?.scopeAndDispatch(createdAction)
-            })
+            self.interceptor?.interceptIfNeeded(scopedAction)
 
             self.reducer(&self.state, scopedAction.action)
             self.observers.forEach { self.send(self.state, to: $0) }
