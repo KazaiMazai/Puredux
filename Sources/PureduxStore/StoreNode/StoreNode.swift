@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 class StoreNode<RootStore, LocalState, State, Action>
     where
     RootStore: StoreProtocol,
@@ -52,16 +53,15 @@ class StoreNode<RootStore, LocalState, State, Action>
     }
 }
 
+typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
+
 extension StoreNode where LocalState == State {
-    static func root(
-        initialState: State,
-        interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void,
-        qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<State, Action>) ->
+    static func root(initialState: State,
+                     interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
+                     qos: DispatchQoS = .userInteractive,
+                     reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
 
-    StoreNode<VoidStore<Action>, LocalState, LocalState, Action> {
-
-        StoreNode<VoidStore<Action>, LocalState, LocalState, Action>(
+        RootStoreNode<State, Action>(
             initialState: initialState,
             stateMapping: { _, state in return state },
             rootStore: VoidStore<Action>(
@@ -77,10 +77,14 @@ extension StoreNode where LocalState == State {
 }
 
 extension StoreNode {
-
     func store() -> Store<State, Action> {
         Store(dispatch: { [weak self] in self?.dispatch($0) },
               subscribe: { [weak self] in self?.subscribe(observer: $0) })
+    }
+
+    func strongRefStore() -> Store<State, Action> {
+        Store(dispatch: { self.dispatch($0) },
+              subscribe: { self.subscribe(observer: $0) })
     }
 
     func node<NodeState, ResultState>(initialState: NodeState,
@@ -89,7 +93,6 @@ extension StoreNode {
                                       reducer: @escaping Reducer<NodeState, Action>) ->
 
     StoreNode<StoreNode<RootStore, LocalState, State, Action>, NodeState, ResultState, Action> {
-
 
         StoreNode<StoreNode<RootStore, LocalState, State, Action>, NodeState, ResultState, Action>(
             initialState: initialState,
@@ -194,25 +197,24 @@ extension StoreNode {
     }
 }
 
-extension StoreNode {
-    struct VoidStore<Action>: StoreProtocol {
-        let currentState: Void = Void()
-        let actionsInterceptor: ActionsInterceptor<Action>?
+struct VoidStore<Action>: StoreProtocol {
+    let currentState: Void = Void()
+    let actionsInterceptor: ActionsInterceptor<Action>?
 
-        func dispatch(_ action: Action) {
+    func dispatch(_ action: Action) {
 
-        }
+    }
 
-        func unsubscribe(observer: Observer<Void>) {
+    func unsubscribe(observer: Observer<Void>) {
 
-        }
+    }
 
-        func subscribe(observer: Observer<Void>) {
+    func subscribe(observer: Observer<Void>) {
 
-        }
+    }
 
-        func dispatch(_ scopedAction: InterceptableAction<Action>) {
+    func dispatch(_ scopedAction: InterceptableAction<Action>) {
 
-        }
     }
 }
+
