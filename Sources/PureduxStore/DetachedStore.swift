@@ -49,15 +49,17 @@ public class DetachedStore<RootState, LocalState, State, Action> {
 }
 
 public extension DetachedStore {
+    func store() -> Store<State, Action> {
+        Store(dispatch: { [weak self] in self?.dispatch($0) },
+              subscribe: { [weak self] in self?.subscribe(observer: $0) })
+    }
+}
+
+extension DetachedStore {
     func dispatch(_ action: Action) {
         let scopedAction = localStore.scopeAction(action)
         localStore.dispatch(scopedAction)
         rootStore.dispatch(scopedAction)
-    }
-
-    func store() -> Store<State, Action> {
-        Store(dispatch: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) })
     }
 }
 
