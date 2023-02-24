@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 13.11.2022.
+//  Created by Sergey Kazakov on 16.02.2023.
 //
 
 import XCTest
@@ -20,14 +20,14 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             return exp
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
 
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -43,7 +43,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-        let store = mainStore.store()
+        let store = factory.store()
         actions.forEach { store.dispatch($0) }
 
         wait(for: unexpected, timeout: timeout, enforceOrder: true)
@@ -60,14 +60,14 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             return exp
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
 
-        let detachedStoreA = mainStore.detachedStore(
+        let detachedStoreA = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -82,7 +82,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStoreB = mainStore.detachedStore(
+        let detachedStoreB = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -110,7 +110,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -122,7 +122,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -144,14 +144,14 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
 
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -171,5 +171,4 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
-
 }

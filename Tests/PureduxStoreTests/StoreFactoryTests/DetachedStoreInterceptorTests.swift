@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 13.11.2022.
+//  Created by Sergey Kazakov on 16.02.2023.
 //
 
 import XCTest
@@ -17,8 +17,14 @@ final class DispatchActionsOnDetachedStoreInterceptionTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
+            interceptor:  { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+                dispatch(ResultAction(index: asyncAction.index))
+            },
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
@@ -29,14 +35,7 @@ final class DispatchActionsOnDetachedStoreInterceptionTests: XCTestCase {
             }
         )
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
-            }
-            dispatch(ResultAction(index: asyncAction.index))
-        }
-
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -58,21 +57,20 @@ final class DispatchActionsOnDetachedStoreInterceptionTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
+            interceptor: { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+                dispatch(ResultAction(index: asyncAction.index))
+            },
             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
-            }
-            dispatch(ResultAction(index: asyncAction.index))
-        }
-
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -105,8 +103,14 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
+            interceptor: { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+                dispatch(ResultAction(index: asyncAction.index))
+            },
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
@@ -117,14 +121,7 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
             }
         )
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
-            }
-            dispatch(ResultAction(index: asyncAction.index))
-        }
-
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -135,7 +132,7 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { AsyncAction(index: $0) }
-        let store = mainStore.store()
+        let store = factory.store()
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -149,21 +146,21 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
             return exp
         }
 
-        let mainStore = MainStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
+            interceptor: { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+                dispatch(ResultAction(index: asyncAction.index))
+            },
             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
-            }
-            dispatch(ResultAction(index: asyncAction.index))
-        }
 
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -180,7 +177,7 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { AsyncAction(index: $0) }
-        let store = mainStore.store()
+        let store = factory.store()
         actions.forEach { store.dispatch($0) }
 
         wait(for: unexpected, timeout: timeout, enforceOrder: true)
@@ -190,29 +187,28 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
 final class DetachedStoreInterceptOnceTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    let mainStore = MainStore<TestState, Action>(
-        initialState: TestState(currentIndex: 0),
-        reducer: { state, action  in
-            state.reduce(action: action)
-        }
-    )
-
     func test_WhenDispatchedToDetachedStore_ThenEachActionInterceptedOnce() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
         }
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
+        let factory = StoreFactory<TestState, Action>(
+            initialState: TestState(currentIndex: 0),
+            interceptor: { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+
+                expectations[asyncAction.index].fulfill()
+                dispatch(ResultAction(index: asyncAction.index))
+            },
+            reducer: { state, action  in
+                state.reduce(action: action)
             }
+        )
 
-            expectations[asyncAction.index].fulfill()
-            dispatch(ResultAction(index: asyncAction.index))
-        }
-
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -234,16 +230,23 @@ final class DetachedStoreInterceptOnceTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        mainStore.setInterceptor { asyncAction, dispatch  in
-            guard let asyncAction = (asyncAction as? AsyncAction) else {
-                return
+        let factory = StoreFactory<TestState, Action>(
+            initialState: TestState(currentIndex: 0),
+            interceptor: { asyncAction, dispatch  in
+                guard let asyncAction = (asyncAction as? AsyncAction) else {
+                    return
+                }
+
+                expectations[asyncAction.index].fulfill()
+                dispatch(ResultAction(index: asyncAction.index))
+            },
+            reducer: { state, action  in
+                state.reduce(action: action)
             }
+        )
 
-            expectations[asyncAction.index].fulfill()
-            dispatch(ResultAction(index: asyncAction.index))
-        }
 
-        let detachedStore = mainStore.detachedStore(
+        let detachedStore = factory.detachedStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -254,7 +257,7 @@ final class DetachedStoreInterceptOnceTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { AsyncAction(index: $0) }
-        let store = mainStore.store()
+        let store = factory.store()
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TestState {
+struct TestState: Equatable {
     private(set) var currentIndex: Int
     private(set) var asyncActionReceivedCount: Int = 0
     private(set) var createdActionReceivedCount: Int = 0
@@ -26,7 +26,7 @@ struct TestState {
     }
 }
 
-struct DetachedTestState {
+struct DetachedTestState: Equatable {
     private(set) var currentIndex: Int
     private(set) var asyncActionReceivedCount: Int = 0
     private(set) var createdActionReceivedCount: Int = 0
@@ -45,7 +45,7 @@ struct DetachedTestState {
     }
 }
 
-struct StateComposition {
+struct StateComposition: Equatable {
     let state: TestState
     let detachedState: DetachedTestState
 }
