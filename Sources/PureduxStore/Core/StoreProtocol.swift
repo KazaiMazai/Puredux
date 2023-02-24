@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 16.02.2023.
+//  Created by Sergey Kazakov on 22.02.2023.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ protocol StoreProtocol {
 
     func unsubscribe(observer: Observer<State>)
 
-    func subscribe(observer: Observer<State>)
+    func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
-    func dispatch(_ scopedAction: InterceptableAction<Action>)
+    func dispatch(scopedAction: ScopedAction<Action>)
 }

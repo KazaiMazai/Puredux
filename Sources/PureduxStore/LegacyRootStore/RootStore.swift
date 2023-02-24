@@ -15,7 +15,7 @@ public enum StoreQueue {
 public typealias Reducer<State, Action> = (inout State, Action) -> Void
 
 public final class RootStore<State, Action> {
-    private let internalStore: InternalStore<State, Action>
+    private let internalStore: CoreStore<State, Action>
 
     /**
     Initializes a new RootStore with provided queue, initial state and reducer
@@ -34,9 +34,9 @@ public final class RootStore<State, Action> {
                 initialState: State,
                 reducer: @escaping Reducer<State, Action>) {
 
-        internalStore = InternalStore(
+        internalStore = CoreStore(
             queue: queue,
-            initial: initialState,
+            initialState: initialState,
             reducer: reducer)
     }
 }
@@ -56,8 +56,7 @@ public extension RootStore {
 
      */
     func store() -> Store<State, Action> {
-        Store(dispatch: { [weak internalStore] in internalStore?.dispatch($0) },
-              subscribe: { [weak internalStore] in internalStore?.subscribe(observer: $0) })
+        internalStore.weakRefStore()
     }
 
 

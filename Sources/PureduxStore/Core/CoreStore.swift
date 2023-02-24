@@ -8,14 +8,12 @@
 import Dispatch
 import Foundation
 
-
 public typealias Dispatch<Action> = (_ action: Action) -> Void
 public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> Void
 
 typealias StoreID = UUID
 
-
-final class InternalStore<State, Action> {
+final class CoreStore<State, Action> {
 
     let id: StoreID = StoreID()
 
@@ -28,11 +26,11 @@ final class InternalStore<State, Action> {
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
-    init(queue: StoreQueue,
-         initial state: State, reducer: @escaping Reducer<State, Action>) {
+    init(queue: StoreQueue = .global(),
+         initialState: State, reducer: @escaping Reducer<State, Action>) {
 
         self.reducer = reducer
-        self.state = state
+        self.state = initialState
 
         switch queue {
         case .main:
@@ -43,7 +41,14 @@ final class InternalStore<State, Action> {
     }
 }
 
-extension InternalStore {
+extension CoreStore {
+    func weakRefStore() -> Store<State, Action> {
+        Store(dispatch: { [weak self] in self?.dispatch($0) },
+              subscribe: { [weak self] in self?.subscribe(observer: $0) })
+    }
+}
+
+extension CoreStore {
     func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
         queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
@@ -80,7 +85,7 @@ extension InternalStore {
     }
 }
 
-extension InternalStore {
+extension CoreStore {
 
     func unsubscribe(observer: Observer<State>) {
         queue.async(flags: .barrier) { [weak self] in
@@ -88,28 +93,30 @@ extension InternalStore {
         }
     }
 
-    func subscribe(observer: Observer<State>) {
+    func subscribe(observer: Observer<State>, receiveCurrentState: Bool = true) {
         queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
                 return
             }
 
             self.observers.insert(observer)
+
+            guard receiveCurrentState else { return }
             self.send(self.state, to: observer)
         }
     }
 }
 
-extension InternalStore {
-    func scopeAction(_ action: Action) -> InterceptableAction<Action> {
-        InterceptableAction(storeId: id, action: action)
+extension CoreStore {
+    func scopeAction(_ action: Action) -> ScopedAction<Action> {
+        ScopedAction(storeId: id, action: action)
     }
 
     private func scopeAndDispatch(_ action: Action) {
-        dispatch(scopeAction(action))
+        dispatch(scopedAction: scopeAction(action))
     }
 
-    func dispatch(_ scopedAction: InterceptableAction<Action>) {
+    func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async(flags: .barrier){ [weak self] in
             guard let self = self else {
                 return
@@ -123,7 +130,7 @@ extension InternalStore {
     }
 }
 
-extension InternalStore {
+extension CoreStore {
 
     private func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in

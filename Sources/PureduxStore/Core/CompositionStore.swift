@@ -2,25 +2,29 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 02.06.2022.
+//  Created by Sergey Kazakov on 13.11.2022.
 //
 
 import Foundation
 
-public class DetachedStore<RootState, LocalState, State, Action> {
+class CompositionStore<RootStore, LocalState, State, Action>
+    where
+    RootStore: StoreProtocol,
+    RootStore.Action == Action {
+
     private static var queueLabel: String { "com.puredux.store" }
 
-    private let localStore: InternalStore<LocalState, Action>
-    private let rootStore: InternalStore<RootState, Action>
+    private let localStore: CoreStore<LocalState, Action>
+    private let rootStore: RootStore
 
-    private let stateMapping: (RootState, LocalState) -> State
+    private let stateMapping: (RootStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
 
     private let queue: DispatchQueue
 
     init(initialState: LocalState,
-         stateMapping: @escaping (RootState, LocalState) -> State,
-         rootStore: InternalStore<RootState, Action>,
+         stateMapping: @escaping (RootStore.State, LocalState) -> State,
+         rootStore: RootStore,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<LocalState, Action>) {
 
@@ -29,9 +33,8 @@ public class DetachedStore<RootState, LocalState, State, Action> {
         self.stateMapping = stateMapping
         self.rootStore = rootStore
 
-        localStore = InternalStore(queue: .global(qos: qos),
-                                   initial: initialState,
-                                   reducer: reducer)
+        localStore = CoreStore(initialState: initialState,
+                               reducer: reducer)
 
         if let rootInterceptor = rootStore.actionsInterceptor {
             let interceptor = ActionsInterceptor(
@@ -43,55 +46,65 @@ public class DetachedStore<RootState, LocalState, State, Action> {
             localStore.setInterceptor(interceptor)
         }
 
-        localStore.subscribe(observer: localStoreObserver)
-        self.rootStore.subscribe(observer: rootStoreObserver)
+        localStore.subscribe(observer: localStoreObserver, receiveCurrentState: false)
+        self.rootStore.subscribe(observer: rootStoreObserver, receiveCurrentState: false)
     }
 }
 
-public extension DetachedStore {
-    func store() -> Store<State, Action> {
-        Store(dispatch: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) })
+extension CompositionStore: StoreProtocol {
+    var currentState: State {
+        queue.sync {
+            stateMapping(rootStore.currentState, localStore.currentState)
+        }
     }
-}
 
-extension DetachedStore {
+    var actionsInterceptor: ActionsInterceptor<Action>? {
+        rootStore.actionsInterceptor
+    }
+
+    func dispatch(scopedAction: ScopedAction<Action>) {
+        queue.async(flags: .barrier) { [weak self] in
+            guard let self = self else { return }
+
+            self.localStore.dispatch(scopedAction: scopedAction)
+            self.rootStore.dispatch(scopedAction: scopedAction)
+        }
+    }
+
     func dispatch(_ action: Action) {
-        let scopedAction = localStore.scopeAction(action)
-        localStore.dispatch(scopedAction)
-        rootStore.dispatch(scopedAction)
+        dispatch(scopedAction: localStore.scopeAction(action))
     }
-}
 
-extension DetachedStore {
     func unsubscribe(observer: Observer<State>) {
-        queue.async { [weak self] in
+        queue.async(flags: .barrier) { [weak self] in
             self?.observers.remove(observer)
         }
     }
 
-    func subscribe(observer: Observer<State>) {
-        queue.async { [weak self] in
+    func subscribe(observer: Observer<State>, receiveCurrentState: Bool = true) {
+        queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
                 return
             }
 
             self.observers.insert(observer)
             let state = self.stateMapping(self.rootStore.currentState, self.localStore.currentState)
+
+            guard receiveCurrentState else { return }
             self.send(state, to: observer)
         }
     }
 }
 
-private extension DetachedStore {
-    var rootStoreObserver: Observer<RootState> {
+extension CompositionStore {
+    var rootStoreObserver: Observer<RootStore.State> {
         Observer { [weak self] rootState, handler in
             guard let self = self else {
                 handler(.dead)
                 return
             }
 
-            self.queue.async { [weak self] in
+            self.queue.async(flags: .barrier) { [weak self] in
                 guard let self = self else {
                     handler(.dead)
                     return
@@ -109,7 +122,7 @@ private extension DetachedStore {
                 return
             }
 
-            self.queue.async { [weak self] in
+            self.queue.async(flags: .barrier) { [weak self] in
                 guard let self = self else {
                     handler(.dead)
                     return
@@ -121,13 +134,13 @@ private extension DetachedStore {
     }
 }
 
-private extension DetachedStore {
-    func observeStateUpdate(root: RootState, local: LocalState) {
+extension CompositionStore {
+    func observeStateUpdate(root: RootStore.State, local: LocalState) {
         let state = stateMapping(root, local)
         observers.forEach { send(state, to: $0) }
     }
 
-     func send(_ state: State, to observer: Observer<State>) {
+    func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in
             guard status == .dead else {
                 return
@@ -137,5 +150,3 @@ private extension DetachedStore {
         }
     }
 }
-
-

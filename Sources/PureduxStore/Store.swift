@@ -40,7 +40,7 @@ public struct Store<State, Action> {
      Generally, Store has no reason to be Initialized directly with this initializer
      unless you want to mock the Store completely or provide your own implementation.
 
-     For all other cases, RootStore's store() method should be used to create viable light-weight Store.
+     For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
      */
     public init(dispatch: @escaping Dispatch,
                 subscribe: @escaping Subscribe) {
@@ -55,23 +55,30 @@ public extension Store {
 
      - Returns: Light-weight Store with local substate
 
-     Store is a light-weight proxy for the RootStore's private internal store.
+     Store is a light-weight proxy for the private internal stores.
      All dispatched Actions and subscribtions are forwarded to the private internal store.
-     Internal store is thread safe, the same as its proxies.
-
-     **Important to note** that proxy store only keeps weak reference to the RootStore's
-     internal store, ensuring that reference cycles will not be created.
+     Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
 
      */
 
     func proxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
+        optionalProxy(toLocalState)
+    }
+}
+
+
+extension Store {
+    func optionalProxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         Store<LocalState, Action>(
             dispatch: dispatch,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(
-                    id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                    guard let localState = toLocalState(state) else {
+                        complete(.active)
+                        return
+                    }
 
-                    localStateObserver.send(toLocalState(state), complete: complete)
+                    localStateObserver.send(localState, complete: complete)
                 })
             })
     }
