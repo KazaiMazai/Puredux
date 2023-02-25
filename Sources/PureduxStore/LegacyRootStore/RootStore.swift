@@ -26,10 +26,10 @@ public final class RootStore<State, Action> {
 
     - Returns: `RootStore<State, Action>`
 
-    RootStore does not behave like a store.
-    It acts like a factory for light-weight stores that are created as proxies for the internal store.
+    RootStore is a factory for light-weight stores that are created as proxies for the internal store.
 
      */
+    @available(*, deprecated, message: "Will be removed in the next major release. Consider migrating to StoreFactory")
     public init(queue: StoreQueue = .global(qos: .userInteractive),
                 initialState: State,
                 reducer: @escaping Reducer<State, Action>) {

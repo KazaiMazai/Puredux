@@ -31,14 +31,18 @@ extension CompositionStore where LocalState == State {
 }
 
 extension CompositionStore {
-    func weakRefStore() -> Store<State, Action> {
-        Store(dispatch: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) })
+    func store() -> Store<State, Action> {
+        Store(
+            dispatch: { [weak self] in self?.dispatch($0) },
+            subscribe: { [weak self] in self?.subscribe(observer: $0) }
+        )
     }
 
-    func strongRefStore() -> Store<State, Action> {
-        Store(dispatch: { self.dispatch($0) },
-              subscribe: { self.subscribe(observer: $0) })
+    func storeObject() -> StoreObject<State, Action> {
+        StoreObject(
+            dispatch: { self.dispatch($0) },
+            subscribe: { self.subscribe(observer: $0) }
+        )
     }
 }
 
