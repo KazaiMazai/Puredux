@@ -7,39 +7,39 @@
 
 import Foundation
 
-class CompositionStore<RootStore, LocalState, State, Action>
+class StoreNode<ParentStore, LocalState, State, Action>
     where
-    RootStore: StoreProtocol,
-    RootStore.Action == Action {
+    ParentStore: StoreProtocol,
+    ParentStore.Action == Action {
 
     private static var queueLabel: String { "com.puredux.store" }
 
     private let localStore: CoreStore<LocalState, Action>
-    private let rootStore: RootStore
+    private let parentStore: ParentStore
 
-    private let stateMapping: (RootStore.State, LocalState) -> State
+    private let stateMapping: (ParentStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
 
     private let queue: DispatchQueue
 
     init(initialState: LocalState,
-         stateMapping: @escaping (RootStore.State, LocalState) -> State,
-         rootStore: RootStore,
+         stateMapping: @escaping (ParentStore.State, LocalState) -> State,
+         parentStore: ParentStore,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<LocalState, Action>) {
 
         queue = DispatchQueue(label: Self.queueLabel, qos: qos)
 
         self.stateMapping = stateMapping
-        self.rootStore = rootStore
+        self.parentStore = parentStore
 
         localStore = CoreStore(initialState: initialState,
                                reducer: reducer)
 
-        if let rootInterceptor = rootStore.actionsInterceptor {
+        if let parentInterceptor = parentStore.actionsInterceptor {
             let interceptor = ActionsInterceptor(
                 storeId: localStore.id,
-                handler: rootInterceptor.handler,
+                handler: parentInterceptor.handler,
                 dispatcher: { [weak self] action in self?.dispatch(action) }
             )
 
@@ -47,19 +47,19 @@ class CompositionStore<RootStore, LocalState, State, Action>
         }
 
         localStore.subscribe(observer: localStoreObserver, receiveCurrentState: false)
-        self.rootStore.subscribe(observer: rootStoreObserver, receiveCurrentState: false)
+        self.parentStore.subscribe(observer: parentStoreObserver, receiveCurrentState: false)
     }
 }
 
-extension CompositionStore: StoreProtocol {
+extension StoreNode: StoreProtocol {
     var currentState: State {
         queue.sync {
-            stateMapping(rootStore.currentState, localStore.currentState)
+            stateMapping(parentStore.currentState, localStore.currentState)
         }
     }
 
     var actionsInterceptor: ActionsInterceptor<Action>? {
-        rootStore.actionsInterceptor
+        parentStore.actionsInterceptor
     }
 
     func dispatch(scopedAction: ScopedAction<Action>) {
@@ -67,7 +67,7 @@ extension CompositionStore: StoreProtocol {
             guard let self = self else { return }
 
             self.localStore.dispatch(scopedAction: scopedAction)
-            self.rootStore.dispatch(scopedAction: scopedAction)
+            self.parentStore.dispatch(scopedAction: scopedAction)
         }
     }
 
@@ -88,7 +88,7 @@ extension CompositionStore: StoreProtocol {
             }
 
             self.observers.insert(observer)
-            let state = self.stateMapping(self.rootStore.currentState, self.localStore.currentState)
+            let state = self.stateMapping(self.parentStore.currentState, self.localStore.currentState)
 
             guard receiveCurrentState else { return }
             self.send(state, to: observer)
@@ -96,8 +96,8 @@ extension CompositionStore: StoreProtocol {
     }
 }
 
-extension CompositionStore {
-    var rootStoreObserver: Observer<RootStore.State> {
+extension StoreNode {
+    var parentStoreObserver: Observer<ParentStore.State> {
         Observer { [weak self] rootState, handler in
             guard let self = self else {
                 handler(.dead)
@@ -128,14 +128,14 @@ extension CompositionStore {
                     return
                 }
 
-                self.observeStateUpdate(root: self.rootStore.currentState, local: localState)
+                self.observeStateUpdate(root: self.parentStore.currentState, local: localState)
             }
         }
     }
 }
 
-extension CompositionStore {
-    func observeStateUpdate(root: RootStore.State, local: LocalState) {
+extension StoreNode {
+    func observeStateUpdate(root: ParentStore.State, local: LocalState) {
         let state = stateMapping(root, local)
         observers.forEach { send(state, to: $0) }
     }

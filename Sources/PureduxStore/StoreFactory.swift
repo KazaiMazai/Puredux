@@ -10,7 +10,7 @@ import Foundation
 import Foundation
 
 public final class StoreFactory<State, Action> {
-    private let rootStore: RootStoreNode<State, Action>
+    private let rootStoreNode: RootStoreNode<State, Action>
 
     /**
      Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
@@ -26,7 +26,7 @@ public final class StoreFactory<State, Action> {
      It suppports the following store types:
      - store - plain root store
      - scopeStore - scoped store proxy to the root store
-     - detachedStore - detached store with `(Root, Local) -> Composition` state mapping and it's own lifecycle
+     - childStore - child store with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
      */
     public init(initialState: State,
@@ -34,7 +34,7 @@ public final class StoreFactory<State, Action> {
                 qos: DispatchQoS = .userInteractive,
                 reducer: @escaping Reducer<State, Action>) {
 
-        rootStore = RootStoreNode.initRootStore(
+        rootStoreNode = RootStoreNode.initRootStore(
             initialState: initialState,
             interceptor: interceptor,
             qos: qos,
@@ -44,16 +44,16 @@ public final class StoreFactory<State, Action> {
 
 public extension StoreFactory {
     /**
-     Initializes a new scope Store with state mapping to local substate.
+     Initializes a new Store as a proxy to internal factory root store.
 
-     - Returns: Store with local substate
+     - Returns: Store
 
-     Store is a proxy for the root store object.
-     All dispatched Actions and subscribtions are forwarded to the root store object.
+     Store is a proxy for the factory root store.
+     All dispatched Actions and subscribtions are forwarded to the factory root store object.
      Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
      */
-    func store() -> Store<State, Action> {
-        rootStore.store()
+    func rootStore() -> Store<State, Action> {
+        rootStoreNode.store()
     }
 
     /**
@@ -67,47 +67,47 @@ public extension StoreFactory {
      When the result local state is nill, subscribers are not triggered.
      */
     func scopeStore<LocalState>(_ toLocalState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        rootStore.store().scope(toLocalState)
+        rootStoreNode.store().scope(toLocalState)
     }
 
 
     /**
-     Initializes a new detached store with initial state
+     Initializes a new child store with initial state
 
-     - Returns: Detached StoreObject
+     - Returns: Child StoreObject
 
-     DetachedStore is a composition of root store and newly created local store.
-     Detached state is a mapping of the local state and root store's state.
+     ChildStore is a composition of root store and newly created local store.
+     Child state is a mapping of the local state and root store's state.
 
-     DetachedStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
+     ChildStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
 
-     RootStore vs DetachedStore Action Dispatch
+     RootStore vs ChildStore Action Dispatch
 
      When action is dispatched to RootStore:
      - action is delivered to root store's reducer
-     - action is not delivered to detached store's reducer
+     - action is not delivered to child store's reducer
      - root state update triggers root store's subscribers
-     - root state update triggers detached stores' subscribers
+     - root state update triggers child stores' subscribers
      - Interceptor dispatches additional actions to RootStore
 
-     When action is dispatched to DetachedStore:
+     When action is dispatched to ChildStore:
      - action is delivered to root store's reducer
-     - action is delivered to detached store's reducer
+     - action is delivered to child store's reducer
      - root state update triggers root store's subscribers.
-     - root state update triggers detached store's subscribers.
-     - local state update triggers detached stores' subscribers.
-     - Interceptor dispatches additional actions to DetachedStore
+     - root state update triggers child store's subscribers.
+     - local state update triggers child stores' subscribers.
+     - Interceptor dispatches additional actions to ChildStore
 
      */
-    func childStore<LocalState, DetachedState>(
+    func childStore<LocalState, ChildState>(
         initialState: LocalState,
-        stateMapping: @escaping (State, LocalState) -> DetachedState,
+        stateMapping: @escaping (State, LocalState) -> ChildState,
         qos: DispatchQoS = .userInteractive,
         reducer: @escaping Reducer<LocalState, Action>) ->
 
-    StoreObject<DetachedState, Action> {
+    StoreObject<ChildState, Action> {
 
-        rootStore.createDetachedStore(
+        rootStoreNode.createChildStore(
             initialState: initialState,
             stateMapping: stateMapping,
             qos: qos,
@@ -117,32 +117,32 @@ public extension StoreFactory {
     }
 
     /**
-     Initializes a new detached store with initial state
+     Initializes a new child store with initial state
 
-     - Returns: Detached StoreObject
+     - Returns: Child StoreObject
 
-     DetachedStore is a composition of root store and newly created local store.
-     Detached state is a mapping of the local state and root store's state.
+     ChildStore is a composition of root store and newly created local store.
+     Child state is a mapping of the local state and root store's state.
 
-     DetachedStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
+     ChildStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
 
-     RootStore vs DetachedStore Action Dispatch
+     RootStore vs ChildStore Action Dispatch
 
      When action is dispatched to RootStore:
      - action is delivered to root store's reducer
-     - action is not delivered to detached store's reducer
+     - action is not delivered to child store's reducer
      - additional interceptor produced actions would be dispatched to root store
      - root state update triggers root store's subscribers
-     - root state update triggers detached stores' subscribers
+     - root state update triggers child stores' subscribers
      - Interceptor dispatches additional actions to RootStore
 
-     When action is dispatched to DetachedStore:
+     When action is dispatched to ChildStore:
      - action is delivered to root store's reducer
-     - action is delivered to detached store's reducer
+     - action is delivered to child store's reducer
      - root state update triggers root store's subscribers.
-     - root state update triggers detached store's subscribers.
-     - local state update triggers detached stores' subscribers.
-     - Interceptor dispatches additional actions to DetachedStore
+     - root state update triggers child store's subscribers.
+     - local state update triggers child stores' subscribers.
+     - Interceptor dispatches additional actions to ChildStore
 
      */
     func childStore<LocalState>(

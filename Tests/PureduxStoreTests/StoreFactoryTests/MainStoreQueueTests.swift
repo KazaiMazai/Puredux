@@ -26,7 +26,7 @@ final class MainStoreQueueTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         let observer = Observer<TestState> { _, complete in
             complete(.active)
@@ -57,7 +57,7 @@ final class MainStoreQueueTests: XCTestCase {
             asyncExpectation.fulfill()
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 
@@ -81,7 +81,7 @@ final class MainStoreQueueTests: XCTestCase {
                 state.reduce(action: action)
             })
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         store.dispatch(UpdateIndex(index: stateIndex))
 

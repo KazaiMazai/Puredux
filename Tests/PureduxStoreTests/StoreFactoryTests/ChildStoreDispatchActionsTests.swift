@@ -8,10 +8,10 @@
 import XCTest
 @testable import PureduxStore
 
-final class DetachedStoreDispatchActionsTests: XCTestCase {
+final class ChildStoreDispatchActionsTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    func test_WhenDispatchedToMainStore_ThenNotReducedOnDetachedStore() {
+    func test_WhenDispatchedToMainStore_ThenNotReducedOnChildStore() {
         let actionsCount = 100
 
         let unexpected = (0..<actionsCount).map {
@@ -27,10 +27,10 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.childStore(
-            initialState: DetachedTestState(currentIndex: 0),
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+        let childStore = factory.childStore(
+            initialState: ChildTestState(currentIndex: 0),
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -43,13 +43,13 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-        let store = factory.store()
+        let store = factory.rootStore()
         actions.forEach { store.dispatch($0) }
 
         wait(for: unexpected, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenDispatchedToDetachedStoreA_ThenNotReducedOnDetachedStoreB() {
+    func test_WhenDispatchedToChildStoreA_ThenNotReducedOnChildStoreB() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -67,10 +67,10 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStoreA = factory.childStore(
-            initialState: DetachedTestState(currentIndex: 0),
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+        let childStoreA = factory.childStore(
+            initialState: ChildTestState(currentIndex: 0),
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -82,10 +82,10 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStoreB = factory.childStore(
-            initialState: DetachedTestState(currentIndex: 0),
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+        let childStoreB = factory.childStore(
+            initialState: ChildTestState(currentIndex: 0),
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -98,12 +98,12 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-        actions.forEach { detachedStoreA.dispatch($0) }
+        actions.forEach { childStoreA.dispatch($0) }
 
         wait(for: [unexpected, expectations].flatMap { $0 }, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenDispatchedToDetachedStore_ThenReducedOnMainStore() {
+    func test_WhenDispatchedToChildStore_ThenReducedOnMainStore() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -121,10 +121,10 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.childStore(
-            initialState: DetachedTestState(currentIndex: 0),
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+        let childStore = factory.childStore(
+            initialState: ChildTestState(currentIndex: 0),
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -132,12 +132,12 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-        actions.forEach { detachedStore.dispatch($0) }
+        actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenDispatchedToDetachedStore_ThenReducenOnDetachedStore() {
+    func test_WhenDispatchedToChildStore_ThenReducenOnChildStore() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -150,10 +150,10 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.childStore(
-            initialState: DetachedTestState(currentIndex: 0),
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+        let childStore = factory.childStore(
+            initialState: ChildTestState(currentIndex: 0),
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -166,7 +166,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         )
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-        actions.forEach { detachedStore.dispatch($0) }
+        actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }

@@ -26,7 +26,7 @@ struct TestState: Equatable {
     }
 }
 
-struct DetachedTestState: Equatable {
+struct ChildTestState: Equatable {
     private(set) var currentIndex: Int
     private(set) var asyncActionReceivedCount: Int = 0
     private(set) var createdActionReceivedCount: Int = 0
@@ -47,5 +47,5 @@ struct DetachedTestState: Equatable {
 
 struct StateComposition: Equatable {
     let state: TestState
-    let detachedState: DetachedTestState
+    let childState: ChildTestState
 }

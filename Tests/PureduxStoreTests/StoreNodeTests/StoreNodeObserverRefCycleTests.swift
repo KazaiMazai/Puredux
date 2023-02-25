@@ -8,8 +8,8 @@
 import XCTest
 @testable import PureduxStore
 
-final class CompositionStoreDetachedStoreObserverRefCycleTests: XCTestCase {
-    typealias DetachedStore = CompositionStore<CompositionStore<VoidStore<Action>, TestState, TestState, Action>, DetachedTestState, StateComposition, Action>
+final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
+    typealias ChildStore = StoreNode<StoreNode<VoidStore<Action>, TestState, TestState, Action>, ChildTestState, StateComposition, Action>
     let timeout: TimeInterval = 3
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
         initialState: TestState(currentIndex: 0),
@@ -17,19 +17,19 @@ final class CompositionStoreDetachedStoreObserverRefCycleTests: XCTestCase {
     )
 
     func test_WhenStrongRefToStoreObjectAndObserverLive_ThenReferencCycleIsCreated() {
-        weak var weakDetachedStore: DetachedStore? = nil
+        weak var weakChildStore: ChildStore? = nil
 
         autoreleasepool {
-            let strongDetachedStore = rootStore.createDetachedStore(
-                initialState: DetachedTestState(currentIndex: 0),
-                stateMapping: { state, detachedState in
-                    StateComposition(state: state, detachedState: detachedState)
+            let strongChildStore = rootStore.createChildStore(
+                initialState: ChildTestState(currentIndex: 0),
+                stateMapping: { state, childState in
+                    StateComposition(state: state, childState: childState)
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-            weakDetachedStore = strongDetachedStore
+            weakChildStore = strongChildStore
 
-            let storeObject = strongDetachedStore.storeObject()
+            let storeObject = strongChildStore.storeObject()
 
             let observer = Observer<StateComposition> { state, complete in
                 storeObject.dispatch(UpdateIndex(index: 1))
@@ -39,25 +39,25 @@ final class CompositionStoreDetachedStoreObserverRefCycleTests: XCTestCase {
             storeObject.subscribe(observer: observer)
         }
 
-        XCTAssertNotNil(weakDetachedStore)
+        XCTAssertNotNil(weakChildStore)
     }
 
     func test_WhenStrongRefToStoreObjectAndObserverDead_ThenStoreIsReleased() {
-        weak var weakDetachedStore: DetachedStore? = nil
+        weak var weakChildStore: ChildStore? = nil
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
         autoreleasepool {
-            let strongDetachedStore = rootStore.createDetachedStore(
-                initialState: DetachedTestState(currentIndex: 0),
-                stateMapping: { state, detachedState in
-                    StateComposition(state: state, detachedState: detachedState)
+            let strongChildStore = rootStore.createChildStore(
+                initialState: ChildTestState(currentIndex: 0),
+                stateMapping: { state, childState in
+                    StateComposition(state: state, childState: childState)
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-            weakDetachedStore = strongDetachedStore
+            weakChildStore = strongChildStore
 
-            let storeObject = strongDetachedStore.storeObject()
+            let storeObject = strongChildStore.storeObject()
 
             let observer = Observer<StateComposition> { state, complete in
                 storeObject.dispatch(UpdateIndex(index: 1))
@@ -69,24 +69,24 @@ final class CompositionStoreDetachedStoreObserverRefCycleTests: XCTestCase {
         }
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertNil(weakDetachedStore)
+            XCTAssertNil(weakChildStore)
         }
     }
 
     func test_WhenStoreAndObserverLive_ThenStoreIsReleased() {
-        weak var weakDetachedStore: DetachedStore? = nil
+        weak var weakChildStore: ChildStore? = nil
 
         autoreleasepool {
-            let strongDetachedStore = rootStore.createDetachedStore(
-                initialState: DetachedTestState(currentIndex: 0),
-                stateMapping: { state, detachedState in
-                    StateComposition(state: state, detachedState: detachedState)
+            let strongChildStore = rootStore.createChildStore(
+                initialState: ChildTestState(currentIndex: 0),
+                stateMapping: { state, childState in
+                    StateComposition(state: state, childState: childState)
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-            weakDetachedStore = strongDetachedStore
+            weakChildStore = strongChildStore
 
-            let store = strongDetachedStore.store()
+            let store = strongChildStore.store()
 
             let observer = Observer<StateComposition> { state, complete in
                 store.dispatch(UpdateIndex(index: 1))
@@ -96,6 +96,6 @@ final class CompositionStoreDetachedStoreObserverRefCycleTests: XCTestCase {
             store.subscribe(observer: observer)
         }
 
-        XCTAssertNil(weakDetachedStore)
+        XCTAssertNil(weakChildStore)
     }
 }

@@ -8,12 +8,12 @@
 import XCTest
 @testable import PureduxStore
 
-final class DetachedStoreTests: XCTestCase {
+final class ChildStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     let initialState = StateComposition(
         state: TestState(currentIndex: 0),
-        detachedState: DetachedTestState(currentIndex: 0)
+        childState: ChildTestState(currentIndex: 0)
     )
 
     lazy var factory = {
@@ -24,11 +24,11 @@ final class DetachedStoreTests: XCTestCase {
             }
     }()
 
-    lazy var detachedStore = {
+    lazy var childStore = {
         factory.childStore(
-            initialState: initialState.detachedState,
-            stateMapping: { rootState, detachedState in
-                StateComposition(state: rootState, detachedState: detachedState)
+            initialState: initialState.childState,
+            stateMapping: { rootState, childState in
+                StateComposition(state: rootState, childState: childState)
             },
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -47,7 +47,7 @@ final class DetachedStoreTests: XCTestCase {
             asyncExpectation.fulfill()
         }
 
-        detachedStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
 
         let initialState = initialState
         waitForExpectations(timeout: timeout) { _ in
@@ -58,7 +58,7 @@ final class DetachedStoreTests: XCTestCase {
     func test_WhenSubscribedAndActionDispatched_ThenInitialAndStateChangesReceivedTwice() {
         let expectedState = StateComposition(
             state: TestState(currentIndex: 2),
-            detachedState: DetachedTestState(currentIndex: 2)
+            childState: ChildTestState(currentIndex: 2)
         )
 
         var lastReceivedState: StateComposition?
@@ -72,8 +72,8 @@ final class DetachedStoreTests: XCTestCase {
             complete(.active)
         }
 
-        detachedStore.subscribe(observer: observer)
-        detachedStore.dispatch(UpdateIndex(index: 2))
+        childStore.subscribe(observer: observer)
+        childStore.dispatch(UpdateIndex(index: 2))
 
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(lastReceivedState, expectedState)
@@ -94,9 +94,9 @@ final class DetachedStoreTests: XCTestCase {
             complete(.active)
         }
 
-        detachedStore.subscribe(observer: observer)
-        detachedStore.subscribe(observer: observer)
-        detachedStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
 
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(receivedStatesIndexes, expectedReceivedStates)
@@ -107,7 +107,7 @@ final class DetachedStoreTests: XCTestCase {
         let expectedIndex = 2
         let expectedState = StateComposition(
             state: TestState(currentIndex: expectedIndex),
-            detachedState: DetachedTestState(currentIndex: expectedIndex)
+            childState: ChildTestState(currentIndex: expectedIndex)
         )
 
         var lastReceivedState: StateComposition?
@@ -121,10 +121,10 @@ final class DetachedStoreTests: XCTestCase {
             complete(.active)
         }
 
-        detachedStore.subscribe(observer: observer)
-        detachedStore.subscribe(observer: observer)
-        detachedStore.subscribe(observer: observer)
-        detachedStore.dispatch(UpdateIndex(index: expectedIndex))
+        childStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
+        childStore.dispatch(UpdateIndex(index: expectedIndex))
 
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(lastReceivedState, expectedState)
@@ -145,11 +145,11 @@ final class DetachedStoreTests: XCTestCase {
             }
         }
 
-        detachedStore.subscribe(observer: observer)
-        let detachedStore = detachedStore
+        childStore.subscribe(observer: observer)
+        let childStore = childStore
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            detachedStore.dispatch(UpdateIndex(index: 10))
+            childStore.dispatch(UpdateIndex(index: 10))
         }
 
         let initialState = initialState
@@ -159,11 +159,11 @@ final class DetachedStoreTests: XCTestCase {
     }
 }
  
-final class DetachedStoreWithoutStateMappingTests: XCTestCase {
+final class ChildStoreWithoutStateMappingTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     let initialState = TestState(currentIndex: 0)
-    let initialDetachedState = DetachedTestState(currentIndex: 0)
+    let initialChildState = ChildTestState(currentIndex: 0)
 
     lazy var factory = {
         StoreFactory<TestState, Action>(
@@ -173,9 +173,9 @@ final class DetachedStoreWithoutStateMappingTests: XCTestCase {
             }
     }()
 
-    lazy var detachedStore = {
+    lazy var childStore = {
         factory.childStore(
-            initialState: initialDetachedState,
+            initialState: initialChildState,
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -185,21 +185,21 @@ final class DetachedStoreWithoutStateMappingTests: XCTestCase {
     func test_WhenSubscribed_ThenCurrentStateReceived() {
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        var receivedState: (root: TestState, local: DetachedTestState)?
+        var receivedState: (root: TestState, local: ChildTestState)?
 
-        let observer = Observer<(TestState, DetachedTestState)> { state, complete in
+        let observer = Observer<(TestState, ChildTestState)> { state, complete in
             receivedState = state
             complete(.active)
             asyncExpectation.fulfill()
         }
 
-        detachedStore.subscribe(observer: observer)
+        childStore.subscribe(observer: observer)
 
         let initialState = initialState
-        let initialDetachedState = initialDetachedState
+        let initialChildState = initialChildState
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(receivedState!.root, initialState)
-            XCTAssertEqual(receivedState!.local, initialDetachedState)
+            XCTAssertEqual(receivedState!.local, initialChildState)
         }
     }
 }

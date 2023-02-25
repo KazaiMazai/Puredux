@@ -8,7 +8,7 @@
 import XCTest
 @testable import PureduxStore
 
-final class CompositionStoreRootStoreRefCyclesTests: XCTestCase {
+final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     let timeout: TimeInterval = 3
 
     func test_WhenStore_ThenWeakRefToRootCreated() {

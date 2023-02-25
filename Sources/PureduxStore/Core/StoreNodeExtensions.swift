@@ -7,9 +7,9 @@
 
 import Foundation
 
-typealias RootStoreNode<State, Action> = CompositionStore<VoidStore<Action>, State, State, Action>
+typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-extension CompositionStore where LocalState == State {
+extension StoreNode where LocalState == State {
     static func initRootStore(initialState: State,
                      interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
                      qos: DispatchQoS = .userInteractive,
@@ -18,7 +18,7 @@ extension CompositionStore where LocalState == State {
         RootStoreNode<State, Action>(
             initialState: initialState,
             stateMapping: { _, state in return state },
-            rootStore: VoidStore<Action>(
+            parentStore: VoidStore<Action>(
                 actionsInterceptor: ActionsInterceptor(
                     storeId: StoreID(),
                     handler: interceptor,
@@ -30,7 +30,7 @@ extension CompositionStore where LocalState == State {
     }
 }
 
-extension CompositionStore {
+extension StoreNode {
     func store() -> Store<State, Action> {
         Store(
             dispatch: { [weak self] in self?.dispatch($0) },
@@ -46,19 +46,19 @@ extension CompositionStore {
     }
 }
 
-extension CompositionStore {
+extension StoreNode {
 
-    func createDetachedStore<NodeState, ResultState>(initialState: NodeState,
+    func createChildStore<NodeState, ResultState>(initialState: NodeState,
                                               stateMapping: @escaping (State, NodeState) -> ResultState,
                                               qos: DispatchQoS = .userInteractive,
                                               reducer: @escaping Reducer<NodeState, Action>) ->
 
-    CompositionStore<CompositionStore<RootStore, LocalState, State, Action>, NodeState, ResultState, Action> {
+    StoreNode<StoreNode<ParentStore, LocalState, State, Action>, NodeState, ResultState, Action> {
 
-        CompositionStore<CompositionStore<RootStore, LocalState, State, Action>, NodeState, ResultState, Action>(
+        StoreNode<StoreNode<ParentStore, LocalState, State, Action>, NodeState, ResultState, Action>(
             initialState: initialState,
             stateMapping: stateMapping,
-            rootStore: self,
+            parentStore: self,
             reducer: reducer
         )
     }

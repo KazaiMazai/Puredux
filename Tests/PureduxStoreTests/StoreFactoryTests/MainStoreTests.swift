@@ -24,7 +24,7 @@ final class MainStoreTests: XCTestCase {
             expectations[state.currentIndex].fulfill()
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -52,7 +52,7 @@ final class MainStoreTests: XCTestCase {
             reducer: { state, action  in state.reduce(action: action) }
         )
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -74,7 +74,7 @@ final class MainStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         var receivedStateIndex: Int?
 
@@ -106,7 +106,7 @@ final class MainStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -137,7 +137,7 @@ final class MainStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -170,7 +170,7 @@ final class MainStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -202,7 +202,7 @@ final class MainStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
@@ -234,7 +234,7 @@ final class MainStoreTests: XCTestCase {
             }
         }
 
-        let store = factory.store()
+        let store = factory.rootStore()
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in

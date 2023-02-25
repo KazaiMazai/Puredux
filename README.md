@@ -306,8 +306,8 @@ let scopeStore = storeFactory.scopeStore() { appState in appState.subState }
 
 StoreFactory is a factory for Stores and StoreObjects.
 It suppports creation of the following store types:
-- store - root parent Store
-- scopeStore - scoped Store as proxy to the root store
+- rootStore - factory root Store
+- scopeStore - scoped Store as proxy to the factory root store
 - childStore - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
 
@@ -315,6 +315,14 @@ It suppports creation of the following store types:
 
 - By default, it works on a global serial queue with `userInteractive` quality of service. QoS can be changed.
  
+</p>
+</details>
+
+## Store vs StoreObject Q&A
+
+<details><summary>Click for details</summary>
+<p>
+
 
 ### What is a Store?
 
