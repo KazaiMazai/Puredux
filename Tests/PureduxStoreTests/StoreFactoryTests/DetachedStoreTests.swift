@@ -158,22 +158,48 @@ final class DetachedStoreTests: XCTestCase {
         }
     }
 }
+ 
+final class DetachedStoreWithoutStateMappingTests: XCTestCase {
+    let timeout: TimeInterval = 10
 
-extension DetachedStoreTests {
-    static var allTests = [
-        ("test_WhenSubscribed_ThenCurrentStateReceived",
-         test_WhenSubscribed_ThenCurrentStateReceived),
+    let initialState = TestState(currentIndex: 0)
+    let initialDetachedState = DetachedTestState(currentIndex: 0)
 
-        ("test_WhenSubscribedAndActionDispatched_ThenInitialAndStateChangesReceivedTwice",
-         test_WhenSubscribedAndActionDispatched_ThenInitialAndStateChangesReceivedTwice),
+    lazy var factory = {
+        StoreFactory<TestState, Action>(
+            initialState: initialState) { state, action  in
 
-        ("test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription",
-         test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription),
+                state.reduce(action: action)
+            }
+    }()
 
-        ("test_WhenSubscribedMultipleTimes_ThenSubscribersAreNotDuplicated",
-         test_WhenSubscribedMultipleTimes_ThenSubscribersAreNotDuplicated),
+    lazy var detachedStore = {
+        factory.detachedStore(
+            initialState: initialDetachedState,
+            reducer: { state, action  in
+                state.reduce(action: action)
+            }
+        )
+    }()
 
-        ("test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
-         test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed),
-    ]
+    func test_WhenSubscribed_ThenCurrentStateReceived() {
+        let asyncExpectation = expectation(description: "Observer state handler")
+
+        var receivedState: (root: TestState, local: DetachedTestState)?
+
+        let observer = Observer<(TestState, DetachedTestState)> { state, complete in
+            receivedState = state
+            complete(.active)
+            asyncExpectation.fulfill()
+        }
+
+        detachedStore.subscribe(observer: observer)
+
+        let initialState = initialState
+        let initialDetachedState = initialDetachedState
+        waitForExpectations(timeout: timeout) { _ in
+            XCTAssertEqual(receivedState!.root, initialState)
+            XCTAssertEqual(receivedState!.local, initialDetachedState)
+        }
+    }
 }

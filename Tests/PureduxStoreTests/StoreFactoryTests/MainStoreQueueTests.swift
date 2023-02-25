@@ -88,17 +88,3 @@ final class MainStoreQueueTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 }
-
-extension MainStoreQueueTests {
-    static var allTests = [
-
-        ("test_WhenActionDispatched_ThenObserverCalledNotOnMainThread",
-         test_WhenActionDispatched_ThenObserverCalledNotOnMainThread),
-
-        ("test_WhenActionDispatched_ThenReducerCalledNotOnMainThread",
-         test_WhenActionDispatched_ThenReducerCalledNotOnMainThread),
-
-        ("test_WhenActionDispatched_ThenInterceptorCalledNotOnMainThread",
-         test_WhenActionDispatched_ThenInterceptorCalledNotOnMainThread)
-    ]
-}

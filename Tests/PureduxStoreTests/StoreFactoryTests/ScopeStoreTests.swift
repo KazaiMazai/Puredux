@@ -252,28 +252,3 @@ final class ScopedStoreTests: XCTestCase {
         }
     }
 }
-
-extension ScopedStoreTests {
-    static var allTests = [
-        ("test_WhenActionsDiptachedToScopedStore_ThenDispatchOrderPreserved",
-         test_WhenActionsDiptachedToScopedStore_ThenDispatchOrderPreserved),
-
-        ("test_WhenSubscribedToScopedStore_ThenCurrentStateReceived",
-         test_WhenSubscribedToScopedStore_ThenCurrentStateReceived),
-
-        ("test_WhenActionDispatchedToScopedStore_ThenStateReceived",
-         test_WhenActionDispatchedToScopedStore_ThenStateReceived),
-
-        ("test_WhenSubscribedMultipleTimesToScopedStore_ThenInitialStateReceivedForEverySubscription",
-         test_WhenSubscribedMultipleTimesToScopedStore_ThenInitialStateReceivedForEverySubscription),
-
-        ("test_WhenSubscribedMultipleTimesToScopedStore_ThenSubscribersAreNotDuplicated",
-         test_WhenSubscribedMultipleTimesToScopedStore_ThenSubscribersAreNotDuplicated),
-
-        ("test_WhenManyActionsDisptachedToScopedStore_ThenObserverReceivesAllStatesInCorrectOrder",
-         test_WhenManyActionsDisptachedToScopedStore_ThenObserverReceivesAllStatesInCorrectOrder),
-
-        ("test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
-         test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed)
-    ]
-}

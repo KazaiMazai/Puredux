@@ -228,28 +228,4 @@ final class RootStoreProxyTests: XCTestCase {
         }
     }
 }
-
-extension RootStoreProxyTests {
-    static var allTests = [
-        ("test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved",
-         test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved),
-
-        ("test_WhenSubscribedToProxy_ThenCurrentStateReceived",
-         test_WhenSubscribedToProxy_ThenCurrentStateReceived),
-
-        ("test_WhenActionDispatchedToProxy_ThenStateReceived",
-         test_WhenActionDispatchedToProxy_ThenStateReceived),
-
-        ("test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription",
-         test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription),
-
-        ("test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated",
-         test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated),
-
-        ("test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder",
-         test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder),
-
-        ("test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
-         test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed)
-    ]
-}
+ 

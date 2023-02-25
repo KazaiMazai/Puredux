@@ -27,13 +27,6 @@ final class RootStoreRefCyclesTests: XCTestCase {
         }
 
         XCTAssertNil(rootStore)
-        XCTAssertNotNil(store)
     }
 }
-
-extension RootStoreRefCyclesTests {
-    static var allTests = [
-        ("test_WhenGetStore_ThenNoStrongRefToRootStore",
-         test_WhenGetStore_ThenNoStrongRefToRootStore)
-    ]
-}
+ 

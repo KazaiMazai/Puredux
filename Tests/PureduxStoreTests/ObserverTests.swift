@@ -44,12 +44,4 @@ final class ObserverTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-
-    static var allTests = [
-        ("test_WhenObserve_ThenObserverClosureCalledWithState",
-         test_WhenObserve_ThenObserverClosureCalledWithState),
-
-        ("test_WhenObserve_ThenObserverStatusReceived",
-         test_WhenSendToObserver_ThenObserverStatusReceived)
-    ]
 }

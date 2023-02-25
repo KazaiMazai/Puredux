@@ -100,8 +100,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
         actions.forEach { detachedStoreA.dispatch($0) }
 
-        wait(for: unexpected, timeout: timeout, enforceOrder: true)
-        wait(for: expectations, timeout: timeout, enforceOrder: true)
+        wait(for: [unexpected, expectations].flatMap { $0 }, timeout: timeout, enforceOrder: true)
     }
 
     func test_WhenDispatchedToDetachedStore_ThenReducedOnMainStore() {

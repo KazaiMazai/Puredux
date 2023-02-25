@@ -257,31 +257,3 @@ final class RootStoreTests: XCTestCase {
     }
 }
 
-extension RootStoreTests {
-
-    static var allTests = [
-        ("test_WhenActionsDiptached_ThenReduceOrderPreserved",
-         test_WhenActionsDiptached_ThenReduceOrderPreserved),
-
-        ("test_WhenActionsDiptached_ThenInterceptorOrderPreserved",
-         test_WhenActionsDiptached_ThenInterceptorOrderPreserved),
-
-        ("test_WhenSubscribed_ThenCurrentStateReceived",
-         test_WhenSubscribed_ThenCurrentStateReceived),
-
-        ("test_WhenSubscribedAndActionDispatched_ThenInitialAndChangedStateReceived",
-         test_WhenSubscribedAndActionDispatched_ThenInitialAndChangedStateReceived),
-
-        ("test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription",
-         test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription),
-
-        ("test_WhenSubscribedMultipleTimes_ThenSubscribersAreNotDuplicated",
-         test_WhenSubscribedMultipleTimes_ThenSubscribersAreNotDuplicated),
-
-        ("test_WhenManyActionsDisptached_ThenObserverReceivesAllStatesInCorrectOrder",
-         test_WhenManyActionsDisptached_ThenObserverReceivesAllStatesInCorrectOrder),
-
-        ("test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
-         test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed)
-    ]
-}
