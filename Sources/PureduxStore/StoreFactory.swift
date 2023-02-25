@@ -86,7 +86,6 @@ public extension StoreFactory {
      When action is dispatched to RootStore:
      - action is delivered to root store's reducer
      - action is not delivered to detached store's reducer
-     - additional interceptor produced actions would be dispatched to root store
      - root state update triggers root store's subscribers
      - root state update triggers detached stores' subscribers
      - Interceptor dispatches additional actions to RootStore
