@@ -11,12 +11,12 @@ public extension StoreObject {
     /**
      Closure that handles Store's dispatching Actions
      */
-    public typealias Dispatch = (_ action: Action) -> Void
+    typealias Dispatch = (_ action: Action) -> Void
 
     /**
      Closure that takes Observer as a parameter and handles Store's subscribtions
      */
-    public typealias Subscribe = (_ observer: Observer<State>) -> Void
+    typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
 public class StoreObject<State, Action> {

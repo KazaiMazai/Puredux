@@ -11,9 +11,9 @@ typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, Sta
 
 extension StoreNode where LocalState == State {
     static func initRootStore(initialState: State,
-                     interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
-                     qos: DispatchQoS = .userInteractive,
-                     reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
+                              interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
+                              qos: DispatchQoS = .userInteractive,
+                              reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
@@ -49,9 +49,9 @@ extension StoreNode {
 extension StoreNode {
 
     func createChildStore<NodeState, ResultState>(initialState: NodeState,
-                                              stateMapping: @escaping (State, NodeState) -> ResultState,
-                                              qos: DispatchQoS = .userInteractive,
-                                              reducer: @escaping Reducer<NodeState, Action>) ->
+                                                  stateMapping: @escaping (State, NodeState) -> ResultState,
+                                                  qos: DispatchQoS = .userInteractive,
+                                                  reducer: @escaping Reducer<NodeState, Action>) ->
 
     StoreNode<StoreNode<ParentStore, LocalState, State, Action>, NodeState, ResultState, Action> {
 
