@@ -27,7 +27,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -67,7 +67,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStoreA = factory.detachedStore(
+        let detachedStoreA = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -82,7 +82,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStoreB = factory.detachedStore(
+        let detachedStoreB = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -121,7 +121,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -150,7 +150,7 @@ final class DetachedStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)

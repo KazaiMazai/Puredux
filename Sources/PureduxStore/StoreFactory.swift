@@ -13,17 +13,17 @@ public final class StoreFactory<State, Action> {
     private let rootStore: RootStoreNode<State, Action>
 
     /**
-    Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
+     Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
 
-    - Parameter initialState: The initial state for the store
-    - Parameter interceptor: Interceptor's closure that takes action and dispatch function as parameters. Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
-    - Parameter qos: defines the DispatchQueue QoS that reducer will be performed on
-    - Parameter reducer: The function that is called on every dispatched Action and performs state mutations
+     - Parameter initialState: The initial state for the store
+     - Parameter interceptor: Interceptor's closure that takes action and dispatch function as parameters. Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
+     - Parameter qos: defines the DispatchQueue QoS that reducer will be performed on
+     - Parameter reducer: The function that is called on every dispatched Action and performs state mutations
 
-    - Returns: `StoreFactory<State, Action>`
+     - Returns: `StoreFactory<State, Action>`
 
-    StoreFactory is a factory for Store and StoreObjects.
-    It suppports the following store types:
+     StoreFactory is a factory for Store and StoreObjects.
+     It suppports the following store types:
      - store - plain root store
      - scopeStore - scoped store proxy to the root store
      - detachedStore - detached store with `(Root, Local) -> Composition` state mapping and it's own lifecycle
@@ -99,7 +99,7 @@ public extension StoreFactory {
      - Interceptor dispatches additional actions to DetachedStore
 
      */
-    func detachedStore<LocalState, DetachedState>(
+    func childStore<LocalState, DetachedState>(
         initialState: LocalState,
         stateMapping: @escaping (State, LocalState) -> DetachedState,
         qos: DispatchQoS = .userInteractive,
@@ -145,20 +145,16 @@ public extension StoreFactory {
      - Interceptor dispatches additional actions to DetachedStore
 
      */
-    func detachedStore<LocalState>(
+    func childStore<LocalState>(
         initialState: LocalState,
         qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<LocalState, Action>) ->
+        reducer: @escaping Reducer<LocalState, Action>) -> StoreObject<(State, LocalState), Action> {
 
-    StoreObject<(State, LocalState), Action> {
+            childStore(initialState: initialState,
+                       stateMapping: { state, localState in (state, localState) },
+                       qos: qos,
+                       reducer: reducer)
 
-        rootStore.createDetachedStore(
-            initialState: initialState,
-            stateMapping: { state, localState in (state, localState) },
-            qos: qos,
-            reducer: reducer
-        )
-        .storeObject()
-    }
+        }
 }
 

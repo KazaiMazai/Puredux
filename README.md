@@ -171,11 +171,11 @@ scopedStore.subscribe(observer: observer)
 ```
 
 
-8. Create detached stores with local state and its own lifecycle:
+8. Create child stores with local state and its own lifecycle:
 
 ```swift
  
-storeFactory.detachedStore(
+storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
@@ -195,7 +195,7 @@ let observer = Observer<(AppState, LocalState)> { stateComposition, complete in
     completeHandler(.active)
 }
 
-detachedStore.subscribe(observer: observer)
+childStore.subscribe(observer: observer)
 
 
 ```
@@ -305,10 +305,10 @@ let scopeStore = storeFactory.scopeStore() { appState in appState.subState }
 ### What is StoreFactory?
 
 StoreFactory is a factory for Stores and StoreObjects.
-It suppports the following store types:
-- store - plain root store
-- scopeStore - scoped store proxy to the root store
-- detachedStore - detached store with `(Root, Local) -> Composition` state mapping and it's own lifecycle
+It suppports creation of the following store types:
+- store - root parent Store
+- scopeStore - scoped Store as proxy to the root store
+- childStore - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
 
 ### What queue does the root store operate on?
@@ -320,7 +320,7 @@ It suppports the following store types:
 
 - Store is a lightweight store. 
 - It's only a proxy to the root store: it forwards subscribtions and all dispatched Actions to it.
-- Root store can be another Store, StoreFactory's root store or a detached store.
+- Root store can be another Store, StoreFactory's root store or a child store.
 - Store is designed to be passed all over the app safely without extra effort.
 - It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
 - It keeps weak reference to the root store, that allows to avoid creating reference cycles accidentally.
@@ -329,34 +329,33 @@ It suppports the following store types:
 
 - It's almost the same thing as a Store 
 - It keeps a *strong* reference to the root store.
-- It's designed to manage the lifecycle of detached stores
+- It's designed to manage the lifecycle of child stores
 
 </p>
 </details>
 
-## Detached Store Q&A
+## Child Store Q&A
 
 <details><summary>Click for details</summary>
 <p>
 
-### What is detached store?
+### What is child store?
 
-- Detached store is a separate store 
-- Detached store has its own local state
-- Detached store has its own local state reducer
-- Detached store is attached to the root store
-- Detached store's state is a composition of root state and local state
+- Child store is a separate store 
+- Child store has its own local state
+- Child store has its own local state reducer
+- Child store is attached to the root store
+- Child store's state is a composition of parent state and local state
+- Creates child-parent hierarchy
 
+### How to create child store?
 
-
-### How to create detached store?
-
-StoreFactory allows to create detached stores. 
+StoreFactory allows to create child stores. 
 You should only provide initial state and reducer:
 
 ```swift
  
-storeFactory.detachedStore(
+storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
@@ -364,35 +363,37 @@ storeFactory.detachedStore(
 )
 
 ```
-### How to manage detached store's and its state lifecycle?
+### How to manage child store's and its state lifecycle?
 
-Detached store's `StoreObject` behaves just like normal class does.
+Child store's `StoreObject` behaves just like normal class does.
 It exist while you keep a reference to it.
 
-### Actions dispatching for DetachedStores follow the rules:
-- Actions go up. From detached stores to root
-- Actions don't go down. From root to detached stores.
-- Action never go horizontally. From detachedStoreA to detachedStoreB
-- State changes go down. From root to detached stores. From stores to subscribers.
+### Actions dispatching for ChildStores follow the rules:
+- Actions go up. From child stores to parent
+- Actions don't go down. From parent to child stores.
+- Action never go horizontally. From childStoreA to childStoreB
+- State changes go down. From parent to child stores. From stores to subscribers.
 - Interceptor dispatches new actions to the same store where the initial action was dispatched. 
 
 According to the rules above.
 
 When action is dispatched to RootStore:
 - action is delivered to root store's reducer
-- action is *not* delivered to detached store's reducer
+- action is *not* delivered to child store's reducer
 - root state update triggers root store's subscribers
-- root state update triggers detached stores' subscribers
+- root state update triggers child stores' subscribers
 - Interceptor dispatches additional actions to RootStore
 
-When action is dispatched to DetachedStore:
+When action is dispatched to ChildStore:
 - action is delivered to root store's reducer
-- action is delivered to detached store's reducer
+- action is delivered to child store's reducer
 - root state update triggers root store's subscribers.
-- root state update triggers detached store's subscribers.
-- local state update triggers detached stores' subscribers.
-- Interceptor dispatches additional actions to DetachedStore
+- root state update triggers child store's subscribers.
+- local state update triggers child stores' subscribers.
+- Interceptor dispatches additional actions to ChildStore
 
+### Does Child Store deduplicate state changes somehow?
+- No. Child Store observers are triggered at every state change: both parent's state  and its own.
 
 
 </p>
@@ -404,11 +405,18 @@ When action is dispatched to DetachedStore:
 <p>
 
 ### What's the scoped store?
+ 
+- Scoped store is a simple proxy to the root store  
+- Scoped doesn't have its own local state.
+- Scoped doesn't have its own reducer
+- Scoped store's state is a mapping of the root state.
+- Doesn't create any child-parent hierarchy
 
-- With Store it's possible to create scoped substate proxies that allows to scope app features effectively.
-  
 ### Does Proxy Store deduplicate state changes somehow?
-- No, Proxy Store observers are triggered at every root store state change. The only store proxy purpose is to scope entire app state to app features
+- No, Proxy Store observers are triggered at every root store state change.
+
+### What for?
+- The purpose is to scope entire app state to app features
   
 </p>
 </details>

@@ -25,7 +25,7 @@ final class DetachedStoreTests: XCTestCase {
     }()
 
     lazy var detachedStore = {
-        factory.detachedStore(
+        factory.childStore(
             initialState: initialState.detachedState,
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -174,7 +174,7 @@ final class DetachedStoreWithoutStateMappingTests: XCTestCase {
     }()
 
     lazy var detachedStore = {
-        factory.detachedStore(
+        factory.childStore(
             initialState: initialDetachedState,
             reducer: { state, action  in
                 state.reduce(action: action)

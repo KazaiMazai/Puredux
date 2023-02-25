@@ -35,7 +35,7 @@ final class DispatchActionsOnDetachedStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -70,7 +70,7 @@ final class DispatchActionsOnDetachedStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -121,7 +121,7 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -160,7 +160,7 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
         )
 
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -208,7 +208,7 @@ final class DetachedStoreInterceptOnceTests: XCTestCase {
             }
         )
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
@@ -246,7 +246,7 @@ final class DetachedStoreInterceptOnceTests: XCTestCase {
         )
 
 
-        let detachedStore = factory.detachedStore(
+        let detachedStore = factory.childStore(
             initialState: DetachedTestState(currentIndex: 0),
             stateMapping: { rootState, detachedState in
                 StateComposition(state: rootState, detachedState: detachedState)
