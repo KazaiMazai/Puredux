@@ -6,7 +6,7 @@
 
 # Puredux-Store
 
-Yet another UDF Architecture Store implementation
+Yet another UDF Architecture state manager
 <p align="left">
     <a href="https://github.com/KazaiMazai/PureduxStore/actions">
         <img src="https://github.com/KazaiMazai/PureduxStore/workflows/Tests/badge.svg" alt="Continuous Integration">
@@ -15,10 +15,11 @@ Yet another UDF Architecture Store implementation
 
 ## Features
 
-- Minimalistic 
-- Operates on main or background queue
-- Light-weight store proxies
-- Thread safe 
+- Minimal API
+- Single/Multiple Stores
+- Operates on background queue
+- Features State isolation
+- Thread safe stores
 - Simple actions interceptor for side effects
 ____________
 
@@ -121,7 +122,7 @@ struct SomeAsyncAction: AsyncAction {
 
 ```
 
-Execute side effects in the interceptor, passed to store factory:
+Execute side effects in the interceptor:
 
 ```swift
 
@@ -306,7 +307,7 @@ let scopeStore = storeFactory.scopeStore() { appState in appState.subState }
 
 StoreFactory is a factory for Stores and StoreObjects.
 It suppports creation of the following store types:
-- rootStore - factory root Store
+- store - store as proxy to the factory's' root store
 - scopeStore - scoped Store as proxy to the factory root store
 - childStore - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
@@ -315,30 +316,112 @@ It suppports creation of the following store types:
 
 - By default, it works on a global serial queue with `userInteractive` quality of service. QoS can be changed.
  
+ 
+### What is a Store?
+
+- Store is a lightweight store. 
+- It's a proxy to its parent store: it forwards subscribtions and all dispatched Actions to it.
+- Store is designed to be passed all over the app safely without extra effort.
+- It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
+- It keeps weak reference to the parent store, that allows to avoid creating reference cycles accidentally.
+
+### What is a StoreObject?
+
+- StoreObject is a class store.
+- It's a proxy to its parent store: it forwards subscribtions and all dispatched Actions to it.
+- It's designed to manage stores lifecycle
+- It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
+- It keeps a *strong* reference to the root store, that's why requries a careful treatment.
+
+
+### How to unsubscribe from store?
+ 
+Call store observer's complete handler with dead status:
+  
+```swift 
+let observer = Observer<State> { state, completeHandler in
+    //
+    completeHandler(.dead)
+}
+ 
+``` 
+
+### Does Puredux provide a single or multiple stores?
+
+It can do both. Puredux allows to have a single store with stores scoping for sake of features isolation.
+It also allows to have a single root store with multiple plugable child stores for even deeper features isolation.
+ 
+### What if I don't know if I need a single or multi store?
+
+Start with a single single store. 
+Puredux is designed in a way that you can seamlessly scale up to multiple stores when needed.
+
+If the single app state is starting to feel overbloated or you start to plug/unplug some parts of the single state. 
+It might be a sign to migrate to multiple stores.
+
+
 </p>
 </details>
 
-## Store vs StoreObject Q&A
+## Root Store Q&A
 
 <details><summary>Click for details</summary>
 <p>
 
+### What is a root store?
 
-### What is a Store?
+- StoreFactory has an internal root store object, 
+- Root Store is Store that is created by `rootStore()` method 
+- Root Store is a simple proxy to the factory's root store object
+- Root Store keeps weak reference to the factory root store object store
 
-- Store is a lightweight store. 
-- It's only a proxy to the root store: it forwards subscribtions and all dispatched Actions to it.
-- Root store can be another Store, StoreFactory's root store or a child store.
-- Store is designed to be passed all over the app safely without extra effort.
-- It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
-- It keeps weak reference to the root store, that allows to avoid creating reference cycles accidentally.
+### How to manage factory root store and its state lifecycle?
 
-### What is a StoreObject?
+Root store object lifecycle and its state managed by factory. 
+Initalized together with the factory and released when factory is released
+It exist as long as the factory exist.
 
-- It's almost the same thing as a Store 
-- It keeps a *strong* reference to the root store.
-- It's designed to manage the lifecycle of child stores
+### How to create a root store?
 
+```swift
+let store = factory.rootStore()
+
+```
+
+### Is root store created with initial root state?
+
+No. State is initialized when factory is created. Then it lives together with it.
+Typically factory's' lifecycle matches app's lifecycle.
+
+</p>
+</details>
+
+## Scoped Store Q&A
+
+<details><summary>Click for details</summary>
+<p>
+
+### What's the scoped store?
+ 
+- Scoped store is a proxy to the root store  
+- Scoped doesn't have its own local state.
+- Scoped doesn't have its own reducer
+- Scoped store's state is a mapping of the root state.
+- Doesn't create any child-parent hierarchy
+
+### How to create s scoped store?
+
+```swift
+let scopedStore = storeFactory.scopeStore { appState in appState.subState }
+
+```
+
+### Does Proxy Store deduplicate state changes somehow?
+- No, Proxy Store observers are triggered at every root store state change.
+
+### What for?
+- The purpose is to scope entire app's state to local app feature state
+  
 </p>
 </details>
 
@@ -352,7 +435,7 @@ It suppports creation of the following store types:
 - Child store is a separate store 
 - Child store has its own local state
 - Child store has its own local state reducer
-- Child store is attached to the root store
+- Child store is attached to the factory root store
 - Child store's state is a composition of parent state and local state
 - Creates child-parent hierarchy
 
@@ -376,11 +459,13 @@ storeFactory.childStore(
 Child store's `StoreObject` behaves just like normal class does.
 It exist while you keep a reference to it.
 
-### Actions dispatching for ChildStores follow the rules:
-- Actions go up. From child stores to parent
-- Actions don't go down. From parent to child stores.
-- Action never go horizontally. From childStoreA to childStoreB
-- State changes go down. From parent to child stores. From stores to subscribers.
+### How does Actions dispatching work with parent/child stores?
+
+First of all it follows the rules:
+- Actions flow to the root. From child stores to parent
+- State changes flow from the root. From Parent to Child stores. From Stores to Subscribers.
+- Actions never flow from the root. From parent to child stores.
+- Action never flow horizontally. From childStoreA to childStoreB
 - Interceptor dispatches new actions to the same store where the initial action was dispatched. 
 
 According to the rules above.
@@ -401,45 +486,7 @@ When action is dispatched to ChildStore:
 - Interceptor dispatches additional actions to ChildStore
 
 ### Does Child Store deduplicate state changes somehow?
-- No. Child Store observers are triggered at every state change: both parent's state  and its own.
-
-
-</p>
-</details>
-
-## Scoped Store Q&A
-
-<details><summary>Click for details</summary>
-<p>
-
-### What's the scoped store?
- 
-- Scoped store is a simple proxy to the root store  
-- Scoped doesn't have its own local state.
-- Scoped doesn't have its own reducer
-- Scoped store's state is a mapping of the root state.
-- Doesn't create any child-parent hierarchy
-
-### Does Proxy Store deduplicate state changes somehow?
-- No, Proxy Store observers are triggered at every root store state change.
-
-### What for?
-- The purpose is to scope entire app state to app features
-  
-</p>
-</details>
-
-### How to unsubscribe from store?
- 
-- Call store observer's complete handler with dead status:
-  
-```swift 
-let observer = Observer<State> { state, completeHandler in
-    //
-    completeHandler(.dead)
-}
- 
-``` 
+- No. Child Store observers are triggered at every state change: both parent's state changes and child's ones.
 
 </p>
 </details>
