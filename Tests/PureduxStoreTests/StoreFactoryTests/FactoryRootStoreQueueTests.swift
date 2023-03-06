@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import PureduxStore
 
-final class MainStoreQueueTests: XCTestCase {
+final class FactoryRootStoreQueueTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionDispatched_ThenObserverCalledNotOnMainThread() {

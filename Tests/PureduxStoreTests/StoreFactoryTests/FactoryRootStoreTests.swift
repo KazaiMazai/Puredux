@@ -8,7 +8,7 @@
 import XCTest
 @testable import PureduxStore
 
-final class MainStoreTests: XCTestCase {
+final class FactoryRootStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptached_ThenReduceOrderPreserved() {

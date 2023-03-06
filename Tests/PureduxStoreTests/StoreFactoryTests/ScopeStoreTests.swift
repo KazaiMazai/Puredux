@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import PureduxStore
 
-final class ScopedStoreTests: XCTestCase {
+final class ScopeStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptachedToScopedStore_ThenDispatchOrderPreserved() {
