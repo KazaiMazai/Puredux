@@ -62,12 +62,26 @@ public extension StoreFactory {
      - Returns: Store with local substate
 
      Store is a proxy for the root store object.
-     All dispatched Actions and subscribtions are forwarded to the root store object.
+     All dispatched Actions and subscribtions are forwarded to the root store.
+     Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
+
+     */
+    func scopeStore<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
+        rootStoreNode.store().scope(to: localState)
+    }
+
+    /**
+     Initializes a new Store with state mapping to local substate.
+
+     - Returns: Store with local substate
+
+     Store is a proxy for the root store object.
+     All dispatched Actions and subscribtions are forwarded to the root store.
      Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
      When the result local state is nill, subscribers are not triggered.
      */
-    func scopeStore<LocalState>(_ toLocalState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        rootStoreNode.store().scope(toLocalState)
+    func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
+        rootStoreNode.store().scope(toOptional: localState)
     }
 
 

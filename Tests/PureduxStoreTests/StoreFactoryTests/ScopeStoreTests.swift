@@ -10,7 +10,8 @@ import Foundation
 import XCTest
 @testable import PureduxStore
 
-final class ScopeStoreTests: XCTestCase {
+
+final class ScopedStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptachedToScopedStore_ThenDispatchOrderPreserved() {
@@ -65,27 +66,6 @@ final class ScopeStoreTests: XCTestCase {
         }
     }
 
-    func test_WhenSubscribedToScopedStoreWithNilState_ThenStateUpdatesNotReceived() {
-
-        let asyncExpectation = expectation(description: "Observer state handler")
-        asyncExpectation.isInverted = true
-
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
-
-            state.reduce(action: action)
-        }
-
-        let store: Store<Int, Action> = factory.scopeStore { state -> Int? in nil }
-
-        let observer = Observer<Int> { state, complete in
-            complete(.active)
-            asyncExpectation.fulfill()
-        }
-
-        store.subscribe(observer: observer)
-        wait(for: [asyncExpectation], timeout: timeout)
-    }
 
     func test_WhenActionDispatchedToScopedStore_ThenStateReceived() {
         let initialStateIndex = 1
@@ -250,5 +230,52 @@ final class ScopeStoreTests: XCTestCase {
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(observerLastReceivedStateIndex, initialStateIndex)
         }
+    }
+}
+
+final class ScopedStoreOptionalStateTests: XCTestCase {
+    let timeout: TimeInterval = 10
+
+    func test_WhenScopeStateIsNill_ThenStateUpdatesNotReceived() {
+
+        let notReceivedExpectation = expectation(description: "Observer state handler")
+        notReceivedExpectation.isInverted = true
+
+        let factory = StoreFactory<TestState, Action>(
+            initialState: TestState(currentIndex: 0)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        let store: Store<Int, Action> = factory.scopeStore(toOptional: { _  in nil })
+
+        let observer = Observer<Int> { state, complete in
+            complete(.active)
+            notReceivedExpectation.fulfill()
+        }
+
+        store.subscribe(observer: observer)
+        wait(for: [notReceivedExpectation], timeout: timeout)
+    }
+
+    func test_WhenStoreWithOptionalStateAndScopeStateIsNill_ThenStateUpdatesReceived() {
+
+        let receivedExpectation = expectation(description: "Observer state handler")
+
+        let factory = StoreFactory<TestState, Action>(
+            initialState: TestState(currentIndex: 0)) { state, action  in
+
+            state.reduce(action: action)
+        }
+
+        let store: Store<Int?, Action> = factory.scopeStore(to: { _  in nil })
+
+        let observer = Observer<Int?> { state, complete in
+            complete(.active)
+            receivedExpectation.fulfill()
+        }
+
+        store.subscribe(observer: observer)
+        wait(for: [receivedExpectation], timeout: timeout)
     }
 }

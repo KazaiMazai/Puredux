@@ -56,14 +56,14 @@ public extension Store {
 
      - Returns: Store with local substate
 
-     Store is a proxy for the root store object.
-     All dispatched Actions and subscribtions are forwarded to the root store object.
+     Store is a proxy store.
+     All dispatched Actions and subscribtions are forwarded to the root store.
      Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
 
      */
     @available(*, deprecated, message: "Will be removed in the next major release. Consider migrating to scope(...)")
     func proxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        scope(toLocalState)
+        scope(to: toLocalState)
     }
 }
 
@@ -75,17 +75,17 @@ public extension Store {
      - Returns: Store with local substate
 
      Store is a proxy for the root store.
-     All dispatched Actions and subscribtions are forwarded to the root store object.
+     All dispatched Actions and subscribtions are forwarded to the root store.
      Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
      When the result local state is nill, subscribers are not triggered.
      */
 
-    func scope<LocalState>(_ toLocalState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
+    func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         Store<LocalState, Action>(
             dispatch: dispatch,
             subscribe: { localStateObserver in
                 subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    guard let localState = toLocalState(state) else {
+                    guard let localState = localState(state) else {
                         complete(.active)
                         return
                     }
@@ -94,5 +94,29 @@ public extension Store {
                 })
             })
     }
+
+    /**
+     Initializes a new scope Store with state mapping to local substate.
+
+     - Returns: Store with local substate
+
+     Store is a proxy for the root store.
+     All dispatched Actions and subscribtions are forwarded to the root store.
+     Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
+     When the result local state is nill, subscribers are not triggered.
+     */
+
+    func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
+        Store<LocalState, Action>(
+            dispatch: dispatch,
+            subscribe: { localStateObserver in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                    let localState = localState(state)
+                    localStateObserver.send(localState, complete: complete)
+                })
+            })
+    }
+
+    
 }
 

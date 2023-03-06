@@ -38,7 +38,7 @@ public class StoreObject<State, Action> {
      - Parameter subscribe: Closure that handles Store's subscription
      - Returns: StoreObject
 
-     Generally, Store has no reason to be Initialized directly with this initializer
+     Generally, StoreObject has no reason to be Initialized directly with this initializer
      unless you want to mock the StoreObject completely or provide your own implementation.
 
      For all other cases, StoreFactory should be used to create viable StoreObject.
@@ -57,8 +57,8 @@ public extension StoreObject {
 
      - Returns: Store with local substate
 
-     Store is a proxy for the root store object.
-     All dispatched Actions and subscribtions are forwarded to the root store object.
+     Store is a proxy store.
+     All dispatched Actions and subscribtions are forwarded to the root store.
      Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
      When the result local state is nill, subscribers are not triggered.
 
