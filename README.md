@@ -6,7 +6,7 @@
 
 # Puredux-Store
 
-Yet another UDF Architecture state manager
+Yet another UDF state management lib
 <p align="left">
     <a href="https://github.com/KazaiMazai/PureduxStore/actions">
         <img src="https://github.com/KazaiMazai/PureduxStore/workflows/Tests/badge.svg" alt="Continuous Integration">
@@ -18,7 +18,6 @@ Yet another UDF Architecture state manager
 - Minimal API
 - Single/Multiple Stores
 - Operates on background queue
-- Features State isolation
 - Thread safe stores
 - Simple actions interceptor for side effects
 ____________
@@ -88,7 +87,7 @@ let factory = StoreFactory<AppState, Action>(
     reducer: reducer
 )
 
-let store = factory.store()
+let store = factory.rootStore()
 ```
 
 5. Setup actions interceptor for side effects:
@@ -145,7 +144,7 @@ let storeFactory = StoreFactory<AppState, Action>(
 6. Create scoped stores with substate:
 
 ```swift
-let scopedStore = storeFactory.scopeStore { appState in appState.subState }
+let scopedStore: Store<SubState, Action> = storeFactory.scopeStore { appState in appState.subState }
 
 ```
 
@@ -172,21 +171,24 @@ scopedStore.subscribe(observer: observer)
 ```
 
 
-8. Create child stores with local state and its own lifecycle:
+8. Create child stores with local state and reducer:
 
 ```swift
  
-storeFactory.childStore(
+let childStoreObject: StoreObject<(AppState, LocalState), Action> = storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
     }
 )
 
+let childStore = childStoreObject.store()
+
+
 let observer = Observer<(AppState, LocalState)> { stateComposition, complete in
     // Handle your latest state here and dispatch some actions to the store
 
-    scopedStore.dispatch(SomeAction())
+    childStore.dispatch(SomeAction())
 
     guard wannaKeepReceivingUpdates else {
         completeHandler(.dead)
@@ -221,6 +223,8 @@ let rootStore = RootStore<AppState, Action>(
     reducer: reducer
 )
 
+let store: Store<AppState, Action> = rootStore.store()
+
 ```
 
 Now:
@@ -232,10 +236,12 @@ let storeFactory = StoreFactory<AppState, Action>(
     reducer: reducer
 )
 
+let store: Store<AppState, Action> = storeFactory.rootStore()
+
 ```
 
 MainQueue is not available for Stores any more. 
-Since now, stores operate on a global serial queue with configurable QoS.
+Since now, stores always operate on a global serial queue with configurable QoS.
 
 ### 2. Update actions interceptor and pass in to store factory:
 
@@ -307,10 +313,9 @@ let scopeStore = storeFactory.scopeStore() { appState in appState.subState }
 
 StoreFactory is a factory for Stores and StoreObjects.
 It suppports creation of the following store types:
-- store - store as proxy to the factory's' root store
-- scopeStore - scoped Store as proxy to the factory root store
-- childStore - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
-
+- Root Store - plain Store as proxy to the factory's' root store
+- Scope Store - scoped Store as proxy to the factory root store
+- Child Store - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
 ### What queue does the root store operate on?
 
@@ -348,16 +353,16 @@ let observer = Observer<State> { state, completeHandler in
 
 ### Does Puredux provide a single or multiple stores?
 
-It can do both. Puredux allows to have a single store with stores scoping for sake of features isolation.
+It does both. Puredux allows to have a single store that can be scoped to proxy substores for sake of features isolation.
 It also allows to have a single root store with multiple plugable child stores for even deeper features isolation.
  
 ### What if I don't know if I need a single or multi store?
 
-Start with a single single store. 
 Puredux is designed in a way that you can seamlessly scale up to multiple stores when needed.
-
-If the single app state is starting to feel overbloated or you start to plug/unplug some parts of the single state. 
-It might be a sign to migrate to multiple stores.
+- Start with a single store. 
+- If the single app state is starting to feel overbloated think about using scope stores.
+- If you start to plug/unplug some parts of the single state it might be a sign to start using
+child stores.
 
 
 </p>
@@ -409,10 +414,10 @@ Typically factory's' lifecycle matches app's lifecycle.
 - Scoped store's state is a mapping of the root state.
 - Doesn't create any child-parent hierarchy
 
-### How to create s scoped store?
+### How to create a scoped store?
 
 ```swift
-let scopedStore = storeFactory.scopeStore { appState in appState.subState }
+let scopedStore: Store<Substate, Action> = storeFactory.scopeStore { appState in appState.subState }
 
 ```
 
@@ -446,7 +451,7 @@ You should only provide initial state and reducer:
 
 ```swift
  
-storeFactory.childStore(
+let childStoreObject: StoreObject<(AppState, LocalState), Action> storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
@@ -456,8 +461,18 @@ storeFactory.childStore(
 ```
 ### How to manage child store's and its state lifecycle?
 
-Child store's `StoreObject` behaves just like normal class does.
-It exist while you keep a reference to it.
+Child store is a `StoreObject` it will exist while you keep a strong reference to it.
+
+### Why root store and scope store is a Store<State, Action> and child store is a `StoreObject<State, Action>`?
+
+Root store's and scope store's lifecycle is controlled by StoreFactory. 
+They exist while factory exist. Typically during the whole app lifecycle.
+
+Child store is for the cases when we want to take over the control of the store lifecycle.
+Typically when we present screens or some flows of the app.
+
+`StoreObject<State, Action>` prevents from errors that could occur because of confusion with 
+Store<State, Action 
 
 ### How does Actions dispatching work with parent/child stores?
 
