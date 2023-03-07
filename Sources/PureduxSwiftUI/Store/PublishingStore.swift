@@ -58,6 +58,19 @@ extension PublishingStore {
             statePublisher: statePublisher
                 .map { toLocalState($0) }
                 .eraseToAnyPublisher(),
-            dispatch: dispatch)
+            dispatch: dispatch
+        )
+    }
+
+    func scope<LocalState>(
+        toLocalState: @escaping (AppState) -> LocalState?) -> PublishingStore<LocalState, Action> {
+
+        PublishingStore<LocalState, Action>(
+            statePublisher: statePublisher
+                .map { toLocalState($0) }
+                .compactMap { $0 }
+                .eraseToAnyPublisher(),
+            dispatch: dispatch
+        )
     }
 }

@@ -9,22 +9,18 @@ import SwiftUI
 import Combine
 
 fileprivate extension DispatchQueue {
-    static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.swiftui.presentation",
-                                                       qos: .userInteractive)
+    static let sharedPresentationQueue = DispatchQueue(
+        label: "com.puredux.swiftui.presentation",
+        qos: .userInteractive
+    )
 }
 
-struct StorePresentingView<AppState, Action, Props, Content: View>: View {
-
-    let store: PublishingStore<AppState, Action>
-
+struct PresentingView<AppState, Action, Props, Content: View>: View {
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
-    let props: (_ state: AppState, _ store: PublishingStore<AppState, Action>) -> Props
-    let content: (_ props: Props) -> Content
-
-    let removeDuplicates: (AppState, AppState) -> Bool
-    let queue: PresentationQueue
+    let store: PublishingStore<AppState, Action>
+    let presenter: Presenter<AppState, Action, Props, Content>
 
     var body: some View {
         makeContent()
@@ -44,32 +40,32 @@ private extension View {
     }
 }
 
-private extension StorePresentingView {
+private extension PresentingView {
     @ViewBuilder
     func makeContent() -> some View {
         if let props = currentProps {
-            content(props)
+            presenter.content(props)
         } else {
             Color.clear
         }
     }
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
-        switch queue {
+        switch presenter.queue {
         case .main:
-            return makePropsPublisherReceiveOn(.main)
+            return makePropsPublisherWith(queue: .main)
         case .serialQueue(let queue):
-            return makePropsPublisherReceiveOn(queue)
+            return makePropsPublisherWith(queue: queue)
         case .sharedPresentationQueue:
-            return makePropsPublisherReceiveOn(.sharedPresentationQueue)
+            return makePropsPublisherWith(queue: .sharedPresentationQueue)
         }
     }
 
-    func makePropsPublisherReceiveOn(_ queue: DispatchQueue) -> AnyPublisher<Props, Never> {
+    func makePropsPublisherWith(queue: DispatchQueue) -> AnyPublisher<Props, Never> {
         store.statePublisher
             .receive(on: queue)
-            .removeDuplicates(by: removeDuplicates)
-            .map { props($0, store) }
+            .removeDuplicates(by: presenter.removeDuplicates)
+            .map { presenter.props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }

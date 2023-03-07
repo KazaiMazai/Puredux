@@ -8,23 +8,6 @@
 import SwiftUI
 import PureduxCommon
 
-public enum PresentationQueue {
-   case sharedPresentationQueue
-   case main
-   case serialQueue(DispatchQueue)
-
-   var dispatchQueue: DispatchQueue? {
-       switch self {
-       case .main:
-           return DispatchQueue.main
-       case .serialQueue(let queue):
-           return queue
-       case .sharedPresentationQueue:
-           return nil
-       }
-   }
-}
-
 extension View {
 
     /**
@@ -67,11 +50,14 @@ extension View {
         queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
-        EnvironmentStorePresentingView<AppState, Action, Props, Self>(
-            props: props,
-            content: content,
-            removeDuplicates: by.predicate,
-            queue: queue)
+            EnvironmentStorePresentingView<AppState, Action, Props, Self>(
+                presenter: Presenter(
+                    props: props,
+                    content: content,
+                    removeDuplicates: by.predicate,
+                    queue: queue
+                )
+            )
     }
 
     /**
@@ -94,7 +80,7 @@ extension View {
      let rootEnvStore = RootEnvStore(rootStore: rootStore)
      let fancyFeatureStore = rootEnvStore.store().proxy { $0.yourFancyFeatureSubstate }
 
-     let presenter = FancyViewPresenter()
+     let presenter = FancyPresenter()
 
      UIHostingController(
          rootView: FancyView.with(
@@ -113,11 +99,14 @@ extension View {
         queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
-        StorePresentingView(
+        PresentingView(
             store: store,
-            props: props,
-            content: content,
-            removeDuplicates: by.predicate,
-            queue: queue)
+            presenter: Presenter(
+                props: props,
+                content: content,
+                removeDuplicates: by.predicate,
+                queue: queue
+            )
+        )
     }
 }
