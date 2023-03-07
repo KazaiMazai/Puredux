@@ -14,7 +14,7 @@ public struct ViewWithStore<AppState, LocalState, ChildState, Action, Props, Con
     where
     Content: View {
 
-    let storeType: StoreType<AppState, LocalState, ChildState, Action>
+    private(set) var storeType: StoreType<AppState, LocalState, ChildState, Action>
     let presenter: Presenter<ChildState, Action, Props, Content>
 
     public var body: some View {
@@ -30,44 +30,24 @@ public struct ViewWithStore<AppState, LocalState, ChildState, Action, Props, Con
 }
 
 public extension ViewWithStore {
-    init(store: ChildStore<AppState, LocalState, ChildState, Action>,
-         props: @escaping (ChildState, PublishingStore<ChildState, Action>) -> Props,
-         content: @escaping (Props) -> Content,
-         removeStateDuplicates equating: Equating<ChildState> = .neverEqual,
-         queue: PresentationQueue) {
+    func useStore(_ store: ChildStore<AppState, LocalState, ChildState, Action>) -> Self {
+        var view = self
+        view.storeType = .childStore(store)
+        return view
+    }
 
-        storeType = .childStore(store)
-        presenter = Presenter(
-            props: props,
-            content: content,
-            removeDuplicates: equating.predicate,
-            queue: queue
-        )
+    func useStore(_ store: ScopeStore<AppState, ChildState>) -> Self {
+        var view = self
+        view.storeType = .scopeStore(store)
+        return view
     }
 }
 
 public extension ViewWithStore {
-    init(store: ScopeStore<AppState, ChildState>,
-         props: @escaping (ChildState, PublishingStore<ChildState, Action>) -> Props,
+    init(props: @escaping (ChildState, PublishingStore<ChildState, Action>) -> Props,
          content: @escaping (Props) -> Content,
          removeStateDuplicates equating: Equating<ChildState> = .neverEqual,
-         queue: PresentationQueue) {
-
-        storeType = .scopeStore(store)
-        presenter = Presenter(
-            props: props,
-            content: content,
-            removeDuplicates: equating.predicate,
-            queue: queue
-        )
-    }
-}
-
-public extension ViewWithStore where AppState == ChildState {
-    init(props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
-         content: @escaping (Props) -> Content,
-         removeStateDuplicates equating: Equating<AppState> = .neverEqual,
-         queue: PresentationQueue) {
+         queue: PresentationQueue = .sharedPresentationQueue) {
 
         storeType = .rootStore
         presenter = Presenter(
@@ -78,3 +58,57 @@ public extension ViewWithStore where AppState == ChildState {
         )
     }
 }
+
+public extension ViewWithStore where Props == (ChildState, PublishingStore<ChildState, Action>) {
+    init(content: @escaping (Props) -> Content,
+         removeStateDuplicates equating: Equating<ChildState> = .neverEqual,
+         queue: PresentationQueue = .sharedPresentationQueue) {
+
+        storeType = .rootStore
+        presenter = Presenter(
+            props: { state, store in (state, store) },
+            content: content,
+            removeDuplicates: equating.predicate,
+            queue: queue
+        )
+    }
+}
+
+
+//
+//public extension ViewWithStore {
+//    init(store: ScopeStore<AppState, ChildState>,
+//         props: @escaping (ChildState, PublishingStore<ChildState, Action>) -> Props,
+//         content: @escaping (Props) -> Content,
+//         removeStateDuplicates equating: Equating<ChildState> = .neverEqual,
+//         queue: PresentationQueue = .sharedPresentationQueue) {
+//
+//        storeType = .scopeStore(store)
+//        presenter = Presenter(
+//            props: props,
+//            content: content,
+//            removeDuplicates: equating.predicate,
+//            queue: queue
+//        )
+//    }
+//}
+
+//
+//
+//public extension ViewWithStore {
+//    init(store: ChildStore<AppState, LocalState, ChildState, Action>,
+//         props: @escaping (ChildState, PublishingStore<ChildState, Action>) -> Props,
+//         content: @escaping (Props) -> Content,
+//         removeStateDuplicates equating: Equating<ChildState> = .neverEqual,
+//         queue: PresentationQueue = .sharedPresentationQueue) {
+//
+//        storeType = .childStore(store)
+//        presenter = Presenter(
+//            props: props,
+//            content: content,
+//            removeDuplicates: equating.predicate,
+//            queue: queue
+//        )
+//    }
+//}
+//
