@@ -11,15 +11,16 @@ import SwiftUI
 import PureduxStore
 import PureduxCommon
 import UIKit
+ 
 
-class ViewEnvStoreDeduplicationTests: ViewWithStoreDeduplicationTests {
+class ViewEnvRootStoreWithoutDeduplicationPropsTests: ViewWithRootStoreWithoutDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreProvidingView(rootStore: rootStore) {
                 Text.withEnvStore(
-                    removeStateDuplicates: .equal { $0.subStateWithIndex.index },
+                    removeStateDuplicates: .neverEqual,
                     props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return state.subStateWithTitle.title
@@ -33,7 +34,7 @@ class ViewEnvStoreDeduplicationTests: ViewWithStoreDeduplicationTests {
     }
 }
 
-class ViewWithStoreDeduplicationTests: XCTestCase {
+class ViewWithRootStoreWithoutDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -53,13 +54,12 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
         rootStore.store()
     }()
 
-    @discardableResult func setupWindowForTests(
-        propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
+    @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
             rootView: Text.with(
                 store: store,
-                removeStateDuplicates: .equal { $0.subStateWithIndex.index },
+                removeStateDuplicates: .neverEqual,
                 props: { (state, _) -> String in
                     propsEvaluatedExpectation.fulfill()
                     return state.subStateWithTitle.title
@@ -72,12 +72,21 @@ class ViewWithStoreDeduplicationTests: XCTestCase {
     }
 }
 
-extension ViewWithStoreDeduplicationTests {
+extension ViewWithRootStoreWithoutDeduplicationPropsTests {
 
-    func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {
+    func test_WhenNoActionAfterSetup_ThenPropsNotEvaluated() {
+        let expectation = expectation(description: "propsEvaluated")
+        expectation.isInverted = true
+
+        setupWindowForTests(propsEvaluatedExpectation: expectation)
+
+        waitForExpectations(timeout: timeout)
+    }
+
+    func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = 1
+        expectation.expectedFulfillmentCount = actionsCount
 
         setupWindowForTests(propsEvaluatedExpectation: expectation)
 
@@ -88,7 +97,7 @@ extension ViewWithStoreDeduplicationTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
+    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
@@ -97,61 +106,9 @@ extension ViewWithStoreDeduplicationTests {
 
         (0..<actionsCount).forEach {
             store.dispatch(UpdateIndex(index: $0))
-        }
-
-        waitForExpectations(timeout: timeout)
-    }
-
-    func test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
-        let actionsCount = 1000
-        let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount
-
-        setupWindowForTests(propsEvaluatedExpectation: expectation)
-
-        (0..<actionsCount).forEach {
-            store.dispatch(UpdateIndex(index: $0))
-        }
-
-        (0..<actionsCount).forEach { _ in
-            store.dispatch(NonMutatingStateAction())
-        }
-
-        waitForExpectations(timeout: timeout)
-    }
-
-    func test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
-        let actionsCount = 1000
-        let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount
-
-        setupWindowForTests(propsEvaluatedExpectation: expectation)
-
-        (0..<actionsCount).forEach {
-            store.dispatch(UpdateIndex(index: $0))
-        }
-
-        (0..<actionsCount).forEach {
-            store.dispatch(UpdateTitle(title: "\($0)"))
         }
 
         waitForExpectations(timeout: timeout)
     }
 }
 
-extension ViewWithStoreDeduplicationTests {
-
-    static var allTests = [
-        ("test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce",
-         test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce),
-
-        ("test_WhenManyMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation",
-         test_WhenManyMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation),
-
-        ("test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation",
-         test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation),
-
-        ("test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation",
-         test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation)
-    ]
-}
