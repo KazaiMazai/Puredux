@@ -16,13 +16,14 @@ struct ViewWithRootStore<AppState, Action, Props, Content>: View
 
     @EnvironmentObject private var storeFactory: EnvStoreFactory<AppState, Action>
 
-    let presenter: Presenter<AppState, Action, Props, Content>
+    let content: ViewWithStore<AppState, Action, Props, Content>
+    private(set) var presentationSettings: PresentationSettings<AppState>
 
     var body: some View {
-        PresentingView(
+        ViewWithPublishingStore(
             store: storeFactory.rootStore(),
-            presenter: presenter
+            content: content,
+            presentationSettings: presentationSettings
         )
     }
 }
- 

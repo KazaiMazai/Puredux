@@ -51,9 +51,11 @@ extension View {
         content: @escaping (Props) -> Self) -> some View {
 
             EnvironmentStorePresentingView<AppState, Action, Props, Self>(
-                presenter: Presenter(
+                content: ViewWithStore(
                     props: props,
-                    content: content,
+                    content: content
+                ),
+                presentationSettings: PresentationSettings(
                     removeDuplicates: by.predicate,
                     queue: queue
                 )
@@ -99,11 +101,13 @@ extension View {
         queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
-        PresentingView(
+        ViewWithPublishingStore(
             store: store,
-            presenter: Presenter(
+            content: ViewWithStore(
                 props: props,
-                content: content,
+                content: content
+            ),
+            presentationSettings: PresentationSettings(
                 removeDuplicates: by.predicate,
                 queue: queue
             )

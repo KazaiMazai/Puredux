@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import PureduxCommon
 
 fileprivate extension DispatchQueue {
     static let sharedPresentationQueue = DispatchQueue(
@@ -15,12 +16,13 @@ fileprivate extension DispatchQueue {
     )
 }
 
-struct PresentingView<AppState, Action, Props, Content: View>: View {
+struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
 
     let store: PublishingStore<AppState, Action>
-    let presenter: Presenter<AppState, Action, Props, Content>
+    let content: ViewWithStore<AppState, Action, Props, Content>
+    var presentationSettings: PresentationSettings<AppState> 
 
     var body: some View {
         makeContent()
@@ -40,18 +42,18 @@ private extension View {
     }
 }
 
-private extension PresentingView {
+private extension ViewWithPublishingStore {
     @ViewBuilder
     func makeContent() -> some View {
         if let props = currentProps {
-            presenter.content(props)
+            content.content(props)
         } else {
             Color.clear
         }
     }
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
-        switch presenter.queue {
+        switch presentationSettings.queue {
         case .main:
             return makePropsPublisherWith(queue: .main)
         case .serialQueue(let queue):
@@ -64,9 +66,10 @@ private extension PresentingView {
     func makePropsPublisherWith(queue: DispatchQueue) -> AnyPublisher<Props, Never> {
         store.statePublisher
             .receive(on: queue)
-            .removeDuplicates(by: presenter.removeDuplicates)
-            .map { presenter.props($0, store) }
+            .removeDuplicates(by: presentationSettings.removeDuplicates)
+            .map { content.props($0, store) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }
+
