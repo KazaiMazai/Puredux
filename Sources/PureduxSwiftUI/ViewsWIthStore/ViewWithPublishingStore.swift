@@ -9,13 +9,6 @@ import SwiftUI
 import Combine
 import PureduxCommon
 
-fileprivate extension DispatchQueue {
-    static let sharedPresentationQueue = DispatchQueue(
-        label: "com.puredux.swiftui.presentation",
-        qos: .userInteractive
-    )
-}
-
 struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
@@ -53,14 +46,7 @@ private extension ViewWithPublishingStore {
     }
 
     func makePropsPublisher() -> AnyPublisher<Props, Never> {
-        switch presentationSettings.queue {
-        case .main:
-            return makePropsPublisherWith(queue: .main)
-        case .serialQueue(let queue):
-            return makePropsPublisherWith(queue: queue)
-        case .sharedPresentationQueue:
-            return makePropsPublisherWith(queue: .sharedPresentationQueue)
-        }
+        makePropsPublisherWith(queue: presentationSettings.queue.dispatchQueue)
     }
 
     func makePropsPublisherWith(queue: DispatchQueue) -> AnyPublisher<Props, Never> {
