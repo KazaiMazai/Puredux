@@ -15,32 +15,30 @@ public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
         content().environmentObject(rootStore)
     }
 
-    /**
-    Initializes a View with a `RootEnvStore` injected into`Content` view via `environmentObject(...)` injection
-
-    - Parameter rootStore: `RootEnvStore` that will be injected into the view hierarchy.
-    - Parameter content: defines `Content`
-
-    - Returns: `View` with injected RootEnvStore.
-
-     `StoreProvidingView` is supposed to be used somewhere on top of the app's views hierarchy.
-     
-     **Important to note:**  Before connecting Views to RootEnvStore, it should be injected into the view hierarchy as an `environmentObject`.
-     `StoreProvidingView` does exactly this:
-
-     ```
-     UIHostingController(
-         rootView: StoreProvidingView(rootStore: rootStore) {
-             FancyView.withEnvStore(
-                 props: presenter.makeProps,
-                 content: { FancyView(props: $0) }
-             )
-         }
-     )
-
-     ```
-     */
-
+    ///    Initializes a View with a `RootEnvStore` injected into`Content` view via `environmentObject(...)` injection
+    ///
+    ///    - Parameter rootStore: `RootEnvStore` that will be injected into the view hierarchy.
+    ///    - Parameter content: defines `Content`
+    ///
+    ///    - Returns: `View` with injected RootEnvStore.
+    ///
+    ///     `StoreProvidingView` is supposed to be used somewhere on top of the app's views hierarchy.
+    ///
+    ///     **Important to note:**  Before connecting Views to RootEnvStore, it should be injected into the view hierarchy as an `environmentObject`.
+    ///     `StoreProvidingView` does exactly this:
+    ///
+    ///     ```
+    ///     UIHostingController(
+    ///         rootView: StoreProvidingView(rootStore: rootStore) {
+    ///             FancyView.withEnvStore(
+    ///                 props: presenter.makeProps,
+    ///                 content: { FancyView(props: $0) }
+    ///             )
+    ///         }
+    ///     )
+    ///
+    ///     ```
+    @available(*, deprecated, message: "Will be removed in the next major release. Use EnvStoreFactory and ViewWithStoreFactory instead")
     public init(rootStore: RootEnvStore<AppState, Aciton>,
                 content: @escaping () -> Content) {
         self.rootStore = rootStore
