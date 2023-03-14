@@ -11,7 +11,6 @@ import SwiftUI
 import PureduxStore
 import PureduxCommon
 import UIKit
- 
 
 class ViewEnvRootStoreWithoutDeduplicationPropsTests: ViewWithRootStoreWithoutDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(
