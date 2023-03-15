@@ -1,9 +1,9 @@
-///
-///  File.swift
-///
-///
-///  Created by Sergey Kazakov on 01.12.2020.
-///
+//
+//  File.swift
+//
+//
+//  Created by Sergey Kazakov on 01.12.2020.
+//
 
 import PureduxStore
 import Combine
