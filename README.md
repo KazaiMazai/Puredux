@@ -291,7 +291,7 @@ let storeProxy = rootStore.store().proxy { appState in appState.subState }
 Now:
 
 ```swift
-let scopeStore = storeFactory.scopeStore() { appState in appState.subState }
+let scopeStore = storeFactory.scopeStore { appState in appState.subState }
 
 ```
 
