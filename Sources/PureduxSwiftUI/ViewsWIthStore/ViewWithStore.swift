@@ -217,7 +217,7 @@ public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewSt
     }
 }
 
-public extension ViewWithStore where Props == (ViewState, Dispatch<Action>) {
+public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewState, Action>) {
     /// Initializes ViewWithStore which  connects its `ContentView`  to the store.
     ///
     /// - Parameter content: defines how `ContentView` is created from the state and store for action dispatching
@@ -240,11 +240,9 @@ public extension ViewWithStore where Props == (ViewState, Dispatch<Action>) {
     /// )
     /// ```
     ///
-    ///
-    init(_ content: @escaping (Props) -> Content) {
-    init(_ content: @escaping ((ViewState, Dispatch<Action>)) -> Content) {
-        self.props = { state, store in (state, store.dispatch) }
-        self.content = content
+    init(_ content: @escaping (ViewState, @escaping Dispatch<Action>) -> Content) {
+        self.props = { state, store in (state, store) }
+        self.content = { props in content(props.0, props.1.dispatch) }
     }
 }
 
