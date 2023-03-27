@@ -119,7 +119,7 @@ public extension ViewWithStore {
     ///  The following Construction with dispatch closure is preferable:
     ///
     ///  ```
-    ///    init(props: @escaping (ViewState, Dispatch<Action>) -> Props,
+    ///    init(props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
     ///         content: @escaping (Props) -> Content) {
     ///         ...
     ///    }
@@ -174,7 +174,7 @@ public extension ViewWithStore {
     /// )
     /// ```
     ///
-    init(props: @escaping (ViewState, Dispatch<Action>) -> Props,
+    init(props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
          content: @escaping (Props) -> Content) {
         self.props = { state, store in props(state, store.dispatch) }
         self.content = content
@@ -242,6 +242,7 @@ public extension ViewWithStore where Props == (ViewState, Dispatch<Action>) {
     ///
     ///
     init(_ content: @escaping (Props) -> Content) {
+    init(_ content: @escaping ((ViewState, Dispatch<Action>)) -> Content) {
         self.props = { state, store in (state, store.dispatch) }
         self.content = content
     }
