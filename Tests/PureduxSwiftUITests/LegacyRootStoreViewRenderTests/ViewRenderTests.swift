@@ -4,7 +4,7 @@ import SwiftUI
 import PureduxStore
 import UIKit
 
-final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
+final class ViewEnvStoreRenderTests: ViewWithRootStoreRenderTests {
 
     @discardableResult override func setupWindowForTests(
         contentRenderedExpectation: XCTestExpectation) -> UIWindow {
@@ -24,7 +24,7 @@ final class ViewEnvStoreRenderTests: ViewWithStoreRenderTests {
     }
 }
 
-class ViewWithStoreRenderTests: XCTestCase {
+class ViewWithRootStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
 
@@ -61,7 +61,7 @@ class ViewWithStoreRenderTests: XCTestCase {
     }
 }
 
-extension ViewWithStoreRenderTests {
+extension ViewWithRootStoreRenderTests {
 
     func test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered() {
         let contentRendered = expectation(description: "contentRendered")
@@ -129,25 +129,5 @@ extension ViewWithStoreRenderTests {
 
         waitForExpectations(timeout: actionDelay * Double(actionsCount) * 4)
     }
-
 }
 
-extension ViewWithStoreRenderTests {
-
-    static var allTests = [
-        ("test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered",
-         test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered),
-
-        ("test_WhenOneActionDispatchedAfterSetup_ThenViewRenderedOnce",
-         test_WhenOneActionDispatchedAfterSetup_ThenViewRenderedOnce),
-
-        ("test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce",
-         test_WhenManyActionsAndPropsNotChanged_ThenViewRenderedOnce),
-
-        ("test_WhenManyActionsDispatchedWithDelayAndPropsChanged_ThenViewRenderedEveryTime",
-         test_WhenManyActionsDispatchedWithDelayAndPropsChanged_ThenViewRenderedEveryTime),
-
-        ("test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce",
-         test_WhenManyActionsDispatchedWithDelayAndPropsNotChanged_ThenViewRenderedOnce)
-    ]
-}

@@ -12,28 +12,7 @@ import PureduxStore
 import PureduxCommon
 import UIKit
 
-class ViewEnvStoreWithAlwaysEqualDeduplicationPropsTests: ViewWithStoreWithAlwaysEqualDeduplicationPropsTests {
-    @discardableResult override func setupWindowForTests(
-        propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
-
-        UIWindow.setupForSwiftUITests(
-            rootView: StoreProvidingView(rootStore: rootStore) {
-                Text.withEnvStore(
-                    removeStateDuplicates: .alwaysEqual,
-                    props: { (state: TestAppState, _: PublishingStore<TestAppState, Action>) -> String in
-                        propsEvaluatedExpectation.fulfill()
-                        return state.subStateWithTitle.title
-                    },
-                    content: {
-                        Text($0)
-                    }
-                )
-            }
-        )
-    }
-}
-
-class ViewWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
+class ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -71,7 +50,7 @@ class ViewWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     }
 }
 
-extension ViewWithStoreWithAlwaysEqualDeduplicationPropsTests {
+extension ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests {
 
     func test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
         let actionsCount = 1000
@@ -101,14 +80,4 @@ extension ViewWithStoreWithAlwaysEqualDeduplicationPropsTests {
         waitForExpectations(timeout: timeout)
     }
 }
-
-extension ViewWithStoreWithAlwaysEqualDeduplicationPropsTests {
-
-    static var allTests = [
-        ("test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce",
-         test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce),
-
-        ("test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce",
-         test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce)
-    ]
-}
+ 
