@@ -13,8 +13,7 @@ public enum ObserverStatus {
     case dead
 }
 
-
-///Observer can be subscribed to Store to handle state updates
+/// Observer can be subscribed to Store to handle state updates
 ///
 public struct Observer<State>: Hashable {
 
@@ -22,7 +21,6 @@ public struct Observer<State>: Hashable {
     ///     - Parameter  status: observer status to handle
     ///
     public typealias StatusHandler = (_ status: ObserverStatus) -> Void
-
 
     ///     Observer's main closure that handle State changes and calls complete handler
     ///        - Parameter state: new observed State

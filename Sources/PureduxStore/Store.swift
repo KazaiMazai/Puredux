@@ -13,7 +13,6 @@ public extension Store {
     /// 
     typealias Dispatch = (_ action: Action) -> Void
 
-
     /// Closure that takes Observer as a parameter and handles Store's subscribtions
     ///
     typealias Subscribe = (_ observer: Observer<State>) -> Void
@@ -30,7 +29,6 @@ public struct Store<State, Action> {
     public func subscribe(observer: Observer<State>) {
         subscribe(observer)
     }
-
 
     /// Initializes a new light-weight Store
     ///
@@ -66,7 +64,6 @@ public extension Store {
     }
 }
 
-
 public extension Store {
 
     /// Initializes a new scope Store with state mapping to local substate.
@@ -94,7 +91,6 @@ public extension Store {
             })
     }
 
-
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -116,6 +112,4 @@ public extension Store {
             })
     }
 
-    
 }
-

@@ -256,4 +256,3 @@ final class RootStoreTests: XCTestCase {
         }
     }
 }
-

@@ -17,9 +17,8 @@ struct ActionsInterceptor<Action> {
     let handler: (Action, @escaping Dispatch<Action>) -> Void
     let dispatcher: Dispatch<Action>
 
-    func interceptIfNeeded(_ action: ScopedAction<Action>) -> Void {
+    func interceptIfNeeded(_ action: ScopedAction<Action>) {
         guard action.storeId == storeId else { return }
         handler(action.action, dispatcher)
     }
 }
-

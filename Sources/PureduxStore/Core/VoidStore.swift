@@ -19,4 +19,3 @@ struct VoidStore<Action>: StoreProtocol {
 
     func dispatch(scopedAction: ScopedAction<Action>) { }
 }
-

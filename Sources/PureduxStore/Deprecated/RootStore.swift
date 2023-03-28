@@ -11,12 +11,11 @@ public enum StoreQueue {
     case main
     case global(qos: DispatchQoS = .userInteractive)
 }
- 
+
 public typealias Reducer<State, Action> = (inout State, Action) -> Void
 
 public final class RootStore<State, Action> {
     private let internalStore: CoreStore<State, Action>
-
 
     /// Initializes a new RootStore with provided queue, initial state and reducer
     ///
@@ -71,4 +70,3 @@ public extension RootStore {
         }
     }
 }
-

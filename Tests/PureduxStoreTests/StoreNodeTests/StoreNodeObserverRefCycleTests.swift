@@ -9,7 +9,9 @@ import XCTest
 @testable import PureduxStore
 
 final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
-    typealias ChildStore = StoreNode<StoreNode<VoidStore<Action>, TestState, TestState, Action>, ChildTestState, StateComposition, Action>
+    typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
+    typealias ChildStore = StoreNode<ParentStore, ChildTestState, StateComposition, Action>
+
     let timeout: TimeInterval = 3
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
         initialState: TestState(currentIndex: 0),
@@ -17,7 +19,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     )
 
     func test_WhenStrongRefToStoreObjectAndObserverLive_ThenReferencCycleIsCreated() {
-        weak var weakChildStore: ChildStore? = nil
+        weak var weakChildStore: ChildStore?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -31,7 +33,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
             let storeObject = strongChildStore.storeObject()
 
-            let observer = Observer<StateComposition> { state, complete in
+            let observer = Observer<StateComposition> { _, complete in
                 storeObject.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
@@ -43,7 +45,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     }
 
     func test_WhenStrongRefToStoreObjectAndObserverDead_ThenStoreIsReleased() {
-        weak var weakChildStore: ChildStore? = nil
+        weak var weakChildStore: ChildStore?
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
@@ -59,7 +61,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
             let storeObject = strongChildStore.storeObject()
 
-            let observer = Observer<StateComposition> { state, complete in
+            let observer = Observer<StateComposition> { _, complete in
                 storeObject.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
                 asyncExpectation.fulfill()
@@ -74,7 +76,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     }
 
     func test_WhenStoreAndObserverLive_ThenStoreIsReleased() {
-        weak var weakChildStore: ChildStore? = nil
+        weak var weakChildStore: ChildStore?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -88,7 +90,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
             let store = strongChildStore.store()
 
-            let observer = Observer<StateComposition> { state, complete in
+            let observer = Observer<StateComposition> { _, complete in
                 store.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }

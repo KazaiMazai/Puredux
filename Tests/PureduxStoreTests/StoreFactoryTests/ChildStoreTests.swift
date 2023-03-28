@@ -158,7 +158,7 @@ final class ChildStoreTests: XCTestCase {
         }
     }
 }
- 
+
 final class ChildStoreWithoutStateMappingTests: XCTestCase {
     let timeout: TimeInterval = 10
 

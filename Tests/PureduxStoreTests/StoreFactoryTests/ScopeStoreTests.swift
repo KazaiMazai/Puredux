@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 @testable import PureduxStore
 
-
 final class ScopedStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
@@ -65,7 +64,6 @@ final class ScopedStoreTests: XCTestCase {
             XCTAssertEqual(receivedStateIndex, expectedStateIndex)
         }
     }
-
 
     func test_WhenActionDispatchedToScopedStore_ThenStateReceived() {
         let initialStateIndex = 1
@@ -249,7 +247,7 @@ final class ScopedStoreOptionalStateTests: XCTestCase {
 
         let store: Store<Int, Action> = factory.scopeStore(toOptional: { _  in nil })
 
-        let observer = Observer<Int> { state, complete in
+        let observer = Observer<Int> { _, complete in
             complete(.active)
             notReceivedExpectation.fulfill()
         }
@@ -270,7 +268,7 @@ final class ScopedStoreOptionalStateTests: XCTestCase {
 
         let store: Store<Int?, Action> = factory.scopeStore(to: { _  in nil })
 
-        let observer = Observer<Int?> { state, complete in
+        let observer = Observer<Int?> { _, complete in
             complete(.active)
             receivedExpectation.fulfill()
         }

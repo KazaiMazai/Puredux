@@ -12,8 +12,8 @@ final class RootStoreRefCyclesTests: XCTestCase {
     let timeout: TimeInterval = 3
 
     func test_WhenGetStore_ThenNoStrongRefToRootStore() {
-        weak var rootStore: RootStore<TestState, Action>? = nil
-        var store: Store<TestState, Action>? = nil
+        weak var rootStore: RootStore<TestState, Action>?
+        var store: Store<TestState, Action>?
 
         autoreleasepool {
             let strongRootStore = RootStore<TestState, Action>(
@@ -29,4 +29,3 @@ final class RootStoreRefCyclesTests: XCTestCase {
         XCTAssertNil(rootStore)
     }
 }
- 

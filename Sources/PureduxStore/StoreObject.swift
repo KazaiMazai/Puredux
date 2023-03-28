@@ -30,7 +30,6 @@ public class StoreObject<State, Action> {
         subscribe(observer)
     }
 
-
     /// Initializes a new StoreObject
     ///
     /// - Parameter dispatch: Closure that handles Store's dispatching Actions
@@ -98,5 +97,3 @@ public extension StoreObject {
         )
     }
 }
-
-
