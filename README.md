@@ -65,13 +65,11 @@ struct FancyView: View {
 
 extension FancyView {
 
-  init(state: AppState, 
-      dispatch: @escaping Dispatch<Action>) {
-
-       init(
+  init(state: AppState, dispatch: @escaping Dispatch<Action>) {
+      self.init(
           title: state.title,
           didAppear: { dispatch(FancyViewDidAppearAction()) }
-       )
+      )
    }
 }
 ```
