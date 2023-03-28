@@ -117,7 +117,7 @@ extension CoreStore {
     }
 
     func dispatch(scopedAction: ScopedAction<Action>) {
-        queue.async(flags: .barrier){ [weak self] in
+        queue.async(flags: .barrier) { [weak self] in
             guard let self = self else {
                 return
             }
@@ -142,4 +142,3 @@ extension CoreStore {
         }
     }
 }
- 

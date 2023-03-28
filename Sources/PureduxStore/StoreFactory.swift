@@ -7,16 +7,14 @@
 
 import Foundation
 
-import Foundation
-
 public final class StoreFactory<State, Action> {
     private let rootStoreNode: RootStoreNode<State, Action>
-
 
     /// Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
     ///
     /// - Parameter initialState: The initial state for the store
-    /// - Parameter interceptor: Interceptor's closure that takes action and dispatch function as parameters. Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
+    /// - Parameter interceptor: Interceptor's closure that takes action and dispatch function as parameters.
+    /// Interceptor is called right before Reducer on the same DispatchQueue that Store operates on.
     /// - Parameter qos: defines the DispatchQueue QoS that reducer will be performed on
     /// - Parameter reducer: The function that is called on every dispatched Action and performs state mutations
     ///
@@ -55,7 +53,6 @@ public extension StoreFactory {
         rootStoreNode.store()
     }
 
-
     /// Initializes a new Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -80,8 +77,6 @@ public extension StoreFactory {
     func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         rootStoreNode.store().scope(toOptional: localState)
     }
-
-
 
     /// Initializes a new child store with initial state
     ///
@@ -126,7 +121,6 @@ public extension StoreFactory {
         .storeObject()
     }
 
-
     /// Initializes a new child store with initial state
     ///
     /// - Returns: Child StoreObject
@@ -166,4 +160,3 @@ public extension StoreFactory {
 
         }
 }
-

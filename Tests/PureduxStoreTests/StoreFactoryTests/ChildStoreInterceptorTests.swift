@@ -8,7 +8,7 @@
 import XCTest
 @testable import PureduxStore
 
-final class DispatchActionsOnChildStoreInterceptionTests: XCTestCase {
+final class ActionsOnChildStoreInterceptionTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionDispatchAndIntercepted_ThenResultReducedOnMainStore() {
@@ -19,7 +19,7 @@ final class DispatchActionsOnChildStoreInterceptionTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor:  { asyncAction, dispatch  in
+            interceptor: { asyncAction, dispatch  in
                 guard let asyncAction = (asyncAction as? AsyncAction) else {
                     return
                 }
@@ -93,8 +93,7 @@ final class DispatchActionsOnChildStoreInterceptionTests: XCTestCase {
     }
 }
 
-
-final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
+final class ActionsOnMainStoreInterceptionTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionDispatchAndIntercepted_ThenResultReducedOnMainStore() {
@@ -158,7 +157,6 @@ final class DispatchActionsOnMainStoreInterceptionTests: XCTestCase {
                 state.reduce(action: action)
             }
         )
-
 
         let childStore = factory.childStore(
             initialState: ChildTestState(currentIndex: 0),
@@ -244,7 +242,6 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
                 state.reduce(action: action)
             }
         )
-
 
         let childStore = factory.childStore(
             initialState: ChildTestState(currentIndex: 0),
