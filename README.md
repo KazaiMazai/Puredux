@@ -474,7 +474,7 @@ Typically when we present screens or some flows of the app.
 `StoreObject<State, Action>` prevents from errors that could occur because of confusion with 
 Store<State, Action 
 
-### How does Actions dispatching work with parent/child stores?
+### How are Actions dispatched with parent/child stores?
 
 First of all it follows the rules:
 - Actions flow to the root. From child stores to parent
