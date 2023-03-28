@@ -36,12 +36,345 @@ ____________
 ## Quick Start Guide
 
 1. Import:
+
 ```swift
 import PureduxSwiftUI
 
 ```
 
-2. Implement your `FancyView`, explicitly declaring it's `Props` as an input: 
+2. Implement your FancyView
+
+```swift
+
+typealias Command = () -> Void
+
+struct FancyView: View {
+    let title: String
+    let didAppear: Command
+    
+    var body: some View {
+        Text(title)
+            .onAppear { didAppear() }
+    }
+}
+```
+
+3. Declare how view connects to store:
+
+```swift
+
+extension FancyView {
+
+  init(state: AppState, 
+      dispatch: @escaping Dispatch<Action>) {
+
+       init(
+          title: state.title,
+          didAppear: { dispatch(FancyViewDidAppearAction()) }
+       )
+   }
+}
+```
+
+3. Connect your fancy view to the store, providing **how** it should be connected:
+
+```swift
+
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(
+    initialState: state,
+    reducer: { state, action in state.reduce(action) }
+)
+ 
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+ 
+UIHostingController(
+    rootView: ViewWithStoreFactory(envStoreFactory) {
+        
+        ViewWithStore { state, dispatch in
+            FancyView(
+              state: state,
+              dispatch: dispatch
+            )
+        }
+    }
+)
+ 
+```
+## How to migrate from v1.0.x to v1.1.x
+
+Old API will be deprecated in the next major update. 
+Good time to migrate to new API, especially if you plan to use new features like child stores.
+
+<details><summary>Click for details</summary>
+<p>
+
+1. Migrate to from `RootStore` to `StoreFactory` like mentioned in PureduxStore [docs](https://github.com/KazaiMazai/PureduxStore)
+
+Before:
+
+```swift
+let appState = AppState()
+let rootStore = RootStore<AppState, Action>(initialState: appState, reducer: reducer)
+let rootEnvStore = RootEnvStore(rootStore: rootStore)
+let fancyFeatureStore = rootEnvStore.store().proxy { $0.yourFancyFeatureSubstate }
+
+let presenter = FancyViewPresenter() 
+
+```
+
+Now:
+
+```swift
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(initialState: state, reducer: reducer)
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+let fancyFeatureStore = envStoreFactory.scopeStore { $0.yourFancyFeatureSubstate }
+
+let presenter = FancyViewPresenter() 
+
+```
+2. Migrate from `StoreProvidingView` to `ViewWithStoreFactory` in case your implementation relied on injected `RootEnvStore`
+
+Before:
+
+```swift
+ UIHostingController(
+      rootView: StoreProvidingView(rootStore: rootEnvStore) {
+        
+        //content view
+     }
+ )
+```
+
+Now:
+
+```swift
+ UIHostingController(
+    rootView: ViewWithStoreFactory(envStoreFactory) {
+        
+       //content view
+    }
+)
+```
+
+
+3. Migrate from `View.with(...)` extension to `ViewWithStore(...)`in case your implementation relied on explicit store
+
+Before:
+
+```swift 
+
+ FancyView.with(
+    store: fancyFeatureStore,
+    removeStateDuplicates: .equal {
+        $0.title
+    },
+    props: presenter.makeProps,
+    queue: .main,
+    content: { FancyView(props: $0) }
+)
+```
+
+Now:
+
+```swift 
+ViewWithStore(props: presenter.makeProps) {
+    FancyView(props: $0)
+}
+.usePresentationQueue(.main)
+.removeStateDuplicates(.equal { $0.title })
+.store(fancyFeatureStore)
+                    
+```
+
+4. Migrate from `View.withEnvStore(...)` extension to `ViewWithStore(...)` in case your implementation relied on injected `RootEnvStore`
+
+Before:
+
+```swift 
+
+ FancyView.withEnvStore(
+    removeStateDuplicates: .equal {
+        $0.title
+    },
+    props: presenter.makeProps,
+    queue: .main,
+    content: { FancyView(props: $0) }
+)
+```
+Now:
+
+```swift 
+ViewWithStore(props: presenter.makeProps) {
+  FancyView(props: $0)
+}
+.usePresentationQueue(.main)
+.removeStateDuplicates(.equal { $0.title })
+
+                    
+```
+
+
+
+</p>
+</details>
+
+## Q&A
+
+<details><summary>Click for details</summary>
+<p>
+
+
+### What is PureduxStore?
+
+It's minilistic UDF architecture store implementation. 
+More details can be found [here](https://github.com/KazaiMazai/PureduxStore)
+
+
+### How to connect view to store?
+
+PureduxSwiftUI allows to connect view to the following kinds of stores:
+
+- Explicitly provided store
+- Root store - app's central single store
+- Scope store - scoped proxy to app's central single store
+- Child store - a composition of independent store with app's root store 
+
+### How to connect view to the explicitly provided store:
+
+```swift
+
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(initialState: state, reducer: reducer)
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+let featureStore = envStoreFactory.scopeStore { $0.yourFancyFeatureSubstate }
+ 
+UIHostingController(
+    rootView: ViewWithStore { state, dispatch in
+        FancyView(
+          state: state,
+          dispatch: dispatch
+        )
+    }
+    .store(featureStore)
+)
+
+```
+
+### How to connect view to the EnvStoreFactory's root store:
+ 
+```swift
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(initialState: state, reducer: reducer)
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+ 
+UIHostingController(
+    rootView: ViewWithStoreFactory(envStoreFactory) {
+        
+        ViewWithStore { appState, dispatch in
+            FancyView(
+              state: state,
+              dispatch: dispatch
+            )
+        }
+    }
+)
+
+```
+
+### How to connect view to the EnvStoreFactory's root scope store
+
+```swift
+
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(initialState: state, reducer: reducer)
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+ 
+UIHostingController(
+    rootView: ViewWithStoreFactory(envStoreFactory) {
+        
+        ViewWithStore { featureSubstate, dispatch in
+            FancyView(
+              state: substate,
+              dispatch: dispatch
+            )
+        }
+        .scopeStore({ $0.yourFancyFeatureSubstate })
+    }
+)
+
+```
+### How to connect view to the EnvStoreFactory's root child store
+
+Child store is special. More details in PureduxStore [docs](https://github.com/KazaiMazai/PureduxStore)
+
+- ChildStore is a composition of root store and newly created local store.
+- ChildStore's state is a mapping of the local child state and root store's state
+- Child store has its own reducer. 
+- ChildStore's lifecycle along with its LocalState is determined by `ViewWithStore's` lifecycle.
+- Child state would be destroyed when ViewWithStore disappears from the hierarchy.
+
+When child store is used, view recieves composition of root and child state.
+This allows `View` to use both a local child state as well as global app's root state.
+
+#### Child actions dispatching also works in a special way.
+Child actions dispatching and state delivery works in the following way:
+- Actions go down from child stores to root store
+- Actions never go from one child stores to another child store
+- States go up from root store to child stores and views
+
+When action is dispatched to RootStore:
+- action is delivered to root store's reducer
+- action is not delivered to child store's reducer
+- root state update triggers root store's subscribers
+- root state update triggers child stores' subscribers
+- Interceptor dispatches additional actions to RootStore
+
+ When action is dispatched to ChildStore:
+ - action is delivered to root store's reducer
+ - action is delivered to child store's reducer
+ - root state update triggers root store's subscribers.
+ - root state update triggers child store's subscribers.
+ - local state update triggers child stores' subscribers.
+ - Interceptor dispatches additional actions to ChildStore
+
+
+```swift
+
+let appState = AppState()
+let storeFactory = StoreFactory<AppState, Action>(initialState: state, reducer: reducer)
+let envStoreFactory = EnvStoreFactory(storeFactory: storeFactory)
+ 
+UIHostingController(
+    rootView: ViewWithStoreFactory(envStoreFactory) {
+        
+        ViewWithStore { stateComposition, dispatch in
+            FancyView(
+              state: substate,
+              dispatch: dispatch
+            )
+        }
+        .childStore(
+            initialState: ChildState(),
+            stateMapping: { appState, childState in
+                StateComposition(appState, childState)
+            },
+            reducer: { childState, action in childState.reduce(action) }
+        )
+    }
+)
+
+```
+
+
+### How to split view from state with props?
+
+PureduxSwiftUI allows to add an extra presentation layer between view and state.
+It can be done for view reusability purposes. 
+It also allows to improve performance by moving props preparation to background queue.
+
+We can add `Props`:
 
 ```swift
 struct FancyView: View {
@@ -61,20 +394,16 @@ extension FancyView {
 }
 
 ```
+`Props` can be though of as a view model.
 
-```swift
-typealias Command = () -> Void
-
-```
-
-3.  Prepare `Props` with current state and store. For e.g. as a part of some fancy presenter:
+2.  Prepare `Props` . 
 
 ```swift
 
-struct FancyViewPresenter {
-    func makeProps(
-        state: FancyFeatureState, 
-        store: PublishingStore<FancyFeatureState, Action>) -> FancyView.Props {
+extension FancyView.Props {
+    static func makeProps(
+          state: AppState, 
+          dispatch: @escaping Dispatch<Action>) -> FancyView.Props {
         
         //prepare props for your fancy view
     }
@@ -82,35 +411,20 @@ struct FancyViewPresenter {
 
 ```
 
-4. Connect your fancy view to the store, providing **how** it should be connected:
+3. Connect View with store by providing props closure and content view from `Props`:
 
 ```swift
-let appState = AppState()
-let rootStore = RootStore<AppState, Action>(initialState: appState, reducer: reducer)
-let rootEnvStore = RootEnvStore(rootStore: rootStore)
-let fancyFeatureStore = rootEnvStore.store().proxy { $0.yourFancyFeatureSubstate }
 
-let presenter = FancyViewPresenter() 
-            
-UIHostingController(
-    rootView: FancyView.with(
-        store: fancyFeatureStore,
-        props: presenter.makeProps,
-        content: { FancyView(props: $0) }
+ViewWithStore(props: FancyView.Props.makeProps) { props in
+    FancyView(
+      props: props
     )
-)
- 
+}
+
 ```
 
-## Q&A
+This allows to make Views dependent only on `Props` and reuse it in different ways.
 
-<details><summary>Click for details</summary>
-<p>
-
-
-### What is PureduxStore?
-
-- It's minilistic UDF architecture store implementation. More details can be found [here](https://github.com/KazaiMazai/PureduxStore)
 
 ### Which DispatchQueue is used to prepare props?
 
@@ -119,7 +433,8 @@ UIHostingController(
   
 ### Is it safe at all?
   
-- PureduxSwiftUI hops to the main dispatch queue to update View. So yes, it's safe. Unless you try to do UI related things (you should not) during your `Props` preparation.  
+- PureduxSwiftUI hops to the main dispatch queue in the end to update View. 
+So yes, it's safe. Unless you try to do UI related things (you should not) during your `Props` preparation.  
 
 ### How to change  presentation queue that is used to prepare props?
 
@@ -127,12 +442,10 @@ UIHostingController(
 - PureduxSwiftUI allows to use main queue or user-provided custom queue. The only requirement for the custom queue is to be **serial** one.
 
 ```swift 
-FancyView.with(
-    store: fancyFeatureStore,
-    props: presenter.makeProps,
-    queue: .main,
-    content: { FancyView(props: $0) }
-)
+ViewWithStore {
+   //Your content here
+}
+.usePresentationQueue(.main)
   
 ```
 
@@ -143,22 +456,20 @@ let queue = DispatchQueue(label: "some.queue", qos: .userInteractive)
   
 ```
   
+```swift 
+ViewWithStore {
+   //your content here
+}
+.usePresentationQueue(.serialQueue(queue))
   
-```swift
-  
-FancyView.with(
-    store: fancyFeatureStore,
-    props: presenter.makeProps,
-    queue: .serialQueue(queue),
-    content: { FancyView(props: $0) }
-)
-        
 ```
+ 
 ### Why we might need to prepare props on background queue?
   
 - Props evaluation maybe heavier than we would love to. 
 We may deal with a large array of items, AttributedStrings, and any other slow things.
 Doing it on the main queue may eventually slow down our fancy app.
+
 
 ### How to deduplicate state changes?
 
@@ -167,16 +478,11 @@ Doing it on the main queue may eventually slow down our fancy app.
 - It's done with the help of `Equating<State>` guy:
 
 ```swift 
-
- FancyView.with(
-    store: fancyFeatureStore,
-    removeStateDuplicates: .equal {
-        $0.title
-    },
-    props: presenter.makeProps,
-    content: { FancyView(props: $0) }
-)
-                    
+ViewWithStore {
+   //Your content here
+}
+.removeStateDuplicates(.equal { $0.title })
+  
 ```
 ### Why we might need to deduplicate state changes?
   
@@ -191,27 +497,20 @@ The app state may be huuuuge and we might love to re-evaluate `Props` only when 
 
 ```swift 
 VStack {  
-    FancyView.with(
-        store: fancyFeatureStore,
-        removeStateDuplicates: .equal {
-            $0.title
-        },
-        props: presenter.makeProps,
-        content: { FancyView(props: $0) }
+    ViewWithStore { state, dispatch in
+        FancyTitleView(state: state, dispatch: dispatch)
     )
+    .removeStateDuplicates(.equal { $0.title })
 
-    FancyView.with(
-        store: fancyFeatureStore,
-        removeStateDuplicates: .equal {
-            $0.subtitle
-        },
-        props: presenter.makeProps,
-        content: { FancyView(props: $0) }
+    ViewWithStore { state, dispatch in
+        FancySubtitleView(state: state, dispatch: dispatch)
     )
+    .removeStateDuplicates(.equal { $0.subtitle })
 }               
 ```
 
-### Any other `Equating<State>`  details ?
+
+### Any other `Equating<State>` details ?
 
 - Equating is a protocol witness for Equtable. It answers the question: "Are these states equal?" 
 - With the help of it, deduplication happens.
@@ -229,169 +528,21 @@ Here is the definition:
 It has handy extensions, like  `Equating.alwaysEqual` or `Equating.neverEqual` as well as `&&` operator:
 
 ```swift 
-  
-FancyView.with(
-    store: fancyFeatureStore,
-    removeStateDuplicates: 
-        .equal { $0.title } &&
-        .equal { $0.subtitle },
-    props: presenter.makeProps,
-    content: { FancyView(props: $0) }
+
+ViewWithStore { state, dispatch in
+        FancyView(state: state, dispatch: dispatch)
 )
-            
+.removeStateDuplicates(
+    .equal { $0.title } &&
+    .equal { $0.subtitle }
+)            
 ```
 
-### How to connect View to Store ?
-  
-- There are two ways of doing it: with explicit in implicit store.
-  
-Explicit store:
-
-```swift
-  
-UIHostingController(
-    rootView: FancyView.with(
-        store: fancyFeatureStore,
-        props: presenter.makeProps,
-        content: { FancyView(props: $0) }
-    )
-)
-  
-```
-Implicit env store:
-  
-```swift
-  
-UIHostingController(
-    rootView: StoreProvidingView(rootStore: rootStore) {
-  
-        FancyView.withEnvStore(
-            props: presenter.makeProps,
-            content: { FancyView(props: $0) }  
-        )
-    }
-)
-
-```
-  
-### How implicit store is passed?
-- It's injected via `environmentObject(...)` and then resolved as `@EnvironmentObject`
-  
-  
-### When explicit/implicit store should be used?
-Explicit:
-- Explicit store should be used when we want to pass the store explicitly as a parameter
-- Explicit store is preferable when aiming to isolate features from the entire AppState
-  
-Implicit:  
-- Implicit store should be used when we are ok with `EnvironmentObject` injections
-- Implicit store should be used when we are ok with exposing the entire AppState to features
-  
-  
-### Any other advices?
-  
-- I would recommend to separate plain Views and PresentingViews. 
-- Make plain Views depend on their Props
-- Make PresentingViews deal with Store and Presentaion logic.
-  
-  
-```swift
- // some action
-  
-extension Actions {
-    struct FetchFancyData: Action {
-
-    }
-}
-  
-```
-
-Presenting view with explicit store:
-  
-```swift
-  
-struct FancyPresentingView: View {
-    let store: PublishingStore<FancyFeatureState, Action>)
-    
-    var body: some View {
-        FancyView.with(
-            store: store,
-            props: makeProps,
-            content: { FancyView(props: $0) }
-        )
-    }
-  
-    func makeProps(
-        state: FancyFeatureState, 
-        store: PublishingStore<FancyFeatureState, Action>) -> FancyView.Props {
-        
-          FancyView.Props(
-              title: state.title,
-              onAppear: { store.dispatch(Actions.FetchFancyData()) }
-          )
-    }
-}
-
-```
-
-Presenting view with implicit store:
-  
-```swift
-struct FancyEnvPresentingView: View {
-     
-    var body: some View {
-        FancyView.withEnvStore(
-            props: makeProps,
-            content: { FancyView(props: $0) }
-        )
-    }
-  
-    func makeProps(
-        state: AppState, 
-        store: PublishingStore<AppState, Action>) -> FancyView.Props {
-        
-          FancyView.Props(
-              title: state.yourFancyFeatureSubstate.title,
-              onAppear: { store.dispatch(Actions.FetchFancyData()) }
-          )
-    }
-}
-
-```
-  
-Presenting view that uses root env store and makes proxy from it  
-  
-```swift
-struct FancyEnvSubstorePresentingView: View {
-    @EnvironmentObject private var rootEnvStore: RootEnvStore<AppState, Action>
-     
-    var body: some View {
-        FancyView.with(
-            store: rootEnvStore.store().proxy { $0.yourFancyFeatureSubstate },
-            props: makeProps,
-            content: { FancyView(props: $0) }
-        )
-    }
-  
-    func makeProps(
-        state: FancyFeatureState, 
-        store: PublishingStore<FancyFeatureState, Action>) -> FancyView.Props {
-        
-          FancyView.Props(
-              title: state.title,
-              onAppear: { store.dispatch(Actions.FetchFancyData()) }
-          )
-    }
-}
-
-```
-  
 
 </p>
 </details>
 
   
-
 
 ## Licensing
 
