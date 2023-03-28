@@ -2,29 +2,29 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 03.12.2021.
+//  Created by Sergey Kazakov on 22.02.2023.
 //
 
 import XCTest
 @testable import PureduxStore
 
-final class RootStoreProxyTests: XCTestCase {
+final class FactoryRootStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    func test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved() {
+    func test_WhenActionsDiptached_ThenReduceOrderPreserved() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -35,23 +35,51 @@ final class RootStoreProxyTests: XCTestCase {
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenSubscribedToProxy_ThenCurrentStateReceived() {
+    func test_WhenActionsDiptached_ThenInterceptorOrderPreserved() {
+        let actionsCount = 100
+        let expectations = (0..<actionsCount).map {
+            XCTestExpectation(description: "index \($0)")
+        }
+
+        let factory = StoreFactory<TestState, Action>(
+            initialState: TestState(currentIndex: 0),
+            interceptor: { action, _  in
+                guard let action = (action as? UpdateIndex) else {
+                    return
+                }
+                expectations[action.index].fulfill()
+            },
+            reducer: { state, action  in state.reduce(action: action) }
+        )
+
+        let store = factory.rootStore()
+
+        let actions = (0..<actionsCount).map {
+            UpdateIndex(index: $0)
+        }
+
+        actions.forEach { store.dispatch($0) }
+
+        wait(for: expectations, timeout: timeout, enforceOrder: true)
+    }
+
+    func test_WhenSubscribed_ThenCurrentStateReceived() {
         let expectedStateIndex = 100
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         var receivedStateIndex: Int?
 
-        let observer = Observer<Int> { receivedState, complete in
-            receivedStateIndex = receivedState
+        let observer = Observer<TestState> { receivedState, complete in
+            receivedStateIndex = receivedState.currentIndex
             complete(.active)
             asyncExpectation.fulfill()
         }
@@ -63,39 +91,39 @@ final class RootStoreProxyTests: XCTestCase {
         }
     }
 
-    func test_WhenActionDispatchedToProxy_ThenStateReceived() {
+    func test_WhenSubscribedAndActionDispatched_ThenInitialAndChangedStateReceived() {
         let initialStateIndex = 1
-        let updatedStateindex = 2
+        let updatedStateIndex = 2
 
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 2
 
-        let expectedStateIndexValues = [initialStateIndex, updatedStateindex]
+        let expectedStateIndexValues = [initialStateIndex, updatedStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState)
+            receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }
 
         store.subscribe(observer: observer)
-        store.dispatch(UpdateIndex(index: updatedStateindex))
+        store.dispatch(UpdateIndex(index: updatedStateIndex))
 
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
         }
     }
 
-    func test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription() {
+    func test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription() {
         let initialStateIndex = 1
 
         let asyncExpectation = expectation(description: "Observer state handler")
@@ -103,18 +131,18 @@ final class RootStoreProxyTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState)
+            receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }
 
@@ -127,7 +155,7 @@ final class RootStoreProxyTests: XCTestCase {
         }
     }
 
-    func test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated() {
+    func test_WhenSubscribedMultipleTimes_ThenSubscribersAreNotDuplicated() {
         let initialStateIndex = 1
         let updatedStateIndex = 2
 
@@ -136,18 +164,18 @@ final class RootStoreProxyTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState)
+            receivedStatesIndexes.append(receivedState.currentIndex)
             complete(.active)
         }
 
@@ -162,23 +190,22 @@ final class RootStoreProxyTests: XCTestCase {
         }
     }
 
-    func test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder() {
+    func test_WhenManyActionsDisptached_ThenObserverReceivesAllStatesInCorrectOrder() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
-        let observer = Observer<Int> { receivedState, complete in
-            expectations[receivedState].fulfill()
-
+        let observer = Observer<TestState> { receivedState, complete in
+            expectations[receivedState.currentIndex].fulfill()
             complete(.active)
         }
 
@@ -193,12 +220,11 @@ final class RootStoreProxyTests: XCTestCase {
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed() {
+    func test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed() {
         let initialStateIndex = 1
-        let stateChangesProcessedExpectation = expectation(
-            description: "Actions and State changes processed for sure")
+        let stateChangesProcessedExpectation = expectation(description: "State changes processed for sure")
 
-        let rootStore = RootStore<TestState, Action>(
+        let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
@@ -208,12 +234,12 @@ final class RootStoreProxyTests: XCTestCase {
             }
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = factory.rootStore()
 
         var observerLastReceivedStateIndex: Int?
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState, complete in
 
-            observerLastReceivedStateIndex = receivedState
+            observerLastReceivedStateIndex = receivedState.currentIndex
             complete(.dead)
         }
 
@@ -229,27 +255,3 @@ final class RootStoreProxyTests: XCTestCase {
     }
 }
 
-extension RootStoreProxyTests {
-    static var allTests = [
-        ("test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved",
-         test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved),
-
-        ("test_WhenSubscribedToProxy_ThenCurrentStateReceived",
-         test_WhenSubscribedToProxy_ThenCurrentStateReceived),
-
-        ("test_WhenActionDispatchedToProxy_ThenStateReceived",
-         test_WhenActionDispatchedToProxy_ThenStateReceived),
-
-        ("test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription",
-         test_WhenSubscribedMultipleTimesToProxy_ThenInitialStateReceivedForEverySubscription),
-
-        ("test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated",
-         test_WhenSubscribedMultipleTimesToProxy_ThenSubscribersAreNotDuplicated),
-
-        ("test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder",
-         test_WhenManyActionsDisptachedToProxy_ThenObserverReceivesAllStatesInCorrectOrder),
-
-        ("test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed",
-         test_WhenObserverCompleteWithDeadStatus_ThenObserverEventuallyGetUnsubscribed)
-    ]
-}
