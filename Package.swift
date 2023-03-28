@@ -15,12 +15,10 @@ let package = Package(
     ],
     dependencies: [
         // The heart of Puredux
-//        .package(name: "PureduxStore",
-//                 url: "https://github.com/KazaiMazai/PureduxStore.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/KazaiMazai/PureduxStore.git", .branch("child-store-factory")),
+        .package(name: "PureduxStore", url: "https://github.com/KazaiMazai/PureduxStore.git", from: "1.0.0"),
+
         // Puredux shared utils
-        .package(name: "PureduxCommon",
-                 url: "https://github.com/KazaiMazai/PureduxCommon.git", .upToNextMajor(from: "1.0.0"))
+        .package(name: "PureduxCommon",url: "https://github.com/KazaiMazai/PureduxCommon.git", from: "1.0.0")
     ],
     targets: [
        .target(

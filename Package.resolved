@@ -14,9 +14,9 @@
         "package": "PureduxStore",
         "repositoryURL": "https://github.com/KazaiMazai/PureduxStore.git",
         "state": {
-          "branch": "child-store-factory",
-          "revision": "f266e85e257f0cf96ea18d2dbec54f6311c54fb4",
-          "version": null
+          "branch": null,
+          "revision": "f61e09511fefcf64b5b1ca68cfc853e687c2926c",
+          "version": "1.1.0"
         }
       }
     ]
