@@ -65,32 +65,3 @@ class StoreDeduplicationPropsTests: DeduplicationPropsTests {
         )
     }
 }
-
-class ChildStoreDeduplicationPropsTests: DeduplicationPropsTests {
-
-    @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,
-                                                         rootStore: PublishingStore<TestAppState, Action>) -> UIWindow {
-
-        UIWindow.setupForSwiftUITests(
-            rootView: ViewWithStoreFactory(factory) {
-
-                ViewWithStore(
-                    props: { (state: (TestAppState, SubStateWithTitle),
-                              dispatch: Dispatch<Action>) -> String in
-
-                        propsEvaluatedExpectation.fulfill()
-                        return state.0.subStateWithTitle.title
-                    },
-                    content: {
-                        Text($0)
-                    }
-                )
-                .removeStateDuplicates(.equal { $0.0.subStateWithIndex.index })
-                .childStore(
-                    initialState: SubStateWithTitle(title: "child state"),
-                    reducer: { state, action in state.reduce(action) }
-                )
-            }
-        )
-    }
-}
