@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-final class VCWithStoreWithoutDeduplicationPropsTests: XCTestCase {
+final class NoDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -17,14 +17,16 @@ final class VCWithStoreWithoutDeduplicationPropsTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
@@ -40,7 +42,7 @@ final class VCWithStoreWithoutDeduplicationPropsTests: XCTestCase {
     }
 }
 
-extension VCWithStoreWithoutDeduplicationPropsTests {
+extension NoDeduplicationPropsTests {
 
     func test_WhenNoActionAfterSetupAndNotSubscribed_ThenPropsNotEvaluated() {
         let expectation = expectation(description: "propsEvaluated")
@@ -89,22 +91,4 @@ extension VCWithStoreWithoutDeduplicationPropsTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension VCWithStoreWithoutDeduplicationPropsTests {
-
-    static var allTests = [
-        ("test_WhenNoActionAfterSetupAndNotSubscribed_ThenPropsNotEvaluated",
-         test_WhenNoActionAfterSetupAndNotSubscribed_ThenPropsNotEvaluated),
-
-        ("test_WhenNoActionAfterSetupAndSubscribed_ThenPropsEvaluatedOnce",
-         test_WhenNoActionAfterSetupAndSubscribed_ThenPropsEvaluatedOnce),
-
-        ("test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction",
-         test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction),
-
-        ("test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction",
-         test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction)
-
-    ]
 }

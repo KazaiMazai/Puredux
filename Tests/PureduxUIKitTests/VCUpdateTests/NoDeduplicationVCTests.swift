@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-final class VCWithStoreWithoutDeduplicationVCTests: XCTestCase {
+final class NoDeduplicationVCTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -17,14 +17,16 @@ final class VCWithStoreWithoutDeduplicationVCTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
@@ -43,7 +45,7 @@ final class VCWithStoreWithoutDeduplicationVCTests: XCTestCase {
     }
 }
 
-extension VCWithStoreWithoutDeduplicationVCTests {
+extension NoDeduplicationVCTests {
 
     func test_WhenNoActionAfterSetupAndNotSubscribed_ThenVCNotUpdated() {
         let expectation = expectation(description: "propsEvaluated")
@@ -92,22 +94,4 @@ extension VCWithStoreWithoutDeduplicationVCTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension VCWithStoreWithoutDeduplicationVCTests {
-
-    static var allTests = [
-        ("test_WhenNoActionAfterSetupAndNotSubscribed_ThenVCNotUpdated",
-         test_WhenNoActionAfterSetupAndNotSubscribed_ThenVCNotUpdated),
-
-        ("test_WhenNoActionAfterSetupAndSubscribed_ThenVCUpdatedOnce",
-         test_WhenNoActionAfterSetupAndSubscribed_ThenVCUpdatedOnce),
-
-        ("test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction",
-         test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction),
-
-        ("test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction",
-         test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction)
-
-    ]
 }

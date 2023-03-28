@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-final class VCWithStoreWithDeduplicationPropsTests: XCTestCase {
+final class DeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     let state = TestAppState(
@@ -17,14 +17,16 @@ final class VCWithStoreWithDeduplicationPropsTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
@@ -44,7 +46,7 @@ final class VCWithStoreWithDeduplicationPropsTests: XCTestCase {
     }
 }
 
-extension VCWithStoreWithDeduplicationPropsTests {
+extension DeduplicationPropsTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribed_ThenPropsNotEvaluated() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
@@ -126,24 +128,4 @@ extension VCWithStoreWithDeduplicationPropsTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension VCWithStoreWithDeduplicationPropsTests {
-
-    static var allTests = [
-        ("test_WhenManyNonMutatingActionsAndNotSubscribed_ThenPropsNotEvaluated",
-         test_WhenManyNonMutatingActionsAndNotSubscribed_ThenPropsNotEvaluated),
-
-        ("test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce",
-         test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce),
-
-        ("test_WhenManyMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenManyMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation),
-
-        ("test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation),
-
-        ("test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation)
-    ]
 }

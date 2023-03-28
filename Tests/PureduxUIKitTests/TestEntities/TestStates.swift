@@ -7,27 +7,6 @@
 
 import Foundation
 
-struct TestVCState {
-    var title: String = ""
-
-    mutating func reduce(_ action: Action) {
-        switch action {
-        case let action as UpdateTitle:
-            self.title = action.title
-        default:
-            break
-        }
-    }
-}
-
-struct TestAppState1 {
-    private(set) var vcState = TestVCState()
-
-    mutating func reduce(_ action: Action) {
-        vcState.reduce(action)
-    }
-}
-
 struct SubStateWithTitle {
     var title: String = ""
 
@@ -61,6 +40,14 @@ struct TestAppState {
 
     mutating func reduce(_ action: Action) {
         subStateWithTitle.reduce(action)
+        subStateWithIndex.reduce(action)
+    }
+}
+
+struct TestAppStateWithIndex {
+    private(set) var subStateWithIndex = SubStateWithIndex()
+
+    mutating func reduce(_ action: Action) {
         subStateWithIndex.reduce(action)
     }
 }

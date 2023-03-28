@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-final class VCWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
+final class AlwaysEqualDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -17,14 +17,16 @@ final class VCWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
@@ -43,7 +45,7 @@ final class VCWithStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     }
 }
 
-extension VCWithStoreWithAlwaysEqualDeduplicationPropsTests {
+extension AlwaysEqualDeduplicationPropsTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribedAndDeduplicationAlwaysEqual_ThenPropsNotEvaluated() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
@@ -87,18 +89,4 @@ extension VCWithStoreWithAlwaysEqualDeduplicationPropsTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension VCWithStoreWithAlwaysEqualDeduplicationPropsTests {
-
-    static var allTests = [
-        ("test_WhenManyNonMutatingActionsAndNotSubscribedAndDeduplicationAlwaysEqual_ThenPropsNotEvaluated",
-         test_WhenManyNonMutatingActionsAndNotSubscribedAndDeduplicationAlwaysEqual_ThenPropsNotEvaluated),
-
-        ("test_WhenManyNonMutatingActionsDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce",
-         test_WhenManyNonMutatingActionsDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce),
-
-        ("test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce",
-         test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce)
-    ]
 }

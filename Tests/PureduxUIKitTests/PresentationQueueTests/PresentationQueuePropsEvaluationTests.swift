@@ -17,14 +17,16 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(queue: PresentationQueue, makeProps: @escaping () -> Void) -> StubViewController {
@@ -108,22 +110,4 @@ extension PresentationQueuePropsEvaluationTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension PresentationQueuePropsEvaluationTests {
-
-    static var allTests = [
-        ("test_WhenMainQueueProvided_ThenPropsEvaluatedOnMainThread",
-         test_WhenMainQueueProvided_ThenPropsEvaluatedOnMainThread),
-
-        ("test_WhenSharedPresentationQueueProvided_ThenPropsEvaluatedNotOnMainThread",
-         test_WhenSharedPresentationQueueProvided_ThenPropsEvaluatedNotOnMainThread),
-
-        ("test_WhenCustomGlobalQueueProvided_ThenPropsEvaluatedNotOnMainThread",
-         test_WhenCustomGlobalQueueProvided_ThenPropsEvaluatedNotOnMainThread),
-
-        ("test_WhenMainQueueProvidedAsCustom_ThenPropsEvaluatedOnMainThread",
-         test_WhenMainQueueProvidedAsCustom_ThenPropsEvaluatedOnMainThread)
-
-    ]
 }

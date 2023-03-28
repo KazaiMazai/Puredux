@@ -9,7 +9,7 @@ import XCTest
 @testable import PureduxUIKit
 import PureduxStore
 
-final class VCWithStoreWithDeduplicationVCTests: XCTestCase {
+final class DeduplicationVCTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     let state = TestAppState(
@@ -17,14 +17,16 @@ final class VCWithStoreWithDeduplicationVCTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var rootStore: RootStore = {
-        RootStore<TestAppState, Action>(initialState: state) { state, action in
-            state.reduce(action)
-        }
+    lazy var factory: StoreFactory = {
+        StoreFactory<TestAppState, Action>(
+            initialState: state,
+            reducer: { state, action in
+                state.reduce(action)
+            })
     }()
 
     lazy var store: Store = {
-        rootStore.store()
+        factory.rootStore()
     }()
 
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
@@ -46,7 +48,7 @@ final class VCWithStoreWithDeduplicationVCTests: XCTestCase {
     }
 }
 
-extension VCWithStoreWithDeduplicationVCTests {
+extension DeduplicationVCTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribed_ThenVCNotUpdated() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
@@ -128,24 +130,4 @@ extension VCWithStoreWithDeduplicationVCTests {
 
         waitForExpectations(timeout: timeout)
     }
-}
-
-extension VCWithStoreWithDeduplicationVCTests {
-
-    static var allTests = [
-        ("test_WhenManyNonMutatingActionsAndNotSubscribed_ThenVCNotUpdated",
-         test_WhenManyNonMutatingActionsAndNotSubscribed_ThenVCNotUpdated),
-
-        ("test_WhenManyNonMutatingActions_ThenVCUpdatedOnce",
-         test_WhenManyNonMutatingActions_ThenVCUpdatedOnce),
-
-        ("test_WhenManyMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenManyMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation),
-
-        ("test_WhenMutatingAndNonMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenMutatingAndNonMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation),
-
-        ("test_WhenSpecificSubStateMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation",
-         test_WhenSpecificSubStateMutatingActions_ThenVCUpdatedForSubscribtionAndEveryDeduplicatedMutation)
-    ]
 }
