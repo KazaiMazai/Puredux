@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'PureduxUIKit'
-  s.version          = '1.0.0'
+  s.version          = '1.1.1'
   s.summary          = 'Puredux UIKit bindings'
 
 # TODO: Add long description here.
@@ -21,7 +21,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '9.0'
   s.swift_version = '5.3'
-  s.dependency 'PureduxStore', '~> 1.0'
+  s.dependency 'PureduxStore', '~> 1.1.0'
   s.dependency 'PureduxCommon', '~> 1.0'
 
   s.source_files = 'Sources/**/*.swift'
