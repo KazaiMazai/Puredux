@@ -15,17 +15,7 @@ let package = Package(
             targets: ["Puredux"]),
     ],
     dependencies: [
-        .package(name: "PureduxSideEffects",
-                 url: "https://github.com/KazaiMazai/PureduxSideEffects.git",
-                 .exact("1.0.0-beta.2")),
-
-        .package(name: "PureduxNetworkOperator",
-                 url: "https://github.com/KazaiMazai/PureduxNetworkOperator.git",
-                 .exact("1.0.0-beta.2")),
-
-        .package(name: "PureduxStore",
-                 url: "https://github.com/KazaiMazai/PureduxStore.git",
-                 .exact("1.0.0-beta.2"))
+        
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -33,9 +23,7 @@ let package = Package(
         .target(
             name: "Puredux",
             dependencies: [
-                .product(name: "PureduxStore", package: "PureduxStore"),
-                .product(name: "PureduxSideEffects", package: "PureduxSideEffects"),
-                .product(name: "PureduxNetworkOperator", package: "PureduxNetworkOperator"),
+                
             ]),
         .testTarget(
             name: "PureduxTests",
