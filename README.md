@@ -6,49 +6,31 @@
 
 Puredux is a lightweight MVI architecture framework in Swift.
 
-## What's Puredux
+## Features
 
-Purderux is a minimal, yet poweful library that allows to build iOS application in a clean and consistent way.
-
-- It's tiny and easy to use and understand
-- It's modular. Allows to bring to a project only those depenencies that it really needs
-- It's flexible enough to be as strict as you want
-
-## Why Puredux
-
+- Tiny and easy to use and understand
 - Pure state and reducer without side effects
 - Clean UI and Presentation layer
 - No room for unexpected state mutations
 - All async work under control
-- Another level of testability with independent side effects
 
-## Special features
-
-### Pure state
-
-Modelling app state as a codable struct allows to obtain persistance out of the box.
-
-### Threading
-Puredux tries to make as little load on the MainThread's queue as possible.
-PureduxStore is threadsafe and performs dispatching and then reduces the state on a background queue.
-
-By defaut, Puredux presenters would prepare views' props in background as well.
-
-Puredux hides all async stuff under the hood, leaving only sync things on the surface. Making app layers thin, plain and testable as hell.
+Puredux is a minimal, yet poweful framework that allows to build iOS application in a clean and consistent way.
 
 # Installation
-
 
 ## Swift Package Manager.
 
 Puredux is available through Swift Package Manager. 
+
 To install it, in Xcode 11.0 or later select File > Swift Packages > Add Package Dependency... and add Puredux repositoies URLs for the modules requried:
 
 ```
 https://github.com/KazaiMazai/Puredux
 ```
 
-## Puredux-Store
+# Basics
+
+## PureduxStore
 
 - Minimal API
 - Single/Multiple Stores
@@ -69,8 +51,14 @@ SwiftUI bindings to connect UI to PureduxSrore
 UIKit bindings to connect UI to PureduxStore
 
 - Clear path to data-driven UIViewControllers
-- Presentation data model aka. 'Props' can be prepared on Main or Background queue
+- Presentation data models aka. 'Props' can be prepared on Main or Background queue
 - State updates deduplication to avoid unnecessary UI refresh
+
+## Check out the Docs for more details:
+ 
+- [PureduxUIKit](Docs/PureduxStore.md)
+- [PureduxUIKit](Docs/PureduxSwiftUI.md)
+- [PureduxUIKit](Docs/PureduxUIKit.md)
 
 # Licensing
 
