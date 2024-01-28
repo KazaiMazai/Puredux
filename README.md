@@ -16,9 +16,9 @@ Puredux is a lightweight MVI architecture framework in Swift.
 
 Puredux is a minimal, yet poweful framework that allows to build iOS application in a clean and consistent way.
 
-# Installation
+## Installation
 
-## Swift Package Manager.
+### Swift Package Manager.
 
 Puredux is available through Swift Package Manager. 
 
@@ -28,9 +28,9 @@ To install it, in Xcode 11.0 or later select File > Swift Packages > Add Package
 https://github.com/KazaiMazai/Puredux
 ```
 
-# Basics
+## Basics
 
-## PureduxStore
+### PureduxStore
 
 - Minimal API
 - Single/Multiple Stores
@@ -38,7 +38,10 @@ https://github.com/KazaiMazai/Puredux
 - Thread safe stores
 - Simple actions interceptor for side effects
 
-## PureduxSwiftUI
+Check out the [PureduxStore Docs](Docs/PureduxStore.md) for more details:
+
+
+### PureduxSwiftUI
 
 SwiftUI bindings to connect UI to PureduxSrore
 
@@ -46,7 +49,10 @@ SwiftUI bindings to connect UI to PureduxSrore
 - Presentation data model aka. 'Props' can be prepared on Main or Background queue
 - State updates deduplication to avoid unnecessary UI refresh
 
-## PureduxUIKit
+Check out the [PureduxSwiftUI Docs](Docs/PureduxSwiftUI.md) for more details:
+
+
+### PureduxUIKit
 
 UIKit bindings to connect UI to PureduxStore
 
@@ -54,11 +60,12 @@ UIKit bindings to connect UI to PureduxStore
 - Presentation data models aka. 'Props' can be prepared on Main or Background queue
 - State updates deduplication to avoid unnecessary UI refresh
 
-## Check out the Docs for more details:
+Check out the [PureduxUIKit Docs](Docs/PureduxUIKit.md) for more details:
  
-- [PureduxUIKit](Docs/PureduxStore.md)
-- [PureduxUIKit](Docs/PureduxSwiftUI.md)
-- [PureduxUIKit](Docs/PureduxUIKit.md)
+## Migration Guiges
+
+- [Migration from v1.0.x to v1.1.x](Docs.Migration from v1.0.x to v1.1.x.md)
+
 
 # Licensing
 
