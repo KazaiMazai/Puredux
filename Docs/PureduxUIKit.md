@@ -3,40 +3,11 @@
  </p>
  
 
-UIKit bindings to connect UI to PureduxSrore
-<p align="left">
-    <a href="https://github.com/KazaiMazai/PureduxUIKit/actions">
-        <img src="https://github.com/KazaiMazai/PureduxUIKit/workflows/Tests/badge.svg" alt="Continuous Integration">
-    </a>
-</p>
-
-## Features
-
-- Clear path to data-driven UIViewControllers
-- Presentation data model aka. 'Props' can be prepared on Main or Background queue
-- State updates deduplication to avoid unnecessary UI refresh
-
-____________
-
-
-## Installation
- 
-
-### Swift Package Manager.
-
-PureduxStore is available through Swift Package Manager. 
-To install it, in Xcode 11.0 or later select File > Swift Packages > Add Package Dependency... and add Puredux repositoies URLs for the modules requried:
-
-```
-https://github.com/KazaiMazai/PureduxUIKit
-```
-____________
-
 ## Quick Start Guide
 
 1. Import:
 ```swift
-import PureduxUIKit
+import Puredux
 
 ```
 
