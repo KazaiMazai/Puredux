@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 
 
-final class NoDeduplicationPropsTests: XCTestCase {
+final class NoDeduplicationPropsUIKitTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -42,7 +42,7 @@ final class NoDeduplicationPropsTests: XCTestCase {
     }
 }
 
-extension NoDeduplicationPropsTests {
+extension NoDeduplicationPropsUIKitTests {
 
     func test_WhenNoActionAfterSetupAndNotSubscribed_ThenPropsNotEvaluated() {
         let expectation = expectation(description: "propsEvaluated")

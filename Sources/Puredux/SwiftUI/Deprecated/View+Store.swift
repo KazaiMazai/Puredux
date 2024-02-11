@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-
+@available(iOS 13.0, *)
 extension View {
     /// Initializes a View with `ContentView` connected  to the implicitly provided`RootEnvStore`.
     ///

@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-
-
+@available(iOS 13.0, *)
 struct ViewWithScopeStore<AppState, LocalState, Action, Props, Content>: View
     where
     Content: View {

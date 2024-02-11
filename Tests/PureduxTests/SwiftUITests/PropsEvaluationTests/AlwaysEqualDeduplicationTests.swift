@@ -12,11 +12,12 @@ import SwiftUI
 
 import UIKit
 
-
+@available(iOS 13.0, *)
 class RootStoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationPropsTests {
 
 }
 
+@available(iOS 13.0, *)
 class ScopeStoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,
                                                          rootStore: PublishingStore<TestAppState, Action>) -> UIWindow {
@@ -42,6 +43,7 @@ class ScopeStoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationProp
     }
 }
 
+@available(iOS 13.0, *)
 class StoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,
                                                          rootStore: PublishingStore<TestAppState, Action>) -> UIWindow {
@@ -67,6 +69,7 @@ class StoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationPropsTest
     }
 }
 
+@available(iOS 13.0, *)
 class ChildStoreAlwaysEqualDeduplicationPropsTests: AlwaysEqualDeduplicationPropsTests {
 
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,

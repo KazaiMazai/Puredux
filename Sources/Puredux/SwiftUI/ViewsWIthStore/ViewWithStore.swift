@@ -54,6 +54,7 @@ import SwiftUI
 ///   }
 /// )
 /// ```
+@available(iOS 13.0, *)
 public struct ViewWithStore<ViewState, Action, Props, Content: View>: View {
     let props: (_ state: ViewState, _ store: PublishingStore<ViewState, Action>) -> Props
     let content: (_ props: Props) -> Content
@@ -67,6 +68,7 @@ public struct ViewWithStore<ViewState, Action, Props, Content: View>: View {
     }
 }
 
+@available(iOS 13.0, *)
 public extension ViewWithStore {
     /// View modier that updates `ViewWithStore` deduplication settings.
     ///
@@ -109,6 +111,7 @@ public extension ViewWithStore {
     }
 }
 
+@available(iOS 13.0, *)
 public extension ViewWithStore {
 
     /// Initializes ViewWithStore which  connects its `ContentView`  to the store.
@@ -181,6 +184,7 @@ public extension ViewWithStore {
     }
 }
 
+@available(iOS 13.0, *)
 public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewState, Action>) {
     /// Initializes ViewWithStore which  connects its `ContentView`  to the store.
     ///
@@ -217,6 +221,7 @@ public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewSt
     }
 }
 
+@available(iOS 13.0, *)
 public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewState, Action>) {
     /// Initializes ViewWithStore which  connects its `ContentView`  to the store.
     ///
@@ -246,6 +251,7 @@ public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewSt
     }
 }
 
+@available(iOS 13.0, *)
 public extension ViewWithStore {
     /// Connects ViewWithStore's  `ContentView`  to the provided store.
     ///

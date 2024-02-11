@@ -8,10 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
-
 import UIKit
 
+@available(iOS 13.0, *)
 class AlwaysEqualDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -57,6 +56,7 @@ class AlwaysEqualDeduplicationPropsTests: XCTestCase {
     }
 }
 
+@available(iOS 13.0, *)
 extension AlwaysEqualDeduplicationPropsTests {
 
     func test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {

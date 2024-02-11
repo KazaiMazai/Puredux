@@ -9,9 +9,8 @@ import XCTest
 @testable import Puredux
 import SwiftUI
 
-
-
-class ChildStoreTests: XCTestCase {
+@available(iOS 13.0, *)
+class ChildStoreSwiftUITests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppState(
@@ -46,7 +45,8 @@ class ChildStoreTests: XCTestCase {
     }()
 }
 
-extension ChildStoreTests {
+@available(iOS 13.0, *)
+extension ChildStoreSwiftUITests {
     func test_WhenActionDispatchedToRootStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
         receivedState.assertForOverFulfill = false

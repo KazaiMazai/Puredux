@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@available(iOS 13.0, *)
 public struct PublishingStore<AppState, Action> {
     public let statePublisher: AnyPublisher<AppState, Never>
     private let dispatchClosure: (_ action: Action) -> Void
@@ -35,6 +36,7 @@ public struct PublishingStore<AppState, Action> {
     }
 }
 
+@available(iOS 13.0, *)
 public extension PublishingStore {
     /// Initializes a new proxy PublishingStore with state mapping to local substate.
     ///

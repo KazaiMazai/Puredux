@@ -8,10 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
-
 import UIKit
 
+@available(iOS 13.0, *)
 class ViewWithStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
@@ -55,6 +54,7 @@ class ViewWithStoreRenderTests: XCTestCase {
     }
 }
 
+@available(iOS 13.0, *)
 extension ViewWithStoreRenderTests {
 
     func test_WhenNoActionDispatched_ThenViewIsNotRendered() {

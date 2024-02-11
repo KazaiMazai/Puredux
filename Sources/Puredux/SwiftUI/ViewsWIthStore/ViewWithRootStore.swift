@@ -8,8 +8,7 @@
 import SwiftUI
 import Combine
 
-
-
+@available(iOS 13.0, *)
 struct ViewWithRootStore<AppState, Action, Props, Content>: View
     where
     Content: View {

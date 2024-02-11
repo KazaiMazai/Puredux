@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+@available(iOS 13.0, *)
 public extension Equating where T: Identifiable {
     static var asIdentifiable: Equating {
         Equating {

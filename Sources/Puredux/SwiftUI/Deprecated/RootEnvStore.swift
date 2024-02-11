@@ -9,6 +9,7 @@
 import Combine
 import SwiftUI
 
+@available(iOS 13.0, *)
 public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let rootStore: RootStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -34,6 +35,7 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
     }
 }
 
+@available(iOS 13.0, *)
 public extension RootEnvStore {
 
     ///     Initializes a new light-weight proxy PublishingStore as a proxy for the RootEnvStore's internal root store
@@ -57,6 +59,7 @@ public extension RootEnvStore {
     }
 }
 
+@available(iOS 13.0, *)
 private extension RootEnvStore {
     func statePublisher() -> AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
@@ -67,6 +70,7 @@ private extension RootEnvStore {
     }
 }
 
+@available(iOS 13.0, *)
 private extension RootEnvStore {
     var asObserver: Observer<AppState> {
         Observer { [weak self] state, complete in

@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-
+@available(iOS 13.0, *)
 struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View where Content: View {
 
     @EnvironmentObject private var store: RootEnvStore<AppState, Action>

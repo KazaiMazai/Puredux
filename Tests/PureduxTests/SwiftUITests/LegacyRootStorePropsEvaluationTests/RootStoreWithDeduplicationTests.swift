@@ -8,10 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
-
 import UIKit
 
+@available(iOS 13.0, *)
 class ViewEnvRootStoreDeduplicationTests: ViewWithRootStoreDeduplicationTests {
     @discardableResult override func setupWindowForTests(
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
@@ -33,6 +32,7 @@ class ViewEnvRootStoreDeduplicationTests: ViewWithRootStoreDeduplicationTests {
     }
 }
 
+@available(iOS 13.0, *)
 class ViewWithRootStoreDeduplicationTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -72,6 +72,7 @@ class ViewWithRootStoreDeduplicationTests: XCTestCase {
     }
 }
 
+@available(iOS 13.0, *)
 extension ViewWithRootStoreDeduplicationTests {
 
     func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {

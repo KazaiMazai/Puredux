@@ -9,8 +9,7 @@ import XCTest
 @testable import Puredux
 import SwiftUI
 
-
-
+@available(iOS 13.0, *)
 class ScopeStoreTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -38,6 +37,7 @@ class ScopeStoreTests: XCTestCase {
     }()
 }
 
+@available(iOS 13.0, *)
 extension ScopeStoreTests {
 
     func test_WhenActionDispatchedToScopeStore_ThenExpectedStateReceived() {

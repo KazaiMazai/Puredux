@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 13.0, *)
 public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
     private let rootStore: RootEnvStore<AppState, Aciton>
     private let content: () -> Content

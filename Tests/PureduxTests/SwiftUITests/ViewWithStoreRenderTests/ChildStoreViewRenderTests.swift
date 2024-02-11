@@ -8,10 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
-
 import UIKit
 
+@available(iOS 13.0, *)
 class ChildStoreViewRenderTests: ViewWithStoreRenderTests {
 
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
@@ -38,6 +37,7 @@ class ChildStoreViewRenderTests: ViewWithStoreRenderTests {
     }
 }
 
+@available(iOS 13.0, *)
 class ChildStoreWithStateMappingViewRenderTests: ViewWithStoreRenderTests {
 
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
