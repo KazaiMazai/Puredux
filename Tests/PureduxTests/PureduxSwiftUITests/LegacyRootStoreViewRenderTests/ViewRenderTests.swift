@@ -1,7 +1,7 @@
 import XCTest
-@testable import PureduxSwiftUI
+@testable import Puredux
 import SwiftUI
-import PureduxStore
+
 import UIKit
 
 final class ViewEnvStoreRenderTests: ViewWithRootStoreRenderTests {

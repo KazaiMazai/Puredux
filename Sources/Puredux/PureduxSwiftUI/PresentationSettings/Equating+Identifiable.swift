@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PureduxCommon
+
 
 public extension Equating where T: Identifiable {
     static var asIdentifiable: Equating {

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PureduxStore
+@testable import Puredux
 
 final class RootStoreProxyTests: XCTestCase {
     let timeout: TimeInterval = 10

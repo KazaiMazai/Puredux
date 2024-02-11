@@ -6,10 +6,10 @@
 //
 
 import XCTest
-@testable import PureduxSwiftUI
+@testable import Puredux
 import SwiftUI
-import PureduxStore
-import PureduxCommon
+
+
 
 class RootStoreTests: XCTestCase {
     let timeout: TimeInterval = 4

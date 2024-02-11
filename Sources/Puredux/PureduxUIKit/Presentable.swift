@@ -5,8 +5,8 @@
 //  Created by Sergey Kazakov on 02.12.2020.
 //
 
-import PureduxStore
-import PureduxCommon
+
+
 
 public protocol PresenterProtocol {
     func subscribeToStore()

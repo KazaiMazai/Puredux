@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PureduxStore
+@testable import Puredux
 
 final class ChildStoreTests: XCTestCase {
     let timeout: TimeInterval = 10

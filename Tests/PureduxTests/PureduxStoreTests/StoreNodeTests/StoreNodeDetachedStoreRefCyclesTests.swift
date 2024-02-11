@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PureduxStore
+@testable import Puredux
 
 final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>

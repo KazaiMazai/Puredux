@@ -5,8 +5,8 @@
 //  Created by Sergey Kazakov on 29.11.2021.
 //
 
-@testable import PureduxUIKit
-@testable import PureduxStore
+@testable import Puredux
+@testable import Puredux
 
 extension StubViewController {
     struct Props {

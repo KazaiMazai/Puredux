@@ -1,5 +1,5 @@
 import XCTest
-@testable import PureduxCommon
+@testable import Puredux
 
 final class PureduxCommonTests: XCTestCase {
     func testExample() {

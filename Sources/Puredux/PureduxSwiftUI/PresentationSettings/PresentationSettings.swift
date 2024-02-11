@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import PureduxCommon
+
  
 struct PresentationSettings<AppState> {
     var removeDuplicates: (AppState, AppState) -> Bool

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PureduxStore
+@testable import Puredux
 
 final class RootStoreRefCyclesTests: XCTestCase {
     let timeout: TimeInterval = 3

@@ -5,10 +5,10 @@
 //  Created by Sergey Kazakov on 13.03.2023.
 //
 import XCTest
-@testable import PureduxSwiftUI
+@testable import Puredux
 import SwiftUI
-import PureduxStore
-import PureduxCommon
+
+
 import UIKit
 
 class PresentationQueueTest: XCTestCase {

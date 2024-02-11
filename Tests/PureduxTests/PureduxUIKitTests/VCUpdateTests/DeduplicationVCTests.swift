@@ -6,8 +6,8 @@
 //
 
 import XCTest
-@testable import PureduxUIKit
-import PureduxStore
+@testable import Puredux
+
 
 final class DeduplicationVCTests: XCTestCase {
     let timeout: TimeInterval = 10

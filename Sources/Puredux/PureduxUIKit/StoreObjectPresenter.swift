@@ -5,7 +5,7 @@
 //  Created by Sergey Kazakov on 26.02.2023.
 //
 
-import PureduxStore
+
 
 struct StoreObjectPresenter<State, Action, ViewController> where ViewController: Presentable {
 

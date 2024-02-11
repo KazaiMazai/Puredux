@@ -6,8 +6,8 @@
 //
 
 import XCTest
-@testable import PureduxUIKit
-import PureduxStore
+@testable import Puredux
+
 
 final class PresentationQueuePropsEvaluationTests: XCTestCase {
     let timeout: TimeInterval = 4
