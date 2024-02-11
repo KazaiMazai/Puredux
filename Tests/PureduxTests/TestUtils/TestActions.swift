@@ -22,3 +22,12 @@ struct ResultAction: Action {
 struct AsyncAction: Action {
     let index: Int
 }
+ 
+struct NonMutatingStateAction: Action {
+
+}
+
+struct UpdateTitle: Action {
+    let title: String
+}
+  

@@ -8,8 +8,6 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
-
 import UIKit
 
 class ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
