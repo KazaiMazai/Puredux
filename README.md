@@ -30,20 +30,20 @@ https://github.com/KazaiMazai/Puredux
 
 ## Basics
 
-### PureduxStore
+### State Store
 
 - Minimal API
 - Single/Multiple Stores
-- Operates on background queue
-- Thread safe stores
-- Simple actions interceptor for side effects
+- Offloads work to background queue
+- Thread safety
+- Actions interceptor for side effects
 
 Check out the [PureduxStore Docs](Docs/PureduxStore.md) for more details:
 
 
-### PureduxSwiftUI
+### SwiftUI Bindings
 
-SwiftUI bindings to connect UI to PureduxSrore
+SwiftUI bindings to connect UI to Puredux Store
 
 - Сlean and reusable SwiftUI's Views without dependencies
 - Presentation data model aka. 'Props' can be prepared on Main or Background queue
@@ -52,9 +52,9 @@ SwiftUI bindings to connect UI to PureduxSrore
 Check out the [PureduxSwiftUI Docs](Docs/PureduxSwiftUI.md) for more details:
 
 
-### PureduxUIKit
+### UIKit Bindings
 
-UIKit bindings to connect UI to PureduxStore
+UIKit bindings to connect UI to Puredux Store
 
 - Clear path to data-driven UIViewControllers
 - Presentation data models aka. 'Props' can be prepared on Main or Background queue
