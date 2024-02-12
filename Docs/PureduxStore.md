@@ -383,7 +383,4 @@ When action is dispatched to ChildStore:
 </p>
 </details>
 
-
-## Licensing
-
-PureduxStore is licensed under MIT license.
+ 

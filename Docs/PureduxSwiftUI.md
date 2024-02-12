@@ -397,10 +397,3 @@ ViewWithStore { state, dispatch in
 </p>
 </details>
 
-  
-
-## Licensing
-
-PureduxSwiftUI is licensed under MIT license.
-
-

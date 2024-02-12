@@ -191,8 +191,4 @@ viewController.with(store: fancyFeatureStore,
 
 </p>
 </details>
-
-
-## Licensing
-
-PureduxUIKit is licensed under MIT license.
+ 
