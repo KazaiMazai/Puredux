@@ -64,7 +64,7 @@ Check out the [PureduxUIKit Docs](Docs/PureduxUIKit.md) for more details:
  
 ## Migration Guiges
 
-- [Migration from v1.0.x to v1.1.x](Docs.Migration from v1.0.x to v1.1.x.md)
+- [Migration from v1.0.x to v1.1.x](Docs/Migration-v1.0.x-v1.1.x.md)
 
 
 # Licensing
