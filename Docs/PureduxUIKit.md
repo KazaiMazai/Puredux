@@ -88,7 +88,8 @@ viewController.with(store: fancyFeatureStore,
 
 ### What is PureduxStore?
 
-- It's minilistic UDF architecture store implementation. More details can be found [here](https://github.com/KazaiMazai/PureduxStore)
+- It's minilistic MVI architecture state store implementation. More details can be found in [PureduxStore Docs](Docs/PureduxStore.md)
+
 
 ### Which DispatchQueue is used to prepare props?
 

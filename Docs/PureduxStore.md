@@ -180,12 +180,7 @@ childStore.subscribe(observer: observer)
 <details><summary>Click for details</summary>
 <p>
 
-  
-### How to connect PureduxStore to UI?
-  
-- It can be done with the help of [PureduxUIKit](https://github.com/KazaiMazai/PureduxUIKit) or [PureduxSwiftUI](https://github.com/KazaiMazai/PureduxSwiftUI)
-
-
+   
 ### What is StoreFactory?
 
 StoreFactory is a factory for Stores and StoreObjects.
