@@ -6,6 +6,12 @@
 
 Puredux is a lightweight MVI architecture framework in Swift.
 
+<p align="left">
+    <a href="https://github.com/KazaiMazai/Puredux/actions">
+        <img src="https://github.com/KazaiMazai/Puredux/workflows/Tests/badge.svg" alt="Continuous Integration">
+    </a>
+</p>
+
 ## Features
 
 - Tiny and easy to use and understand
