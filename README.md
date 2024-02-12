@@ -2,7 +2,6 @@
   <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
 </p>
 
-# Puredux
 
 Puredux is a lightweight MVI architecture framework in Swift.
 
@@ -14,13 +13,30 @@ Puredux is a lightweight MVI architecture framework in Swift.
 
 ## Features
 
-- Tiny and easy to use and understand
-- Pure state and reducer without side effects
-- Clean UI and Presentation layer
-- No room for unexpected state mutations
-- All async work under control
+Puredux is a minimal, yet powerful framework to build iOS applications in a clean and consistent way.
 
-Puredux is a minimal, yet poweful framework that allows to build iOS application in a clean and consistent way.
+### State Store
+- Minimal API
+- Single/Multiple Stores Design
+- Offloads work to the background
+- Thread safety
+- Side effects via actions interceptor
+
+Check out the [PureduxStore Docs](Docs/PureduxStore.md) for more details.
+
+### SwiftUI & UIKit Bindings
+
+SwiftUI & UIKit bindings to connect UI to Puredux Store
+
+- Side-effects free SwiftUI Views
+- Data-driven UIViewControllers
+- Offloads heavy UI-related work to the background
+- Takeover the control over state updates deduplication and UI refresh lifecycle
+
+Check out the docs for more details:
+- [PureduxSwiftUI Docs](Docs/PureduxSwiftUI.md)
+- [PureduxUIKit Docs](Docs/PureduxUIKit.md)
+
 
 ## Installation
 
@@ -33,44 +49,11 @@ To install it, in Xcode 11.0 or later select File > Swift Packages > Add Package
 ```
 https://github.com/KazaiMazai/Puredux
 ```
-
-## Basics
-
-### State Store
-
-- Minimal API
-- Single/Multiple Stores
-- Offloads work to background queue
-- Thread safety
-- Actions interceptor for side effects
-
-Check out the [PureduxStore Docs](Docs/PureduxStore.md) for more details:
-
-
-### SwiftUI Bindings
-
-SwiftUI bindings to connect UI to Puredux Store
-
-- Сlean and reusable SwiftUI's Views without dependencies
-- Presentation data model aka. 'Props' can be prepared on Main or Background queue
-- State updates deduplication to avoid unnecessary UI refresh
-
-Check out the [PureduxSwiftUI Docs](Docs/PureduxSwiftUI.md) for more details:
-
-
-### UIKit Bindings
-
-UIKit bindings to connect UI to Puredux Store
-
-- Clear path to data-driven UIViewControllers
-- Presentation data models aka. 'Props' can be prepared on Main or Background queue
-- State updates deduplication to avoid unnecessary UI refresh
-
-Check out the [PureduxUIKit Docs](Docs/PureduxUIKit.md) for more details:
  
 ## Migration Guiges
 
 - [Migration from v1.0.x to v1.1.x](Docs/Migration-v1.0.x-v1.1.x.md)
+- [Migration to Puredux monorepo](Docs/Migration-monorepo.md)
 
 
 # Licensing
