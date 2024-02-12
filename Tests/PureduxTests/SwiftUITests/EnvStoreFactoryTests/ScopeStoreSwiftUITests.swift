@@ -42,59 +42,55 @@ extension ScopeStoreTests {
 
     func test_WhenActionDispatchedToScopeStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
-        receivedState.assertForOverFulfill = false
         let expectedIndex = 100
 
-        var lastReceivedState: Int?
         let cancellable = store.statePublisher.sink { state in
-            lastReceivedState = state.index
-
+            guard state.index == expectedIndex else {
+                return
+            }
             receivedState.fulfill()
+            XCTAssertEqual(expectedIndex, state.index)
         }
 
         store.dispatch(UpdateIndex(index: expectedIndex))
-
         waitForExpectations(timeout: timeout)
-        XCTAssertEqual(expectedIndex, lastReceivedState)
     }
 
     func test_WhenActionDispatchedToScopedRootStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
-        receivedState.assertForOverFulfill = false
         let expectedIndex = 100
-
-        var lastReceivedState: Int?
+ 
         let store = rootStore.scope { $0.subStateWithIndex }
 
         let cancellable = store.statePublisher.sink { state in
-            lastReceivedState = state.index
-
+            guard state.index == expectedIndex else {
+                return
+            }
+            
             receivedState.fulfill()
+            XCTAssertEqual(expectedIndex, state.index)
         }
 
         store.dispatch(UpdateIndex(index: expectedIndex))
-
         waitForExpectations(timeout: timeout)
-        XCTAssertEqual(expectedIndex, lastReceivedState)
     }
 
     func test_WhenActionDispatchedToRootStoreProxy_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
-        receivedState.assertForOverFulfill = false
         let expectedIndex = 100
-
-        var lastReceivedState: Int?
+ 
         let store = rootStore.proxy { $0.subStateWithIndex }
 
         let cancellable = store.statePublisher.sink { state in
-            lastReceivedState = state.index
+            guard state.index == expectedIndex else {
+                return
+            }
 
             receivedState.fulfill()
+            XCTAssertEqual(expectedIndex, state.index)
         }
 
         store.dispatch(UpdateIndex(index: expectedIndex))
-
         waitForExpectations(timeout: timeout)
-        XCTAssertEqual(expectedIndex, lastReceivedState)
     }
 }
