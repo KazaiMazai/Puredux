@@ -83,8 +83,8 @@ UIHostingController(
 
 ### What is PureduxStore?
 
-It's minilistic UDF architecture store implementation. 
-More details can be found [here](https://github.com/KazaiMazai/PureduxStore)
+It's minilistic MVI architecture state store implementation. 
+More details can be found [PureduxStore Docs](Docs/PureduxStore.md)
 
 
 ### How to connect view to store?
@@ -162,7 +162,7 @@ UIHostingController(
 ```
 ### How to connect view to the EnvStoreFactory's root child store
 
-Child store is special. More details in PureduxStore [docs](https://github.com/KazaiMazai/PureduxStore)
+Child store is special. More details in [PureduxStore Docs](Docs/PureduxStore.md)
 
 - ChildStore is a composition of root store and newly created local store.
 - ChildStore's state is a mapping of the local child state and root store's state
@@ -396,11 +396,4 @@ ViewWithStore { state, dispatch in
 
 </p>
 </details>
-
-  
-
-## Licensing
-
-PureduxSwiftUI is licensed under MIT license.
-
 
