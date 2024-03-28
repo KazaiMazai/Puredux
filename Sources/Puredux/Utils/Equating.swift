@@ -50,3 +50,16 @@ public extension Equating where T: Equatable {
         }
     }
 }
+
+extension Equating {
+    func isEqual(_ lhs: T?, to rhs: T?) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none):
+            return true
+        case (.some(let lhsValue), .some(let rhsValue)):
+            return predicate(lhsValue, rhsValue)
+        default:
+            return false
+        }
+    }
+}
