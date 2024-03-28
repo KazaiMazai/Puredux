@@ -7,6 +7,10 @@
 
 import Foundation
 
+
+@available(*, deprecated, message: "Will be removed in the next major release. Feel free to rename StoreObject to Store")
+typealias StoreObject = Store
+
 public extension Store {
 
     /// Closure that handles Store's dispatching Actions
