@@ -5,7 +5,6 @@
 //  Created by Sergey Kazakov on 26.02.2023.
 //
 
-
 import SwiftUI
 import Combine
 
@@ -65,9 +64,10 @@ public extension PublishingStoreObject {
     /// PublishingStore is thread safe. Actions can be safely dispatched from any thread.
     ///
     func store() -> PublishingStore<AppState, Action> {
-        PublishingStore(
+        let store = undelyingStore.store()
+        return PublishingStore(
             statePublisher: statePublisher(),
-            dispatch: { undelyingStore.dispatch($0) }
+            dispatch: { store.dispatch($0) }
         )
     }
 }

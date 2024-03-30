@@ -25,7 +25,7 @@ import SwiftUI
 ///
 /// are SwiftUI-friendly counterparts for Puredux's
 /// - `StoreFactory`
-/// -  `Store`
+/// - `Store`
 /// - `StoreObject`
 ///
 /// **Usage:**
