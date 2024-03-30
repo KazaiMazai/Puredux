@@ -138,9 +138,11 @@ extension Store {
     static func referencedStore(dispatch: @escaping Dispatch,
                                 subscribe: @escaping Subscribe) -> Store {
         
-        Store(.storeObject(StoreObject(
-            dispatch: dispatch,
-            subscribe: subscribe))
+        Store(
+            .storeObject(StoreObject(
+                dispatch: dispatch,
+                subscribe: subscribe)
+            )
         )
     }
 }
