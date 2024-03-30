@@ -7,6 +7,8 @@
 
 import Dispatch
 
+typealias ObservationQueue = PresentationQueue
+
 public enum PresentationQueue {
    case sharedPresentationQueue
    case main
