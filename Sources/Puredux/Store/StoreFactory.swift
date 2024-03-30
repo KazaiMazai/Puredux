@@ -20,7 +20,7 @@ public final class StoreFactory<State, Action> {
     ///
     /// - Returns: `StoreFactory<State, Action>`
     ///
-    /// StoreFactory is a factory for Store and StoreObjects.
+    /// StoreFactory is a factory for Store.
     /// It suppports the following store types:
     /// - Root Store - plain root store of the factory
     /// - Scope Store - scoped store proxy to the root store
@@ -80,12 +80,12 @@ public extension StoreFactory {
 
     /// Initializes a new child store with initial state
     ///
-    /// - Returns: Child StoreObject
+    /// - Returns: Child Store
     ///
     /// ChildStore is a composition of root store and newly created local store.
     /// Local state is a mapping of the child state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its ChildState is determined by StoreObject's lifecycle.
+    /// ChildStore's lifecycle along with its ChildState is determined by Store's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
@@ -123,12 +123,12 @@ public extension StoreFactory {
 
     /// Initializes a new child store with initial state
     ///
-    /// - Returns: Child StoreObject
+    /// - Returns: Child Store
     ///
     /// ChildStore is a composition of root store and newly created local store.
     /// Child state is a mapping of the local state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
+    /// ChildStore's lifecycle along with its LocalState is determined by Store's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
