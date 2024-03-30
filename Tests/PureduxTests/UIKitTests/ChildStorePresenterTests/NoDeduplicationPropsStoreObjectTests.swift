@@ -22,7 +22,7 @@ final class PropsEvaluationWithChildStoreTests: XCTestCase {
             })
     }()
 
-    lazy var store: StoreObject<(TestAppStateWithIndex, SubStateWithTitle), Action> = {
+    lazy var store: Store<(TestAppStateWithIndex, SubStateWithTitle), Action> = {
         factory.childStore(
             initialState: SubStateWithTitle(title: "title"),
             reducer: { state, action in state.reduce(action) }

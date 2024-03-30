@@ -31,7 +31,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObject_ThenStrongRefToRootCreated() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
-        var store: StoreObject<TestState, Action>?
+        var store: Store<TestState, Action>?
 
         autoreleasepool {
             let strongRootStore = RootStoreNode<TestState, Action>.initRootStore(
@@ -49,7 +49,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObjectReleased_ThenRootStoreIsReleased() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
-        var store: StoreObject<TestState, Action>?
+        var store: Store<TestState, Action>?
 
         autoreleasepool {
             let strongRootStore = RootStoreNode<TestState, Action>.initRootStore(

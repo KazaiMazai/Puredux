@@ -110,7 +110,7 @@ public extension StoreFactory {
         qos: DispatchQoS = .userInteractive,
         reducer: @escaping Reducer<ChildState, Action>) ->
 
-    StoreObject<LocalState, Action> {
+    Store<LocalState, Action> {
 
         rootStoreNode.createChildStore(
             initialState: initialState,

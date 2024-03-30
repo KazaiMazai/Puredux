@@ -128,7 +128,7 @@ extension EnvStoreFactory {
     PublishingStoreObject<LocalState, Action> {
 
         PublishingStoreObject(
-            storeObject: storeFactory.childStore(
+            store: storeFactory.childStore(
                 initialState: initialState,
                 stateMapping: stateMapping,
                 qos: qos,
@@ -172,7 +172,7 @@ extension EnvStoreFactory {
     PublishingStoreObject<(AppState, ChildState), Action> {
 
         PublishingStoreObject(
-            storeObject: storeFactory.childStore(
+            store: storeFactory.childStore(
                 initialState: initialState,
                 qos: qos,
                 reducer: reducer
