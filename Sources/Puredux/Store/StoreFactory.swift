@@ -118,7 +118,7 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .storeObject()
+        .strongRefStore()
     }
 
     /// Initializes a new child store with initial state

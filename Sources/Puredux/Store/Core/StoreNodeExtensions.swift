@@ -38,8 +38,8 @@ extension StoreNode {
         )
     }
 
-    func storeObject() -> StoreObject<State, Action> {
-        StoreObject(
+    func strongRefStore() -> Store<State, Action> {
+        Store(
             dispatch: { [self] in self.dispatch($0) },
             subscribe: { [self] in self.subscribe(observer: $0) }
         )
