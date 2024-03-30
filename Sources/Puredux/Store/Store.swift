@@ -88,10 +88,11 @@ public extension Store {
     ///
     ///
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        Store<LocalState, Action>(
-            dispatch: store().dispatch,
+        let store = store()
+        return Store<LocalState, Action>(
+            dispatch: store.dispatch,
             subscribe: { localStateObserver in
-                store().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = localState(state) else {
                         complete(.active)
                         return
@@ -111,12 +112,12 @@ public extension Store {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     /// When the result local state is nill, subscribers are not triggered.
     ///
-    ///
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        Store<LocalState, Action>(
-            dispatch: dispatch,
+        let store = store()
+        return Store<LocalState, Action>(
+            dispatch: store.dispatch,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = localState(state)
                     localStateObserver.send(localState, complete: complete)
                 })
@@ -144,7 +145,6 @@ extension Store {
     }
 }
 
-
 private extension Store {
     init(_ storeType: StoreType) {
         self.storeType = storeType
@@ -158,9 +158,6 @@ private extension Store {
     }
     
     class ReferencedStore {
-        typealias Dispatch = (_ action: Action) -> Void
-        typealias Subscribe = (_ observer: Observer<State>) -> Void
-        
         private let dispatch: Dispatch
         private let subscribe: Subscribe
         

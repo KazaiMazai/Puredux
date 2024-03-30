@@ -43,7 +43,8 @@ extension Presenter: PresenterProtocol {
 
 private extension Presenter {
     var asObserver: Observer<State> {
-        Observer { state, complete in
+        let store = store.store()
+        return Observer { state, complete in
             workerQueue.async { [weak viewController] in
                 guard let viewController else {
                     complete(.dead)
