@@ -94,3 +94,14 @@ struct SubStateWithIndex {
         }
     }
 }
+
+class SomeClass {
+    
+    func reduce(_ action: Action) {
+         
+    }
+    
+    deinit {
+        
+    }
+}

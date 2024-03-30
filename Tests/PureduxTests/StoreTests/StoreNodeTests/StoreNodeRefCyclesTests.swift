@@ -41,7 +41,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
                 }
 
             weakRootStore = strongRootStore
-            store = strongRootStore.storeObject()
+            store = strongRootStore.referencedStore()
         }
 
         XCTAssertNotNil(weakRootStore)
@@ -59,7 +59,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
                 }
 
             weakRootStore = strongRootStore
-            store = strongRootStore.storeObject()
+            store = strongRootStore.referencedStore()
         }
 
         store = nil
