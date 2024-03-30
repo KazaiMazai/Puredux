@@ -7,7 +7,6 @@
 
 import Dispatch
 
-
 struct Presenter<State, Action, ViewController> where ViewController: Presentable {
 
     private let mainQueue = DispatchQueue.main

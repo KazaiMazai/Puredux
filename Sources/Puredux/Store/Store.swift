@@ -26,7 +26,7 @@ public struct Store<State, Action> {
     
     public func dispatch(_ action: Action) {
         switch storeType {
-        case .referencedStore(let store):
+        case .storeObject(let store):
             store.dispatch(action)
         case .store(let dispatch, _):
             dispatch(action)
@@ -35,7 +35,7 @@ public struct Store<State, Action> {
     
     public func subscribe(observer: Observer<State>) {
         switch storeType {
-        case .referencedStore(let store):
+        case .storeObject(let store):
             store.subscribe(observer: observer)
         case .store(_, let subscribe):
             subscribe(observer)
@@ -128,7 +128,7 @@ public extension Store {
 extension Store {
     func store() -> Store<State, Action> {
         switch storeType {
-        case .referencedStore(let referencedStore):
+        case .storeObject(let referencedStore):
             return referencedStore.weakRefStore()
         case .store:
             return self
@@ -138,7 +138,7 @@ extension Store {
     static func referencedStore(dispatch: @escaping Dispatch,
                                 subscribe: @escaping Subscribe) -> Store {
         
-        Store(.referencedStore(ReferencedStore(
+        Store(.storeObject(StoreObject(
             dispatch: dispatch,
             subscribe: subscribe))
         )
@@ -153,11 +153,11 @@ private extension Store {
 
 private extension Store {
     enum StoreType {
-        case referencedStore(ReferencedStore)
+        case storeObject(StoreObject)
         case store(Dispatch, Subscribe)
     }
     
-    class ReferencedStore {
+    class StoreObject {
         private let dispatch: Dispatch
         private let subscribe: Subscribe
         
