@@ -8,7 +8,7 @@
 import Foundation
 
 public final class StoreFactory<State, Action> {
-    private let rootStoreNode: RootStoreNode<State, Action>
+    let rootStoreNode: RootStoreNode<State, Action>
 
     /// Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
     ///
@@ -118,7 +118,7 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .strongRefStore()
+        .referencedStore()
     }
 
     /// Initializes a new child store with initial state
@@ -151,7 +151,7 @@ public extension StoreFactory {
     func childStore<ChildState>(
         initialState: ChildState,
         qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<ChildState, Action>) -> StoreObject<(State, ChildState), Action> {
+        reducer: @escaping Reducer<ChildState, Action>) -> Store<(State, ChildState), Action> {
 
             childStore(initialState: initialState,
                        stateMapping: { state, childState in (state, childState) },
@@ -160,3 +160,4 @@ public extension StoreFactory {
 
         }
 }
+ 

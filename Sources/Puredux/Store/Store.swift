@@ -11,28 +11,37 @@ import Foundation
 public typealias StoreObject = Store
 
 public extension Store {
-
+    
     /// Closure that handles Store's dispatching Actions
-    /// 
+    ///
     typealias Dispatch = (_ action: Action) -> Void
-
+    
     /// Closure that takes Observer as a parameter and handles Store's subscribtions
     ///
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
 public struct Store<State, Action> {
-    private let dispatch: Dispatch
-    private let subscribe: Subscribe
-
+    private let storeType: StoreType
+    
     public func dispatch(_ action: Action) {
-        dispatch(action)
+        switch storeType {
+        case .referencedStore(let store):
+            store.dispatch(action)
+        case .store(let dispatch, _):
+            dispatch(action)
+        }
     }
-
+    
     public func subscribe(observer: Observer<State>) {
-        subscribe(observer)
+        switch storeType {
+        case .referencedStore(let store):
+            store.subscribe(observer: observer)
+        case .store(_, let subscribe):
+            subscribe(observer)
+        }
     }
-
+    
     /// Initializes a new light-weight Store
     ///
     /// - Parameter dispatch: Closure that handles Store's dispatching Actions
@@ -46,13 +55,12 @@ public struct Store<State, Action> {
     ///
     public init(dispatch: @escaping Dispatch,
                 subscribe: @escaping Subscribe) {
-        self.dispatch = dispatch
-        self.subscribe = subscribe
+        storeType = .store(dispatch, subscribe)
     }
 }
 
 public extension Store {
-
+    
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -68,7 +76,7 @@ public extension Store {
 }
 
 public extension Store {
-
+    
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -81,19 +89,19 @@ public extension Store {
     ///
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         Store<LocalState, Action>(
-            dispatch: dispatch,
+            dispatch: store().dispatch,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                store().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = localState(state) else {
                         complete(.active)
                         return
                     }
-
+                    
                     localStateObserver.send(localState, complete: complete)
                 })
             })
     }
-
+    
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -114,5 +122,67 @@ public extension Store {
                 })
             })
     }
-
 }
+
+extension Store {
+    func store() -> Store<State, Action> {
+        switch storeType {
+        case .referencedStore(let referencedStore):
+            return referencedStore.weakRefStore()
+        case .store:
+            return self
+        }
+    }
+    
+    static func referencedStore(dispatch: @escaping Dispatch,
+                                subscribe: @escaping Subscribe) -> Store {
+        
+        Store(.referencedStore(ReferencedStore(
+            dispatch: dispatch,
+            subscribe: subscribe))
+        )
+    }
+}
+
+
+private extension Store {
+    init(_ storeType: StoreType) {
+        self.storeType = storeType
+    }
+}
+
+private extension Store {
+    enum StoreType {
+        case referencedStore(ReferencedStore)
+        case store(Dispatch, Subscribe)
+    }
+    
+    class ReferencedStore {
+        typealias Dispatch = (_ action: Action) -> Void
+        typealias Subscribe = (_ observer: Observer<State>) -> Void
+        
+        private let dispatch: Dispatch
+        private let subscribe: Subscribe
+        
+        func dispatch(_ action: Action) {
+            dispatch(action)
+        }
+        
+        func subscribe(observer: Observer<State>) {
+            subscribe(observer)
+        }
+        
+        init(dispatch: @escaping Dispatch,
+             subscribe: @escaping Subscribe) {
+            self.dispatch = dispatch
+            self.subscribe = subscribe
+        }
+        
+        func weakRefStore() -> Store<State, Action> {
+            Store(dispatch: { [weak self] in self?.dispatch($0) },
+                  subscribe: { [weak self] in self?.subscribe(observer: $0) }
+            )
+        }
+    }
+}
+
