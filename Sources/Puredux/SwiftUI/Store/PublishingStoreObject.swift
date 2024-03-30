@@ -48,7 +48,7 @@ public extension PublishingStoreObject {
     func store() -> PublishingStore<AppState, Action> {
         PublishingStore(
             statePublisher: statePublisher(),
-            dispatch: { [weak storeObject] in storeObject?.dispatch($0) }
+            dispatch: { storeObject.dispatch($0) }
         )
     }
 }
