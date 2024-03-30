@@ -23,13 +23,14 @@ public struct Observer<State>: Hashable {
     public typealias StatusHandler = (_ status: ObserverStatus) -> Void
     
     ///     Observer's main closure that handle State changes and calls complete handler
-    ///        - Parameter state: new observed State
+    ///        - Parameter state: newly observed State
     ///        - Parameter complete: complete handler that Observer calls when the work is done
     ///
     public typealias StateHandler = (_ state: State, _ complete: @escaping  StatusHandler) -> Void
     
     ///     Observer's main closure that handle State changes and calls complete handler
-    ///        - Parameter state: new observed State
+    ///        - Parameter state: newly observed State
+    ///        - Parameter prev: previous State
     ///        - Parameter complete: complete handler that Observer calls when the work is done
     ///
     public typealias StateObserver = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> Void
@@ -38,7 +39,15 @@ public struct Observer<State>: Hashable {
     
     private let observeClosure: StateObserver
     private let prevState: Referenced<State?> = Referenced(value: nil)
-    
+   
+    func send(_ state: State, complete: @escaping StatusHandler) {
+        let prev = prevState.value
+        prevState.value = state
+        observeClosure(state, prev, complete)
+    }
+}
+
+extension Observer {
     init(id: UUID, observe: @escaping StateHandler) {
         self.id = id
         self.observeClosure = { state, _, complete in observe(state, complete) }
@@ -49,10 +58,25 @@ public struct Observer<State>: Hashable {
         self.observeClosure = observe
     }
     
-    func send(_ state: State, complete: @escaping StatusHandler) {
-        let prev = prevState.value
-        prevState.value = state
-        observeClosure(state, prev, complete)
+    init(_ observer: AnyObject,
+         id: UUID = UUID(),
+         removeStateDuplicates equating: Equating<State> = .neverEqual,
+         observe: @escaping StateHandler) {
+        
+        self.id = id
+        self.observeClosure = { [weak observer] state, prevState, complete in
+            guard observer != nil else {
+                complete(.dead)
+                return
+            }
+            
+            guard !equating.isEqual(state, to: prevState) else {
+                complete(.active)
+                return
+            }
+            
+            observe(state, complete)
+        }
     }
 }
 
@@ -103,79 +127,3 @@ private extension Observer {
         }
     }
 }
-
-extension Observer {
-    
-    static func asObserver<Props, Action>(
-        _ observer: AnyObject,
-        of store: Store<State, Action>,
-        props: @escaping (State, Store<State, Action>) -> Props,
-        propsQueue: ObservationQueue = .sharedPresentationQueue,
-        removeStateDuplicates equating: Equating<State> = .neverEqual,
-        observerQueue: ObservationQueue = .main,
-        handler: @escaping (Props) -> Void
-        
-    ) -> Observer<State> {
-        
-        Observer { [weak observer] state, prevState, complete in
-            
-            propsQueue.dispatchQueue.async { [weak observer] in
-                guard let observer else {
-                    complete(.dead)
-                    return
-                }
-                
-                if equating.isEqual(state, to: prevState) {
-                    complete(.active)
-                    return
-                }
-                
-                let newProps = props(state, store)
-                
-                observerQueue.dispatchQueue.async { [weak observer] in
-                    guard let observer else {
-                        complete(.dead)
-                        return
-                    }
-                    
-                    handler(newProps)
-                    complete(.active)
-                }
-            }
-        }
-    }
-    
-    static func asObserver<Action>(
-        _ observer: AnyObject,
-        of store: Store<State, Action>,
-        removeStateDuplicates equating: Equating<State> = .neverEqual,
-        observerQueue: ObservationQueue = .main,
-        handler: @escaping (State) -> Void
-        
-    ) -> Observer<State> {
-        
-        Observer { [weak observer] state, prevState, complete in
-            
-            guard let observer else {
-                complete(.dead)
-                return
-            }
-            
-            if equating.isEqual(state, to: prevState) {
-                complete(.active)
-                return
-            }
-            
-            observerQueue.dispatchQueue.async { [weak observer] in
-                guard let observer else {
-                    complete(.dead)
-                    return
-                }
-                
-                handler(state)
-                complete(.active)
-            }
-        }
-    }
-}
-
