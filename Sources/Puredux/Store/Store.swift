@@ -7,8 +7,7 @@
 
 import Foundation
 
-
-@available(*, deprecated, message: "Will be removed in the next major release. Feel free to rename StoreObject to Store")
+@available(*, deprecated, renamed: "Store", message: "Will be removed in the next major release.Feel free to rename StoreObject to Stor")
 public typealias StoreObject = Store
 
 public extension Store {
