@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StoreNode<ParentStore, LocalState, State, Action>
+final class StoreNode<ParentStore, LocalState, State, Action>
     where
     ParentStore: StoreProtocol,
     ParentStore.Action == Action {

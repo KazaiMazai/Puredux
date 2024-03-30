@@ -157,7 +157,7 @@ private extension Store {
         case store(Dispatch, Subscribe)
     }
     
-    class StoreObject {
+    final class StoreObject {
         private let dispatch: Dispatch
         private let subscribe: Subscribe
         
