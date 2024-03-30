@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 
 
-final class StoreObjectPresnterRefCycleTests: XCTestCase {
+final class ChildStorePresenterRefCycleTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppStateWithIndex()
