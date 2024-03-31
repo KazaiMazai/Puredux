@@ -22,15 +22,15 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         weak var weakRefObject: ReferenceTypeState?
         
         autoreleasepool {
-            let strongRefObject = ReferenceTypeState()
-            let strongChildStore = rootStore.createChildStore(
-                initialState: strongRefObject,
+            let object = ReferenceTypeState()
+            let store = rootStore.createChildStore(
+                initialState: object,
                 stateMapping: { state, childState in childState },
                 reducer: { state, action  in  state.reduce(action) }
             )
-            weakRefObject = strongRefObject
+            weakRefObject = object
 
-            let referencedStore = strongChildStore.strongRefStore()
+            let referencedStore = store.strongRefStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
@@ -48,15 +48,15 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         let asyncExpectation = expectation(description: "Observer state handler")
 
         autoreleasepool {
-            let strongRefObject = ReferenceTypeState()
-            let strongChildStore = rootStore.createChildStore(
-                initialState: strongRefObject,
+            let object = ReferenceTypeState()
+            let store = rootStore.createChildStore(
+                initialState: object,
                 stateMapping: { state, childState in childState },
                 reducer: { state, action in state.reduce(action) }
             )
-            weakRefObject = strongRefObject
+            weakRefObject = object
 
-            let referencedStore = strongChildStore.strongRefStore()
+            let referencedStore = store.strongRefStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
@@ -74,21 +74,21 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
     func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
         weak var weakRefObject: ReferenceTypeState?
-        
+       
         autoreleasepool {
-            let strongRefObject = ReferenceTypeState()
-            let strongChildStore = rootStore.createChildStore(
-                initialState: strongRefObject,
+            let object = ReferenceTypeState()
+            let store = rootStore.createChildStore(
+                initialState: object,
                 stateMapping: { state, childState in childState },
                 reducer: { state, action  in  state.reduce(action) }
             )
             
-            weakRefObject = strongRefObject
+            weakRefObject = object
 
-            let store = strongChildStore.weakRefStore()
+            let weakRefStore = store.weakRefStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
-                store.dispatch(UpdateIndex(index: 1))
+                weakRefStore.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
 
