@@ -100,8 +100,4 @@ class ReferenceTypeState {
     func reduce(_ action: Action) {
          
     }
-    
-    deinit {
-        
-    }
 }
