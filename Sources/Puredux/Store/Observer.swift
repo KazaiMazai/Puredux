@@ -13,42 +13,80 @@ public enum ObserverStatus {
     case dead
 }
 
-/// Observer can be subscribed to Store to handle state updates
-///
-public struct Observer<State>: Hashable {
-    
+public extension Observer {
     ///     Closure that handles  Observer's status
     ///     - Parameter  status: observer status to handle
     ///
-    public typealias StatusHandler = (_ status: ObserverStatus) -> Void
+    typealias StatusHandler = (_ status: ObserverStatus) -> Void
     
     ///     Observer's main closure that handle State changes and calls complete handler
     ///        - Parameter state: newly observed State
     ///        - Parameter complete: complete handler that Observer calls when the work is done
     ///
-    public typealias StateHandler = (_ state: State, _ complete: @escaping  StatusHandler) -> Void
-    
+    typealias StateHandler = (_ state: State, _ complete: @escaping  StatusHandler) -> Void
+
     ///     Observer's main closure that handle State changes and calls complete handler
     ///        - Parameter state: newly observed State
     ///        - Parameter prev: previous State
     ///        - Parameter complete: complete handler that Observer calls when the work is done
     ///
-    public typealias StateObserver = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> Void
-    
+    typealias StateObserver = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> Void
+}
+
+/// Observer can be subscribed to Store to handle state updates
+///
+public struct Observer<State>: Hashable {
     let id: UUID
     
     private let observeClosure: StateObserver
     private let removeStateDuplicates: Equating<State>?
     private let prevState: Referenced<State?> = Referenced(value: nil)
-   
+    
     func send(_ state: State, complete: @escaping StatusHandler) {
-        guard let removeStateDuplicates else {
+        guard removesStateDuplicates else {
             observeClosure(state, nil, complete)
             return
         }
         let prev = prevState.value
         prevState.value = state
         observeClosure(state, prev, complete)
+    }
+}
+
+public extension Observer {
+    ///     Initializes a new store Observer
+    ///
+    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
+    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
+    ///
+    ///     - Returns: Observer
+    ///
+    ///     Observer handles new states, sent by the Store.
+    ///
+    init(observe: @escaping StateHandler) {
+        self.init(id: UUID(), observe: observe)
+    }
+    ///     Initializes a new store Observer
+    ///
+    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
+    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
+    ///
+    ///     - Returns: Observer
+    ///
+    ///     Observer handles new states, sent by the Store.
+    ///
+    init(observe: @escaping StateObserver) {
+        self.init(id: UUID(), observe: observe)
+    }
+}
+
+public extension Observer {
+    static func == (lhs: Observer<State>, rhs: Observer<State>) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
@@ -93,41 +131,9 @@ extension Observer {
     }
 }
 
-public extension Observer {
-    ///     Initializes a new store Observer
-    ///
-    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
-    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
-    ///
-    ///     - Returns: Observer
-    ///
-    ///     Observer handles new states, sent by the Store.
-    ///
-    init(observe: @escaping StateHandler) {
-        self.init(id: UUID(), observe: observe)
-    }
-    
-    ///     Initializes a new store Observer
-    ///
-    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
-    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
-    ///
-    ///     - Returns: Observer
-    ///
-    ///     Observer handles new states, sent by the Store.
-    ///
-    init(observe: @escaping StateObserver) {
-        self.init(id: UUID(), observe: observe)
-    }
-}
-
-public extension Observer {
-    static func == (lhs: Observer<State>, rhs: Observer<State>) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+private extension Observer {
+    var removesStateDuplicates: Bool {
+        removeStateDuplicates != nil
     }
 }
 
