@@ -19,21 +19,20 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     )
 
     func test_WhenStrongRefToStoreObjectAndObserverLive_ThenReferencCycleIsCreated() {
-        weak var weakChildStore: ChildStore?
-
+        weak var weakRefObject: ReferenceTypeState?
+        
         autoreleasepool {
+            let strongRefObject = ReferenceTypeState()
             let strongChildStore = rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+                initialState: strongRefObject,
+                stateMapping: { state, childState in childState },
+                reducer: { state, action  in  state.reduce(action) }
             )
-            weakChildStore = strongChildStore
+            weakRefObject = strongRefObject
 
             let referencedStore = strongChildStore.referencedStore()
 
-            let observer = Observer<StateComposition> { _, complete in
+            let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
@@ -41,27 +40,25 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             referencedStore.subscribe(observer: observer)
         }
 
-        XCTAssertNotNil(weakChildStore)
+        XCTAssertNotNil(weakRefObject)
     }
 
     func test_WhenStrongRefToStoreObjectAndObserverDead_ThenStoreIsReleased() {
-        weak var weakChildStore: ChildStore?
-
+        weak var weakRefObject: ReferenceTypeState?
         let asyncExpectation = expectation(description: "Observer state handler")
 
         autoreleasepool {
+            let strongRefObject = ReferenceTypeState()
             let strongChildStore = rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+                initialState: strongRefObject,
+                stateMapping: { state, childState in childState },
+                reducer: { state, action in state.reduce(action) }
             )
-            weakChildStore = strongChildStore
+            weakRefObject = strongRefObject
 
             let referencedStore = strongChildStore.referencedStore()
 
-            let observer = Observer<StateComposition> { _, complete in
+            let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
                 asyncExpectation.fulfill()
@@ -71,34 +68,33 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         }
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertNil(weakChildStore)
+            XCTAssertNil(weakRefObject)
         }
     }
 
     func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
-        weak var weakChildStore: ChildStore?
+        weak var weakRefObject: ReferenceTypeState?
         
         autoreleasepool {
+            let strongRefObject = ReferenceTypeState()
             let strongChildStore = rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+                initialState: strongRefObject,
+                stateMapping: { state, childState in childState },
+                reducer: { state, action  in  state.reduce(action) }
             )
-            weakChildStore = strongChildStore
+            
+            weakRefObject = strongRefObject
 
             let store = strongChildStore.store()
 
-            let observer = Observer<StateComposition> { _, complete in
+            let observer = Observer<ReferenceTypeState> { _, complete in
                 store.dispatch(UpdateIndex(index: 1))
                 complete(.active)
-                
             }
 
             store.subscribe(observer: observer)
         }
 
-        XCTAssertNil(weakChildStore)
+        XCTAssertNil(weakRefObject)
     }
 }
