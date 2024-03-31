@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Sergey Kazakov on 16.02.2023.
 //
@@ -9,59 +9,59 @@ import XCTest
 @testable import Puredux
 
 final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
-    let timeout: TimeInterval = 3
-
-    func test_WhenStore_ThenWeakRefToRootCreated() {
+    
+    func test_WhenWeakRefStore_ThenWeakRefToRootCreated() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
         var store: Store<TestState, Action>?
-
+        
         autoreleasepool {
-            let strongRootStore = RootStoreNode<TestState, Action>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
-
+                    
                     state.reduce(action: action)
                 }
-
-            weakRootStore = strongRootStore
-            store = strongRootStore.store()
+            
+            weakRootStore = rootStore
+            store = rootStore.weakRefStore()
         }
-
+        
         XCTAssertNil(weakRootStore)
     }
-
-    func test_WhenStoreObject_ThenStrongRefToRootCreated() {
+    
+    func test_WhenStoreExists_ThenStrongRefToRootCreated() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
         var store: Store<TestState, Action>?
-
+        
         autoreleasepool {
-            let strongRootStore = RootStoreNode<TestState, Action>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
-
+                    
                     state.reduce(action: action)
                 }
-
-            weakRootStore = strongRootStore
-            store = strongRootStore.referencedStore()
+            
+            weakRootStore = rootStore
+            store = rootStore.strongRefStore()
         }
-
+        
         XCTAssertNotNil(weakRootStore)
     }
-
-    func test_WhenStoreObjectReleased_ThenRootStoreIsReleased() {
+    
+    func test_WhenStoreRemoved_ThenRootStoreIsReleased() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
         var store: Store<TestState, Action>?
-
+        
         autoreleasepool {
-            let strongRootStore = RootStoreNode<TestState, Action>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
-
+                    
                     state.reduce(action: action)
                 }
-
-            weakRootStore = strongRootStore
-            store = strongRootStore.referencedStore()
+            
+            weakRootStore = rootStore
+            store = rootStore.strongRefStore()
         }
-
+        
+        XCTAssertNotNil(weakRootStore)
         store = nil
         XCTAssertNil(weakRootStore)
     }

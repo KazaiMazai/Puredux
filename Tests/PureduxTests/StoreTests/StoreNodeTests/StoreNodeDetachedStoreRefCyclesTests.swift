@@ -31,7 +31,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
             )
 
             weakChildStore = strongChildStore
-            store = strongChildStore.store()
+            store = strongChildStore.weakRefStore()
         }
 
         XCTAssertNil(weakChildStore)
@@ -51,7 +51,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
             )
 
             weakChildStore = strongChildStore
-            referencedStore = strongChildStore.referencedStore()
+            referencedStore = strongChildStore.strongRefStore()
         }
 
         XCTAssertNotNil(weakChildStore)
@@ -71,7 +71,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
             )
 
             weakChildStore = strongChildStore
-            referencedStore = strongChildStore.referencedStore()
+            referencedStore = strongChildStore.strongRefStore()
         }
 
         referencedStore = nil

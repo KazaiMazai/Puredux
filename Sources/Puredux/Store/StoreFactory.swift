@@ -50,7 +50,7 @@ public extension StoreFactory {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
     func rootStore() -> Store<State, Action> {
-        rootStoreNode.store()
+        rootStoreNode.weakRefStore()
     }
 
     /// Initializes a new Store with state mapping to local substate.
@@ -62,7 +62,7 @@ public extension StoreFactory {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
     func scopeStore<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        rootStoreNode.store().scope(to: localState)
+        rootStoreNode.weakRefStore().scope(to: localState)
     }
 
     /// Initializes a new Store with state mapping to local substate.
@@ -75,7 +75,7 @@ public extension StoreFactory {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        rootStoreNode.store().scope(toOptional: localState)
+        rootStoreNode.weakRefStore().scope(toOptional: localState)
     }
 
     /// Initializes a new child store with initial state
@@ -118,7 +118,7 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .referencedStore()
+        .strongRefStore()
     }
 
     /// Initializes a new child store with initial state

@@ -25,13 +25,13 @@ public extension Presentable {
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
  
-        let weakStore = store.store()
+        let weakRefStore = store.weakRefStore()
         let observer = Observer(
             self,
             removeStateDuplicates: equating,
             observe: { [weak self] state, complete in
                 presentationQueue.dispatchQueue.async {
-                    let props = props(state, weakStore)
+                    let props = props(state, weakRefStore)
                     
                     PresentationQueue.main.dispatchQueue.async { [weak self] in
                         self?.setProps(props)

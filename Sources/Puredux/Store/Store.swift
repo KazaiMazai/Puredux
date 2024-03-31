@@ -88,7 +88,7 @@ public extension Store {
     ///
     ///
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        let store = store()
+        let store = weakRefStore()
         return Store<LocalState, Action>(
             dispatch: store.dispatch,
             subscribe: { localStateObserver in
@@ -113,7 +113,7 @@ public extension Store {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        let store = store()
+        let store = weakRefStore()
         return Store<LocalState, Action>(
             dispatch: store.dispatch,
             subscribe: { localStateObserver in
@@ -126,7 +126,7 @@ public extension Store {
 }
 
 extension Store {
-    func store() -> Store<State, Action> {
+    func weakRefStore() -> Store<State, Action> {
         switch storeType {
         case .storeObject(let referencedStore):
             return referencedStore.weakRefStore()
