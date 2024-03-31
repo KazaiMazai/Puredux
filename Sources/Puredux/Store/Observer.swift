@@ -53,13 +53,13 @@ public struct Observer<State>: Hashable {
 }
 
 extension Observer {
-    init(id: UUID, observe: @escaping StateHandler) {
+    init(id: UUID = UUID(), observe: @escaping StateHandler) {
         self.id = id
         self.removeStateDuplicates = nil
         self.observeClosure = { state, _, complete in observe(state, complete) }
     }
     
-    init(id: UUID, observe: @escaping StateObserver) {
+    init(id: UUID = UUID(), observe: @escaping StateObserver) {
         self.id = id
         self.removeStateDuplicates = nil
         self.observeClosure = observe
@@ -78,9 +78,12 @@ extension Observer {
                 return
             }
             
-            let isEqual = equating?.isEqual(state, to: prevState) ?? false
+            guard let equating else {
+                observe(state, complete)
+                return
+            }
             
-            guard isEqual else {
+            guard !equating.isEqual(state, to: prevState) else {
                 complete(.active)
                 return
             }
