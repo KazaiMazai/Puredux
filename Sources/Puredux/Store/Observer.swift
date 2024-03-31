@@ -38,18 +38,18 @@ public extension Observer {
 public struct Observer<State>: Hashable {
     let id: UUID
     
-    private let observeClosure: StateObserver
+    private let stateHandler: StateObserver
     private let removeStateDuplicates: Equating<State>?
     private let prevState: Referenced<State?> = Referenced(value: nil)
     
     func send(_ state: State, complete: @escaping StatusHandler) {
         guard removesStateDuplicates else {
-            observeClosure(state, nil, complete)
+            stateHandler(state, nil, complete)
             return
         }
         let prev = prevState.value
         prevState.value = state
-        observeClosure(state, prev, complete)
+        stateHandler(state, prev, complete)
     }
 }
 
@@ -94,13 +94,13 @@ extension Observer {
     init(id: UUID = UUID(), observe: @escaping StateHandler) {
         self.id = id
         self.removeStateDuplicates = nil
-        self.observeClosure = { state, _, complete in observe(state, complete) }
+        self.stateHandler = { state, _, complete in observe(state, complete) }
     }
     
     init(id: UUID = UUID(), observe: @escaping StateObserver) {
         self.id = id
         self.removeStateDuplicates = nil
-        self.observeClosure = observe
+        self.stateHandler = observe
     }
     
     init(_ observer: AnyObject,
@@ -110,7 +110,7 @@ extension Observer {
         
         self.id = id
         self.removeStateDuplicates = equating
-        self.observeClosure = { [weak observer] state, prevState, complete in
+        self.stateHandler = { [weak observer] state, prevState, complete in
             guard observer != nil else {
                 complete(.dead)
                 return
