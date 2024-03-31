@@ -10,7 +10,7 @@ import XCTest
 
 final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
-    typealias ChildStore = StoreNode<ParentStore, ChildTestState, StateComposition, Action>
+    typealias ChildStore = StoreNode<ParentStore, ReferenceTypeState, ReferenceTypeState, Action>
 
     let timeout: TimeInterval = 3
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
@@ -20,6 +20,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
     func test_WhenStrongRefToStoreObjectAndObserverLive_ThenReferencCycleIsCreated() {
         weak var weakRefObject: ReferenceTypeState?
+        weak var weakChildStore: ChildStore?
         
         autoreleasepool {
             let object = ReferenceTypeState()
@@ -28,7 +29,9 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
                 stateMapping: { state, childState in childState },
                 reducer: { state, action  in  state.reduce(action) }
             )
+            
             weakRefObject = object
+            weakChildStore = store
 
             let referencedStore = store.strongRefStore()
 
@@ -41,10 +44,13 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         }
 
         XCTAssertNotNil(weakRefObject)
+        XCTAssertNotNil(weakChildStore)
     }
 
     func test_WhenStrongRefToStoreObjectAndObserverDead_ThenStoreIsReleased() {
         weak var weakRefObject: ReferenceTypeState?
+        weak var weakChildStore: ChildStore?
+        
         let asyncExpectation = expectation(description: "Observer state handler")
 
         autoreleasepool {
@@ -54,7 +60,9 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
                 stateMapping: { state, childState in childState },
                 reducer: { state, action in state.reduce(action) }
             )
+            
             weakRefObject = object
+            weakChildStore = store
 
             let referencedStore = store.strongRefStore()
 
@@ -69,12 +77,14 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
         waitForExpectations(timeout: timeout) { _ in
             XCTAssertNil(weakRefObject)
+            XCTAssertNil(weakChildStore)
         }
     }
 
     func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
         weak var weakRefObject: ReferenceTypeState?
-       
+        weak var weakChildStore: ChildStore?
+        
         autoreleasepool {
             let object = ReferenceTypeState()
             let store = rootStore.createChildStore(
@@ -84,7 +94,8 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             )
             
             weakRefObject = object
-
+            weakChildStore = store
+            
             let weakRefStore = store.weakRefStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
@@ -95,6 +106,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             store.subscribe(observer: observer)
         }
 
+        XCTAssertNil(weakChildStore)
         XCTAssertNil(weakRefObject)
     }
 }
