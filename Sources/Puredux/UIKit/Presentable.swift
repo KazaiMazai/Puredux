@@ -23,14 +23,14 @@ public extension Presentable {
     func with<State, Action>(store: Store<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State> = .neverEqual) {
+                             removeStateDuplicates equating: Equating<State>? = nil) {
  
         let weakStore = store.store()
         presenter = Presenter(
             store: store,
             observer: Observer(
                 self,
-                removeStateDuplicates: equating, 
+                removeStateDuplicates: equating,
                 observe: { state, complete in
                     presentationQueue.dispatchQueue.async {
                         let props = props(state, weakStore)
