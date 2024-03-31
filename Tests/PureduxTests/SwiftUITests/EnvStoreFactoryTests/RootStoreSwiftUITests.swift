@@ -38,14 +38,15 @@ extension RootStoreSwiftUITests {
 
     func test_WhenActionDispatched_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
-        receivedState.assertForOverFulfill = false
         let expectedIndex = 100
 
         var lastReceievedState: Int?
 
         let cancellable = store.statePublisher.sink { state in
             lastReceievedState = state.subStateWithIndex.index
-            receivedState.fulfill()
+            if lastReceievedState == expectedIndex {
+                receivedState.fulfill()
+            }
         }
 
         store.dispatch(UpdateIndex(index: expectedIndex))
