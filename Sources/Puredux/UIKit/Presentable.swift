@@ -26,32 +26,30 @@ public extension Presentable {
                              removeStateDuplicates equating: Equating<State>? = nil) {
  
         let weakStore = store.store()
-        presenter = Presenter(
-            store: store,
-            observer: Observer(
-                self,
-                removeStateDuplicates: equating,
-                observe: { [weak self] state, complete in
-                    presentationQueue.dispatchQueue.async {
-                        let props = props(state, weakStore)
-                        
-                        PresentationQueue.main.dispatchQueue.async { [weak self] in
-                            self?.setProps(props)
-                            complete(.active)
-                        }
+        let observer = Observer(
+            self,
+            removeStateDuplicates: equating,
+            observe: { [weak self] state, complete in
+                presentationQueue.dispatchQueue.async {
+                    let props = props(state, weakStore)
+                    
+                    PresentationQueue.main.dispatchQueue.async { [weak self] in
+                        self?.setProps(props)
+                        complete(.active)
                     }
                 }
-            )
+            }
         )
+        
+        presenter = Presenter { store.subscribe(observer: observer) }
     }
 }
 
-struct Presenter<State, Action>: PresenterProtocol {
-    let store: Store<State, Action>
-    let observer: Observer<State>
+struct Presenter: PresenterProtocol {
+    let subscribe: () -> Void
      
     func subscribeToStore() {
-        store.subscribe(observer: observer)
+        subscribe()
     }
 }
  
