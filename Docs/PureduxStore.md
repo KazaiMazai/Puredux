@@ -145,15 +145,13 @@ scopedStore.subscribe(observer: observer)
 
 ```swift
  
-let childStoreObject: StoreObject<(AppState, LocalState), Action> = storeFactory.childStore(
+let childStore: Store<(AppState, LocalState), Action> = storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
     }
 )
-
-let childStore = childStoreObject.store()
-
+ 
 
 let observer = Observer<(AppState, LocalState)> { stateComposition, complete in
     // Handle your latest state here and dispatch some actions to the store
@@ -183,11 +181,11 @@ childStore.subscribe(observer: observer)
    
 ### What is StoreFactory?
 
-StoreFactory is a factory for Stores and StoreObjects.
+StoreFactory is a factory for Stores.
 It suppports creation of the following store types:
 - Root Store - plain Store as proxy to the factory's' root store
 - Scope Store - scoped Store as proxy to the factory root store
-- Child Store - child StoreObject with `(Root, Local) -> Composition` state mapping and it's own lifecycle
+- Child Store - child Store with `(Root, Local) -> Composition` state mapping and it's own state lifecycle
 
 ### What queue does the root store operate on?
 
@@ -200,15 +198,11 @@ It suppports creation of the following store types:
 - It's a proxy to its parent store: it forwards subscribtions and all dispatched Actions to it.
 - Store is designed to be passed all over the app safely without extra effort.
 - It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
-- It keeps weak reference to the parent store, that allows to avoid creating reference cycles accidentally.
 
-### What is a StoreObject?
-
-- StoreObject is a class store.
+### What is a Child Store?
+ 
 - It's a proxy to its parent store: it forwards subscribtions and all dispatched Actions to it.
-- It's designed to manage stores lifecycle
-- It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
-- It keeps a *strong* reference to the root store, that's why requries a careful treatment.
+- It has its own state lifecycle
 
 
 ### How to unsubscribe from store?
@@ -323,7 +317,7 @@ You should only provide initial state and reducer:
 
 ```swift
  
-let childStoreObject: StoreObject<(AppState, LocalState), Action> storeFactory.childStore(
+let childStore: Store<(AppState, LocalState), Action> storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
@@ -333,18 +327,16 @@ let childStoreObject: StoreObject<(AppState, LocalState), Action> storeFactory.c
 ```
 ### How to manage child store's and its state lifecycle?
 
-Child store is a `StoreObject` it will exist while you keep a strong reference to it.
+Child store's state will exist while there is a reference to the Store.
 
-### Why root store and scope store is a Store<State, Action> and child store is a `StoreObject<State, Action>`?
+### More about state lifecycle
 
 Root store's and scope store's lifecycle is controlled by StoreFactory. 
 They exist while factory exist. Typically during the whole app lifecycle.
 
 Child store is for the cases when we want to take over the control of the store lifecycle.
 Typically when we present screens or some flows of the app.
-
-`StoreObject<State, Action>` prevents from errors that could occur because of confusion with 
-Store<State, Action 
+ 
 
 ### How are Actions dispatched with parent/child stores?
 

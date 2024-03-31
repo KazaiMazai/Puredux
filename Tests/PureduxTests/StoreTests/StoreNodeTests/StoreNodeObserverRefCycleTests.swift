@@ -31,14 +31,14 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             )
             weakChildStore = strongChildStore
 
-            let storeObject = strongChildStore.storeObject()
+            let referencedStore = strongChildStore.referencedStore()
 
             let observer = Observer<StateComposition> { _, complete in
-                storeObject.dispatch(UpdateIndex(index: 1))
+                referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
 
-            storeObject.subscribe(observer: observer)
+            referencedStore.subscribe(observer: observer)
         }
 
         XCTAssertNotNil(weakChildStore)
@@ -59,15 +59,15 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             )
             weakChildStore = strongChildStore
 
-            let storeObject = strongChildStore.storeObject()
+            let referencedStore = strongChildStore.referencedStore()
 
             let observer = Observer<StateComposition> { _, complete in
-                storeObject.dispatch(UpdateIndex(index: 1))
+                referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
                 asyncExpectation.fulfill()
             }
 
-            storeObject.subscribe(observer: observer)
+            referencedStore.subscribe(observer: observer)
         }
 
         waitForExpectations(timeout: timeout) { _ in
@@ -75,9 +75,9 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         }
     }
 
-    func test_WhenStoreAndObserverLive_ThenStoreIsReleased() {
+    func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
         weak var weakChildStore: ChildStore?
-
+        
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
                 initialState: ChildTestState(currentIndex: 0),
@@ -93,6 +93,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let observer = Observer<StateComposition> { _, complete in
                 store.dispatch(UpdateIndex(index: 1))
                 complete(.active)
+                
             }
 
             store.subscribe(observer: observer)

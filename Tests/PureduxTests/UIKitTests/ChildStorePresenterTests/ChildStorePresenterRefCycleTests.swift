@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 
 
-final class StoreObjectPresnterRefCycleTests: XCTestCase {
+final class ChildStorePresenterRefCycleTests: XCTestCase {
     let timeout: TimeInterval = 4
 
     let state = TestAppStateWithIndex()
@@ -23,51 +23,55 @@ final class StoreObjectPresnterRefCycleTests: XCTestCase {
     }()
 
     func test_WhenStrongRefToVC_ThenStrongRefToChildStore() {
-        weak var weakChildStore: StoreObject<(TestAppStateWithIndex, SubStateWithTitle), Action>?
         var strongViewController: StubViewController?
-
+        weak var weakRefObject: SomeClass?
+        
         autoreleasepool {
+            let strongRefObject = SomeClass()
+            
             let strongChildStore = factory.childStore(
-                initialState: SubStateWithTitle(),
+                initialState: strongRefObject,
                 reducer: { state, action in state.reduce(action) }
             )
 
-            weakChildStore = strongChildStore
+            weakRefObject = strongRefObject
 
             let viewController = StubViewController()
 
             viewController.with(store: strongChildStore,
-                    props: { state, _ in .init(title: state.1.title) }
+                    props: { state, _ in .init(title: "") }
             )
 
             strongViewController = viewController
         }
-
-        XCTAssertNotNil(weakChildStore)
+        
+        XCTAssertNotNil(weakRefObject)
     }
 
     func test_WhenNoStrongRefToVC_ThenChildStoreIsReleased() {
-        weak var weakChildStore: StoreObject<(TestAppStateWithIndex, SubStateWithTitle), Action>?
+        weak var weakRefObject: SomeClass?
         var strongViewController: StubViewController?
 
         autoreleasepool {
+            let strongRefObject = SomeClass()
+            
             let strongChildStore = factory.childStore(
-                initialState: SubStateWithTitle(),
+                initialState: strongRefObject,
                 reducer: { state, action in state.reduce(action) }
             )
 
-            weakChildStore = strongChildStore
+            weakRefObject = strongRefObject
 
             let viewController = StubViewController()
 
             viewController.with(store: strongChildStore,
-                    props: { state, _ in .init(title: state.1.title) }
+                    props: { state, _ in .init(title: "") }
             )
 
             strongViewController = viewController
         }
-
+         
         strongViewController = nil
-        XCTAssertNil(weakChildStore)
+        XCTAssertNil(weakRefObject)
     }
 }

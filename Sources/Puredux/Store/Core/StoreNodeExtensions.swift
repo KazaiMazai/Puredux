@@ -32,16 +32,14 @@ extension StoreNode where LocalState == State {
 
 extension StoreNode {
     func store() -> Store<State, Action> {
-        Store(
-            dispatch: { [weak self] in self?.dispatch($0) },
-            subscribe: { [weak self] in self?.subscribe(observer: $0) }
+        Store(dispatch: { [weak self] in self?.dispatch($0) },
+              subscribe: { [weak self] in self?.subscribe(observer: $0) }
         )
     }
 
-    func storeObject() -> StoreObject<State, Action> {
-        StoreObject(
-            dispatch: { self.dispatch($0) },
-            subscribe: { self.subscribe(observer: $0) }
+    func referencedStore() -> Store<State, Action> {
+        Store.referencedStore(dispatch: { [self] in self.dispatch($0) },
+                              subscribe: { [self] in self.subscribe(observer: $0) }
         )
     }
 }

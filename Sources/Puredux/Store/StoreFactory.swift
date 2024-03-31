@@ -8,7 +8,7 @@
 import Foundation
 
 public final class StoreFactory<State, Action> {
-    private let rootStoreNode: RootStoreNode<State, Action>
+    let rootStoreNode: RootStoreNode<State, Action>
 
     /// Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
     ///
@@ -20,7 +20,7 @@ public final class StoreFactory<State, Action> {
     ///
     /// - Returns: `StoreFactory<State, Action>`
     ///
-    /// StoreFactory is a factory for Store and StoreObjects.
+    /// StoreFactory is a factory for Store.
     /// It suppports the following store types:
     /// - Root Store - plain root store of the factory
     /// - Scope Store - scoped store proxy to the root store
@@ -80,12 +80,12 @@ public extension StoreFactory {
 
     /// Initializes a new child store with initial state
     ///
-    /// - Returns: Child StoreObject
+    /// - Returns: Child Store
     ///
     /// ChildStore is a composition of root store and newly created local store.
     /// Local state is a mapping of the child state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its ChildState is determined by StoreObject's lifecycle.
+    /// ChildStore's lifecycle along with its ChildState is determined by Store's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
@@ -110,7 +110,7 @@ public extension StoreFactory {
         qos: DispatchQoS = .userInteractive,
         reducer: @escaping Reducer<ChildState, Action>) ->
 
-    StoreObject<LocalState, Action> {
+    Store<LocalState, Action> {
 
         rootStoreNode.createChildStore(
             initialState: initialState,
@@ -118,17 +118,17 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .storeObject()
+        .referencedStore()
     }
 
     /// Initializes a new child store with initial state
     ///
-    /// - Returns: Child StoreObject
+    /// - Returns: Child Store
     ///
     /// ChildStore is a composition of root store and newly created local store.
     /// Child state is a mapping of the local state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its LocalState is determined by StoreObject's lifecycle.
+    /// ChildStore's lifecycle along with its LocalState is determined by Store's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
@@ -151,7 +151,7 @@ public extension StoreFactory {
     func childStore<ChildState>(
         initialState: ChildState,
         qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<ChildState, Action>) -> StoreObject<(State, ChildState), Action> {
+        reducer: @escaping Reducer<ChildState, Action>) -> Store<(State, ChildState), Action> {
 
             childStore(initialState: initialState,
                        stateMapping: { state, childState in (state, childState) },
@@ -160,3 +160,4 @@ public extension StoreFactory {
 
         }
 }
+ 
