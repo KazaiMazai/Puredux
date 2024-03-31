@@ -18,7 +18,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         reducer: { state, action  in state.reduce(action: action) }
     )
 
-    func test_WhenStrongRefToStoreObjectAndObserverLive_ThenReferencCycleIsCreated() {
+    func test_WhenStrongRefToStoreAndObserverLive_ThenReferencCycleIsCreated() {
         weak var weakRefObject: ReferenceTypeState?
         weak var weakChildStore: ChildStore?
         
@@ -47,7 +47,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
         XCTAssertNotNil(weakChildStore)
     }
 
-    func test_WhenStrongRefToStoreObjectAndObserverDead_ThenStoreIsReleased() {
+    func test_WhenStrongRefToStoreAndObserverDead_ThenStoreIsReleased() {
         weak var weakRefObject: ReferenceTypeState?
         weak var weakChildStore: ChildStore?
         
@@ -69,7 +69,9 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
-                asyncExpectation.fulfill()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    asyncExpectation.fulfill()
+                }
             }
 
             referencedStore.subscribe(observer: observer)
