@@ -31,7 +31,7 @@ public extension Presentable {
             observer: Observer(
                 self,
                 removeStateDuplicates: equating,
-                observe: { state, complete in
+                observe: { [weak self] state, complete in
                     presentationQueue.dispatchQueue.async {
                         let props = props(state, weakStore)
                         
@@ -45,3 +45,13 @@ public extension Presentable {
         )
     }
 }
+
+struct Presenter<State, Action>: PresenterProtocol {
+    let store: Store<State, Action>
+    let observer: Observer<State>
+     
+    func subscribeToStore() {
+        store.subscribe(observer: observer)
+    }
+}
+ 
