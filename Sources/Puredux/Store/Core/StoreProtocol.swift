@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StoreProtocol {
+protocol StoreProtocol<State, Action>: AnyObject {
     associatedtype Action
     associatedtype State
 
@@ -22,4 +22,10 @@ protocol StoreProtocol {
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
     func dispatch(scopedAction: ScopedAction<Action>)
+}
+
+extension StoreProtocol {
+    func subscribe(observer: Observer<State>) {
+        subscribe(observer: observer, receiveCurrentState: true)
+    }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct VoidStore<Action>: StoreProtocol {
+final class VoidStore<Action>: StoreProtocol {
     let currentState: Void = Void()
     let actionsInterceptor: ActionsInterceptor<Action>?
 
@@ -18,4 +18,8 @@ struct VoidStore<Action>: StoreProtocol {
     func subscribe(observer: Observer<()>, receiveCurrentState: Bool) { }
 
     func dispatch(scopedAction: ScopedAction<Action>) { }
+    
+    init(actionsInterceptor: ActionsInterceptor<Action>? = nil) {
+        self.actionsInterceptor = actionsInterceptor
+    }
 }
