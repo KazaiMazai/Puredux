@@ -129,21 +129,19 @@ extension Store {
     func weakRefStore() -> Store<State, Action> {
         switch storeType {
         case .storeObject(let referencedStore):
-            return referencedStore.weakRefStore()
+            return Store(
+                dispatch: { [weak referencedStore] in referencedStore?.dispatch($0) },
+                subscribe: { [weak referencedStore] in referencedStore?.subscribe(observer: $0) }
+            )
         case .store:
             return self
         }
     }
-    
-    static func referencedStore(dispatch: @escaping Dispatch,
-                                subscribe: @escaping Subscribe) -> Store {
-        
-        Store(
-            .storeObject(StoreObject(
-                dispatch: dispatch,
-                subscribe: subscribe)
-            )
-        )
+}
+
+extension Store {
+    init(storeObject: any StoreProtocol<State, Action>) {
+        self.storeType = .storeObject(storeObject)
     }
 }
 
@@ -153,35 +151,11 @@ private extension Store {
     }
 }
 
+
 private extension Store {
     enum StoreType {
-        case storeObject(StoreObject)
+        case storeObject(any StoreProtocol<State, Action>)
         case store(Dispatch, Subscribe)
-    }
-    
-    final class StoreObject {
-        private let dispatch: Dispatch
-        private let subscribe: Subscribe
-        
-        func dispatch(_ action: Action) {
-            dispatch(action)
-        }
-        
-        func subscribe(observer: Observer<State>) {
-            subscribe(observer)
-        }
-        
-        init(dispatch: @escaping Dispatch,
-             subscribe: @escaping Subscribe) {
-            self.dispatch = dispatch
-            self.subscribe = subscribe
-        }
-        
-        func weakRefStore() -> Store<State, Action> {
-            Store(dispatch: { [weak self] in self?.dispatch($0) },
-                  subscribe: { [weak self] in self?.subscribe(observer: $0) }
-            )
-        }
     }
 }
 

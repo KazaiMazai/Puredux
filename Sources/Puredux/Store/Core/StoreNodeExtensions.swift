@@ -38,9 +38,7 @@ extension StoreNode {
     }
 
     func strongRefStore() -> Store<State, Action> {
-        Store.referencedStore(dispatch: { [self] in self.dispatch($0) },
-                              subscribe: { [self] in self.subscribe(observer: $0) }
-        )
+        Store<State, Action>(storeObject: self)
     }
 }
 
