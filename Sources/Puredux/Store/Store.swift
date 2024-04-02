@@ -129,10 +129,7 @@ extension Store {
     func weakRefStore() -> Store<State, Action> {
         switch storeType {
         case .storeObject(let referencedStore):
-            return Store(
-                dispatch: { [weak referencedStore] in referencedStore?.dispatch($0) },
-                subscribe: { [weak referencedStore] in referencedStore?.subscribe(observer: $0) }
-            )
+            return referencedStore.weakRefStore()
         case .store:
             return self
         }

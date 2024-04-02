@@ -28,4 +28,14 @@ extension StoreProtocol {
     func subscribe(observer: Observer<State>) {
         subscribe(observer: observer, receiveCurrentState: true)
     }
+    
+    func weakRefStore() -> Store<State, Action> {
+        Store(dispatch: { [weak self] in self?.dispatch($0) },
+              subscribe: { [weak self] in self?.subscribe(observer: $0) }
+        )
+    }
+    
+    func strongRefStore() -> Store<State, Action> {
+        Store<State, Action>(storeObject: self)
+    }
 }
