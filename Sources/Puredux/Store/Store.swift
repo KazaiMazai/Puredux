@@ -53,9 +53,29 @@ public struct Store<State, Action> {
     ///
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
+    ///
+    @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
     public init(dispatch: @escaping Dispatch,
                 subscribe: @escaping Subscribe) {
-        storeType = .store(dispatch, subscribe)
+        self.init(dispatcher: dispatch, subscribe: subscribe)
+    }
+    
+    /// Initializes a mock Store
+    ///
+    /// - Parameter dispatch: Closure that handles Store's dispatching Actions
+    /// - Parameter subscribe: Closure that handles Store's subscription
+    /// - Returns: Store
+    ///
+    /// Generally, Store has no reason to be Initialized this way
+    /// unless you want to mock the Store completely.
+    ///
+    /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
+    ///
+    ///
+    public static func mockStore(dispatch: @escaping Dispatch,
+                                 subscribe: @escaping Subscribe) -> Store<State, Action> {
+        
+        Store(dispatcher: dispatch, subscribe: subscribe)
     }
 }
 
@@ -90,7 +110,7 @@ public extension Store {
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         let store = weakRefStore()
         return Store<LocalState, Action>(
-            dispatch: store.dispatch,
+            dispatcher: store.dispatch,
             subscribe: { localStateObserver in
                 store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = localState(state) else {
@@ -115,7 +135,7 @@ public extension Store {
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         let store = weakRefStore()
         return Store<LocalState, Action>(
-            dispatch: store.dispatch,
+            dispatcher: store.dispatch,
             subscribe: { localStateObserver in
                 store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = localState(state)
@@ -137,6 +157,11 @@ extension Store {
 }
 
 extension Store {
+    init(dispatcher: @escaping Dispatch,
+         subscribe: @escaping Subscribe) {
+        storeType = .store(dispatcher, subscribe)
+    }
+    
     init(storeObject: any StoreProtocol<State, Action>) {
         self.storeType = .storeObject(storeObject)
     }
