@@ -43,7 +43,7 @@ final class CoreStore<State, Action> {
 
 extension CoreStore {
     func weakRefStore() -> Store<State, Action> {
-        Store(dispatch: { [weak self] in self?.dispatch($0) },
+        Store(dispatcher: { [weak self] in self?.dispatch($0) },
               subscribe: { [weak self] in self?.subscribe(observer: $0) })
     }
 }
