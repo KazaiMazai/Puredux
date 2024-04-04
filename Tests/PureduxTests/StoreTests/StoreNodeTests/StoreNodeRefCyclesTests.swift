@@ -11,11 +11,11 @@ import XCTest
 final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     
     func test_WhenWeakRefStore_ThenWeakRefToRootCreated() {
-        weak var weakRootStore: RootStoreNode<TestState, AppAction>?
-        var store: Store<TestState, AppAction>?
+        weak var weakRootStore: RootStoreNode<TestState, Action>?
+        var store: Store<TestState, Action>?
         
         autoreleasepool {
-            let rootStore = RootStoreNode<TestState, AppAction>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
@@ -29,11 +29,11 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     }
     
     func test_WhenStoreExists_ThenStrongRefToRootCreated() {
-        weak var weakRootStore: RootStoreNode<TestState, AppAction>?
-        var store: StateStore<TestState, AppAction>?
+        weak var weakRootStore: RootStoreNode<TestState, Action>?
+        var store: StateStore<TestState, Action>?
         
         autoreleasepool {
-            let rootStore = RootStoreNode<TestState, AppAction>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
@@ -47,11 +47,11 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     }
     
     func test_WhenStoreRemoved_ThenRootStoreIsReleased() {
-        weak var weakRootStore: RootStoreNode<TestState, AppAction>?
-        var store: StateStore<TestState, AppAction>?
+        weak var weakRootStore: RootStoreNode<TestState, Action>?
+        var store: StateStore<TestState, Action>?
         
         autoreleasepool {
-            let rootStore = RootStoreNode<TestState, AppAction>.initRootStore(
+            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
