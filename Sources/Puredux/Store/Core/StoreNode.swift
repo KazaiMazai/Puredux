@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
+
 final class StoreNode<ParentStore, LocalState, State, Action>
     where
     ParentStore: StoreProtocol,
@@ -48,6 +50,27 @@ final class StoreNode<ParentStore, LocalState, State, Action>
 
         localStore.subscribe(observer: localStoreObserver, receiveCurrentState: false)
         self.parentStore.subscribe(observer: parentStoreObserver, receiveCurrentState: false)
+    }
+}
+
+extension StoreNode where LocalState == State {
+    static func initRootStore(initialState: State,
+                              interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
+                              qos: DispatchQoS = .userInteractive,
+                              reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
+
+        RootStoreNode<State, Action>(
+            initialState: initialState,
+            stateMapping: { _, state in return state },
+            parentStore: VoidStore<Action>(
+                actionsInterceptor: ActionsInterceptor(
+                    storeId: StoreID(),
+                    handler: interceptor,
+                    dispatcher: { _ in }
+                )
+            ),
+            reducer: reducer
+        )
     }
 }
 
@@ -96,7 +119,7 @@ extension StoreNode: StoreProtocol {
     }
 }
 
-extension StoreNode {
+private extension StoreNode {
     var parentStoreObserver: Observer<ParentStore.State> {
         Observer { [weak self] rootState, handler in
             guard let self = self else {
@@ -134,7 +157,7 @@ extension StoreNode {
     }
 }
 
-extension StoreNode {
+private extension StoreNode {
     func observeStateUpdate(root: ParentStore.State, local: LocalState) {
         let state = stateMapping(root, local)
         observers.forEach { send(state, to: $0) }

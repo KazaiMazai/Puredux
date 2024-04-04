@@ -27,3 +27,26 @@ public struct StateStore<State, Action> {
         storeObject.subscribe(observer: observer)
     }
 }
+
+extension StateStore {
+   
+    func createChildStore<LocalState, ResultState>(
+            initialState: LocalState,
+            stateMapping: @escaping (State, LocalState) -> ResultState,
+            qos: DispatchQoS,
+            reducer: @escaping Reducer<LocalState, Action>) -> StateStore<ResultState, Action> {
+    
+                StateStore<ResultState, Action>(
+                    storeObject: storeObject.createChildStore(
+                        initialState: initialState,
+                        stateMapping: stateMapping,
+                        qos: qos,
+                        reducer: reducer
+                    )
+                )
+            }
+
+}
+
+
+

@@ -111,14 +111,15 @@ public extension StoreFactory {
         reducer: @escaping Reducer<ChildState, Action>) ->
 
     StateStore<LocalState, Action> {
-
-        rootStoreNode.createChildStore(
-            initialState: initialState,
-            stateMapping: stateMapping,
-            qos: qos,
-            reducer: reducer
+        
+        StateStore(
+            storeObject: rootStoreNode.createChildStore(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                qos: qos,
+                reducer: reducer
+            )
         )
-        .stateStore()
     }
 
     /// Initializes a new child StateStore with initial state
