@@ -20,18 +20,41 @@ public protocol Presentable: AnyObject {
 }
 
 public extension Presentable {
-    func with<State, Action>(store: Store<State, Action>,
+    func with<State, Action>(store: StateStore<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
  
-        let weakRefStore = store.weakRefStore()
+        let weakRefStore = store.store()
         let observer = Observer(
             self,
             removeStateDuplicates: equating,
             observe: { [weak self] state, complete in
                 presentationQueue.dispatchQueue.async {
                     let props = props(state, weakRefStore)
+                    
+                    PresentationQueue.main.dispatchQueue.async { [weak self] in
+                        self?.setProps(props)
+                        complete(.active)
+                    }
+                }
+            }
+        )
+        
+        presenter = Presenter { store.subscribe(observer: observer) }
+    }
+    
+    func with<State, Action>(store: Store<State, Action>,
+                             props: @escaping (State, Store<State, Action>) -> Self.Props,
+                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
+                             removeStateDuplicates equating: Equating<State>? = nil) {
+ 
+        let observer = Observer(
+            self,
+            removeStateDuplicates: equating,
+            observe: { [weak self] state, complete in
+                presentationQueue.dispatchQueue.async {
+                    let props = props(state, store)
                     
                     PresentationQueue.main.dispatchQueue.async { [weak self] in
                         self?.setProps(props)
