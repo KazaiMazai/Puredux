@@ -14,9 +14,7 @@ public struct StateStore<State, Action> {
     let storeObject: any StoreProtocol<State, Action>
     
     public func store() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) })
+        weakStore()
     }
     
     public func dispatch(_ action: Action) {
@@ -29,6 +27,17 @@ public struct StateStore<State, Action> {
 }
 
 extension StateStore {
+    func weakStore() -> Store<State, Action> {
+        Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) })
+    }
+    
+    func strongStore() -> Store<State, Action> {
+        Store<State, Action>(
+            dispatcher: dispatch,
+            subscribe: subscribe)
+    }
    
     func createChildStore<LocalState, ResultState>(
             initialState: LocalState,
@@ -45,5 +54,4 @@ extension StateStore {
                     )
                 )
             }
-
 }
