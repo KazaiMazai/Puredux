@@ -7,11 +7,8 @@
 
 import Foundation
 
+
 extension Store {
-    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
-        map { $0[keyPath: keyPath] }
-    }
-    
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
         Store<T, Action>(
             dispatcher: dispatch,
@@ -22,10 +19,6 @@ extension Store {
                 })
             }
         )
-    }
-    
-    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
-        compactMap { $0[keyPath: keyPath] }
     }
     
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
@@ -43,11 +36,7 @@ extension Store {
             }
         )
     }
-    
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
-        flatMap { $0[keyPath: keyPath] }
-    }
-    
+ 
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
         Store<T?, Action>(
             dispatcher: dispatch,
@@ -61,6 +50,19 @@ extension Store {
     }
 }
 
+extension Store {
+    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
+        map { $0[keyPath: keyPath] }
+    }
+    
+    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
+        compactMap { $0[keyPath: keyPath] }
+    }
+    
+    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
+        flatMap { $0[keyPath: keyPath] }
+    }
+}
 
 extension StateStore {
    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
