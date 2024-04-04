@@ -8,9 +8,10 @@
 import XCTest
 @testable import Puredux
 
+@available(iOS 16.0.0, *)
 final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
-    typealias ChildStore = StoreNode<ParentStore, ChildTestState, StateComposition, Action>
+    typealias ChildStore = any StoreProtocol<StateComposition, Action>
 
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
         initialState: TestState(currentIndex: 1),
@@ -27,6 +28,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 
@@ -47,6 +49,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 
@@ -67,6 +70,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 

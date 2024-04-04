@@ -39,3 +39,19 @@ extension StoreProtocol {
         StateStore<State, Action>(storeObject: self)
     }
 }
+
+extension StoreProtocol {
+    func createChildStore<LocalState, ResultState>(
+        initialState: LocalState,
+        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
+        qos: DispatchQoS,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
+            
+            StoreNode<Self, LocalState, ResultState, Action>(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                parentStore: self,
+                reducer: reducer
+            )
+        }
+}
