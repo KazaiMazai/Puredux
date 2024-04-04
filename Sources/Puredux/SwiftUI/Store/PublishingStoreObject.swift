@@ -13,7 +13,7 @@ import Combine
 ///
 @available(iOS 13.0, *)
 public struct PublishingStoreObject<AppState, Action> {
-    private let undelyingStore: Store<AppState, Action>
+    private let stateStore: StateStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
 
     /// Initializes a new PublishingStoreObject
@@ -28,9 +28,9 @@ public struct PublishingStoreObject<AppState, Action> {
     /// For all other cases, EnvStoreFactory's methods should be used to create viable PublishingStoreObject.
     ///
     ///
-    @available(*, deprecated, renamed: "init(store:)", message: "Will be removed in the next major release.")
-    public init(storeObject: Store<AppState, Action>) {
-        self.undelyingStore = storeObject
+    @available(*, deprecated, renamed: "init(stateStore:)", message: "Will be removed in the next major release.")
+    public init(storeObject: StoreObject<AppState, Action>) {
+        self.stateStore = storeObject
         self.stateSubject = PassthroughSubject<AppState, Never>()
         storeObject.subscribe(observer: asObserver)
     }
@@ -46,10 +46,10 @@ public struct PublishingStoreObject<AppState, Action> {
     ///
     /// For all other cases, EnvStoreFactory's methods should be used to create viable PublishingStoreObject.
     ///
-    public init(store: Store<AppState, Action>) {
-        self.undelyingStore = store
+    public init(stateStore: StateStore<AppState, Action>) {
+        self.stateStore = stateStore
         self.stateSubject = PassthroughSubject<AppState, Never>()
-        store.subscribe(observer: asObserver)
+        stateStore.subscribe(observer: asObserver)
     }
 }
 
@@ -64,7 +64,7 @@ public extension PublishingStoreObject {
     /// PublishingStore is thread safe. Actions can be safely dispatched from any thread.
     ///
     func store() -> PublishingStore<AppState, Action> {
-        let store = undelyingStore.weakRefStore()
+        let store = stateStore.store()
         return PublishingStore(
             statePublisher: statePublisher(),
             dispatch: { store.dispatch($0) }
@@ -79,7 +79,7 @@ private extension PublishingStoreObject {
     }
 
     func dispatch(_ action: Action) {
-        undelyingStore.dispatch(action)
+        stateStore.dispatch(action)
     }
 }
 
