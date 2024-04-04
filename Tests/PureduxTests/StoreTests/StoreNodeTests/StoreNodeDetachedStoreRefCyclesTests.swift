@@ -8,18 +8,19 @@
 import XCTest
 @testable import Puredux
 
+@available(iOS 16.0.0, *)
 final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
-    typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
-    typealias ChildStore = StoreNode<ParentStore, ChildTestState, StateComposition, Action>
+    typealias ParentStore = StoreNode<VoidStore<AppAction>, TestState, TestState, AppAction>
+    typealias ChildStore = any StoreProtocol<StateComposition, AppAction>
 
-    let rootStore = RootStoreNode<TestState, Action>.initRootStore(
+    let rootStore = RootStoreNode<TestState, AppAction>.initRootStore(
         initialState: TestState(currentIndex: 1),
         reducer: { state, action in state.reduce(action: action) }
     )
 
     func test_WhenStore_ThenWeakRefToChildStoreCreated() {
         weak var weakChildStore: ChildStore?
-        var store: Store<StateComposition, Action>?
+        var store: Store<StateComposition, AppAction>?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -27,6 +28,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 
@@ -39,7 +41,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObject_ThenStrongRefToChildStoreCreated() {
         weak var weakChildStore: ChildStore?
-        var referencedStore: StateStore<StateComposition, Action>?
+        var referencedStore: StateStore<StateComposition, AppAction>?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -47,6 +49,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 
@@ -59,7 +62,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObjectReleased_ThenChildStoreIsReleased() {
         weak var weakChildStore: ChildStore?
-        var referencedStore: StateStore<StateComposition, Action>?
+        var referencedStore: StateStore<StateComposition, AppAction>?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -67,6 +70,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
+                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
 
