@@ -7,8 +7,8 @@
 
 import Foundation
 
-@available(*, deprecated, renamed: "Store", message: "Will be removed in the next major release. Feel free to rename StoreObject to Stor")
-public typealias StoreObject = Store
+@available(*, deprecated, renamed: "StateStore", message: "Will be removed in the next major release. Feel free to rename StoreObject to StateStore")
+public typealias StoreObject = StateStore
 
 public extension Store {
     
@@ -22,24 +22,17 @@ public extension Store {
 }
 
 public struct Store<State, Action> {
-    private let storeType: StoreType
-    
-    public func dispatch(_ action: Action) {
-        switch storeType {
-        case .storeObject(let store):
-            store.dispatch(action)
-        case .store(let dispatch, _):
-            dispatch(action)
-        }
+    private let dispatchHandler: Dispatch
+    private let subscribeHandler: Subscribe
+}
+
+public extension Store {
+    func dispatch(_ action: Action) {
+        dispatchHandler(action)
     }
     
-    public func subscribe(observer: Observer<State>) {
-        switch storeType {
-        case .storeObject(let store):
-            store.subscribe(observer: observer)
-        case .store(_, let subscribe):
-            subscribe(observer)
-        }
+    func subscribe(observer: Observer<State>) {
+        subscribeHandler(observer)
     }
     
     /// Initializes a new light-weight Store
@@ -55,8 +48,8 @@ public struct Store<State, Action> {
     ///
     ///
     @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
-    public init(dispatch: @escaping Dispatch,
-                subscribe: @escaping Subscribe) {
+    init(dispatch: @escaping Dispatch,
+         subscribe: @escaping Subscribe) {
         self.init(dispatcher: dispatch, subscribe: subscribe)
     }
     
@@ -72,8 +65,8 @@ public struct Store<State, Action> {
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
     ///
-    public static func mockStore(dispatch: @escaping Dispatch,
-                                 subscribe: @escaping Subscribe) -> Store<State, Action> {
+    static func mockStore(dispatch: @escaping Dispatch,
+                          subscribe: @escaping Subscribe) -> Store<State, Action> {
         
         Store(dispatcher: dispatch, subscribe: subscribe)
     }
@@ -108,11 +101,10 @@ public extension Store {
     ///
     ///
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        let store = weakRefStore()
-        return Store<LocalState, Action>(
-            dispatcher: store.dispatch,
+        Store<LocalState, Action>(
+            dispatcher: dispatch,
             subscribe: { localStateObserver in
-                store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = localState(state) else {
                         complete(.active)
                         return
@@ -133,51 +125,22 @@ public extension Store {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        let store = weakRefStore()
-        return Store<LocalState, Action>(
-            dispatcher: store.dispatch,
+        Store<LocalState, Action>(
+            dispatcher: dispatch,
             subscribe: { localStateObserver in
-                store.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = localState(state)
                     localStateObserver.send(localState, complete: complete)
                 })
             })
     }
 }
-
-extension Store {
-    func weakRefStore() -> Store<State, Action> {
-        switch storeType {
-        case .storeObject(let referencedStore):
-            return referencedStore.weakRefStore()
-        case .store:
-            return self
-        }
-    }
-}
-
+ 
 extension Store {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe) {
-        storeType = .store(dispatcher, subscribe)
-    }
-    
-    init(storeObject: any StoreProtocol<State, Action>) {
-        self.storeType = .storeObject(storeObject)
+       
+        dispatchHandler = dispatcher
+        subscribeHandler = subscribe
     }
 }
-
-private extension Store {
-    init(_ storeType: StoreType) {
-        self.storeType = storeType
-    }
-}
-
-
-private extension Store {
-    enum StoreType {
-        case storeObject(any StoreProtocol<State, Action>)
-        case store(Dispatch, Subscribe)
-    }
-}
-
