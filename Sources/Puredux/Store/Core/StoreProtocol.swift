@@ -35,7 +35,7 @@ extension StoreProtocol {
         )
     }
     
-    func strongRefStore() -> Store<State, Action> {
-        Store<State, Action>(storeObject: self)
+    func stateStore() -> StateStore<State, Action> {
+        StateStore<State, Action>(storeObject: self)
     }
 }
