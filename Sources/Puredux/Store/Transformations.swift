@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 extension Store {
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
         Store<T, Action>(
@@ -66,26 +65,26 @@ extension Store {
 
 extension StateStore {
    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
-       store().map(keyPath)
+       strongStore().map(keyPath)
    }
    
    func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-       store().map(transform)
+       strongStore().map(transform)
    }
    
    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
-       store().compactMap(keyPath)
+       strongStore().compactMap(keyPath)
    }
    
    func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-       store().compactMap(transform)
+       strongStore().compactMap(transform)
    }
    
    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
-       store().flatMap(keyPath)
+       strongStore().flatMap(keyPath)
    }
    
    func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-       store().flatMap(transform)
+       strongStore().flatMap(transform)
    }
 }
