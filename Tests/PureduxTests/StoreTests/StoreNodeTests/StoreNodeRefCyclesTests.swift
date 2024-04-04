@@ -30,7 +30,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     
     func test_WhenStoreExists_ThenStrongRefToRootCreated() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
-        var store: Store<TestState, Action>?
+        var store: StateStore<TestState, Action>?
         
         autoreleasepool {
             let rootStore = RootStoreNode<TestState, Action>.initRootStore(
@@ -40,7 +40,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
                 }
             
             weakRootStore = rootStore
-            store = rootStore.strongRefStore()
+            store = rootStore.stateStore()
         }
         
         XCTAssertNotNil(weakRootStore)
@@ -48,7 +48,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     
     func test_WhenStoreRemoved_ThenRootStoreIsReleased() {
         weak var weakRootStore: RootStoreNode<TestState, Action>?
-        var store: Store<TestState, Action>?
+        var store: StateStore<TestState, Action>?
         
         autoreleasepool {
             let rootStore = RootStoreNode<TestState, Action>.initRootStore(
@@ -58,7 +58,7 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
                 }
             
             weakRootStore = rootStore
-            store = rootStore.strongRefStore()
+            store = rootStore.stateStore()
         }
         
         XCTAssertNotNil(weakRootStore)
