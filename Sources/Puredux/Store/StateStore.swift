@@ -7,6 +7,9 @@
 
 import Foundation
 
+@available(*, deprecated, renamed: "StateStore", message: "Will be removed in the next major release. StateStore is a former StoreObject replacement")
+public typealias StoreObject = StateStore
+
 public struct StateStore<State, Action> {
     let storeObject: any StoreProtocol<State, Action>
     
