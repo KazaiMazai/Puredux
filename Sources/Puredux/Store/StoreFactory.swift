@@ -110,7 +110,7 @@ public extension StoreFactory {
         qos: DispatchQoS = .userInteractive,
         reducer: @escaping Reducer<ChildState, Action>) ->
 
-    Store<LocalState, Action> {
+    StateStore<LocalState, Action> {
 
         rootStoreNode.createChildStore(
             initialState: initialState,
@@ -118,7 +118,7 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .strongRefStore()
+        .stateStore()
     }
 
     /// Initializes a new child store with initial state
@@ -151,7 +151,7 @@ public extension StoreFactory {
     func childStore<ChildState>(
         initialState: ChildState,
         qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<ChildState, Action>) -> Store<(State, ChildState), Action> {
+        reducer: @escaping Reducer<ChildState, Action>) -> StateStore<(State, ChildState), Action> {
 
             childStore(initialState: initialState,
                        stateMapping: { state, childState in (state, childState) },
