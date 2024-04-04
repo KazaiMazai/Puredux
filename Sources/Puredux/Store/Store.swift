@@ -82,7 +82,7 @@ public extension Store {
     ///
     @available(*, deprecated, message: "Will be removed in the next major release. Consider migrating to scope(...)")
     func proxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        scope(to: toLocalState)
+        map(toLocalState)
     }
 }
 
@@ -99,18 +99,7 @@ public extension Store {
     ///
     ///
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        Store<LocalState, Action>(
-            dispatcher: dispatch,
-            subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    guard let localState = localState(state) else {
-                        complete(.active)
-                        return
-                    }
-                    
-                    localStateObserver.send(localState, complete: complete)
-                })
-            })
+        compactMap(localState)
     }
     
     /// Initializes a new scope Store with state mapping to local substate.
@@ -123,14 +112,7 @@ public extension Store {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        Store<LocalState, Action>(
-            dispatcher: dispatch,
-            subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    let localState = localState(state)
-                    localStateObserver.send(localState, complete: complete)
-                })
-            })
+        map(localState)
     }
 }
  

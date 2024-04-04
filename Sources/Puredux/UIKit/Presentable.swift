@@ -25,7 +25,7 @@ public extension Presentable {
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
  
-        let weakRefStore = store.store()
+        let weakRefStore = store.weakStore()
         let observer = Observer(
             self,
             removeStateDuplicates: equating,

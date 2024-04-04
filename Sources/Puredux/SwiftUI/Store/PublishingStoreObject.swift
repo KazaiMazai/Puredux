@@ -64,7 +64,7 @@ public extension PublishingStoreObject {
     /// PublishingStore is thread safe. Actions can be safely dispatched from any thread.
     ///
     func store() -> PublishingStore<AppState, Action> {
-        let store = stateStore.store()
+        let store = stateStore.weakStore()
         return PublishingStore(
             statePublisher: statePublisher(),
             dispatch: { store.dispatch($0) }
