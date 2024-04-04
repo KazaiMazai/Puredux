@@ -145,25 +145,25 @@ scopedStore.subscribe(observer: observer)
 
 ```swift
  
-let childStore: Store<(AppState, LocalState), Action> = storeFactory.childStore(
+let childStore: StateStore<(AppState, LocalState), Action> = storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
     }
 )
  
-
 let observer = Observer<(AppState, LocalState)> { stateComposition, complete in
     // Handle your latest state here and dispatch some actions to the store
-
-    childStore.dispatch(SomeAction())
-
-    guard wannaKeepReceivingUpdates else {
-        completeHandler(.dead)
-        return 
-    }
-
-    completeHandler(.active)
+    //
+    // - Do some work here and dispatch actions
+    // childStore.dispatch(SomeAction()) if needed
+    //
+    // - Wanna keep receiving updated? Then:
+    // complete(.active)
+    //
+    // - Work is done? Then:
+    // complete(.dead)
+   
 }
 
 childStore.subscribe(observer: observer)
@@ -181,11 +181,12 @@ childStore.subscribe(observer: observer)
    
 ### What is StoreFactory?
 
-StoreFactory is a factory for Stores.
+StoreFactory is a factory for Stores and StateStores.
+
 It suppports creation of the following store types:
 - Root Store - plain Store as proxy to the factory's' root store
 - Scope Store - scoped Store as proxy to the factory root store
-- Child Store - child Store with `(Root, Local) -> Composition` state mapping and it's own state lifecycle
+- Child Store - child StateStore with `(Root, Local) -> Composition` state mapping and it's own lifecycle
 
 ### What queue does the root store operate on?
 
@@ -199,10 +200,14 @@ It suppports creation of the following store types:
 - Store is designed to be passed all over the app safely without extra effort.
 - It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
 
-### What is a Child Store?
- 
+
+### What is a Child StateStore?
+
+- StateStore owns the state.
 - It's a proxy to its parent store: it forwards subscribtions and all dispatched Actions to it.
-- It has its own state lifecycle
+- It's designed to manage state lifecycle
+- It's threadsafe. It allows to dispatch actions and subscribe from any thread. 
+- It keeps a *strong* reference to the root store, that's why requries a careful treatment.
 
 
 ### How to unsubscribe from store?
@@ -210,9 +215,9 @@ It suppports creation of the following store types:
 Call store observer's complete handler with dead status:
   
 ```swift 
-let observer = Observer<State> { state, completeHandler in
-    //
-    completeHandler(.dead)
+let observer = Observer<State> { state, complete in
+    
+    complete(.dead)
 }
  
 ``` 
@@ -317,7 +322,7 @@ You should only provide initial state and reducer:
 
 ```swift
  
-let childStore: Store<(AppState, LocalState), Action> storeFactory.childStore(
+let childStateStore: StateStore<(AppState, LocalState), Action> storeFactory.childStore(
     initialState: LocalState(),
     reducer: { localState, action  in
         localState.reduce(action: action)
@@ -325,18 +330,21 @@ let childStore: Store<(AppState, LocalState), Action> storeFactory.childStore(
 )
 
 ```
-### How to manage child store's and its state lifecycle?
+### How to manage child store and its state lifecycle?
 
-Child store's state will exist while there is a reference to the Store.
+Child store is a `StateStore`. The state will exist while StateStore exists.
 
-### More about state lifecycle
+### Why root store and scope store is a Store<State, Action> and child store is a `StateStore<State, Action>`?
 
 Root store's and scope store's lifecycle is controlled by StoreFactory. 
 They exist while factory exist. Typically during the whole app lifecycle.
 
-Child store is for the cases when we want to take over the control of the store lifecycle.
+Child store is for the cases when we want to take over the control of the state lifecycle.
 Typically when we present screens or some flows of the app.
  
+`StateStore<State, Action>` prevents from errors that could occur because of confusion with 
+Store<State, Action 
+
 
 ### How are Actions dispatched with parent/child stores?
 

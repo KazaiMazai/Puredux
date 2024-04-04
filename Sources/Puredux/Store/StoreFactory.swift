@@ -78,14 +78,14 @@ public extension StoreFactory {
         rootStoreNode.weakRefStore().scope(toOptional: localState)
     }
 
-    /// Initializes a new child store with initial state
+    /// Initializes a new child StateStore with initial state
     ///
-    /// - Returns: Child Store
+    /// - Returns: Child StateStore
     ///
     /// ChildStore is a composition of root store and newly created local store.
     /// Local state is a mapping of the child state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its ChildState is determined by Store's lifecycle.
+    /// ChildStore's lifecycle along with its Child's State is determined by StateStore's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
@@ -110,7 +110,7 @@ public extension StoreFactory {
         qos: DispatchQoS = .userInteractive,
         reducer: @escaping Reducer<ChildState, Action>) ->
 
-    Store<LocalState, Action> {
+    StateStore<LocalState, Action> {
 
         rootStoreNode.createChildStore(
             initialState: initialState,
@@ -118,17 +118,17 @@ public extension StoreFactory {
             qos: qos,
             reducer: reducer
         )
-        .strongRefStore()
+        .stateStore()
     }
 
-    /// Initializes a new child store with initial state
+    /// Initializes a new child StateStore with initial state
     ///
-    /// - Returns: Child Store
+    /// - Returns: Child StateStore
     ///
     /// ChildStore is a composition of root store and newly created local store.
-    /// Child state is a mapping of the local state and root store's state.
+    /// Local state is a mapping of the child state and root store's state.
     ///
-    /// ChildStore's lifecycle along with its LocalState is determined by Store's lifecycle.
+    /// ChildStore's lifecycle along with its Child's State is determined by StateStore's lifecycle.
     ///
     /// RootStore vs ChildStore Action Dispatch
     ///
@@ -151,7 +151,7 @@ public extension StoreFactory {
     func childStore<ChildState>(
         initialState: ChildState,
         qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<ChildState, Action>) -> Store<(State, ChildState), Action> {
+        reducer: @escaping Reducer<ChildState, Action>) -> StateStore<(State, ChildState), Action> {
 
             childStore(initialState: initialState,
                        stateMapping: { state, childState in (state, childState) },

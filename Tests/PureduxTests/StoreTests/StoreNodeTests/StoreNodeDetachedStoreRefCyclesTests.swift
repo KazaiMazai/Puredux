@@ -39,7 +39,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObject_ThenStrongRefToChildStoreCreated() {
         weak var weakChildStore: ChildStore?
-        var referencedStore: Store<StateComposition, Action>?
+        var referencedStore: StateStore<StateComposition, Action>?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -51,7 +51,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
             )
 
             weakChildStore = strongChildStore
-            referencedStore = strongChildStore.strongRefStore()
+            referencedStore = strongChildStore.stateStore()
         }
 
         XCTAssertNotNil(weakChildStore)
@@ -59,7 +59,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
 
     func test_WhenStoreObjectReleased_ThenChildStoreIsReleased() {
         weak var weakChildStore: ChildStore?
-        var referencedStore: Store<StateComposition, Action>?
+        var referencedStore: StateStore<StateComposition, Action>?
 
         autoreleasepool {
             let strongChildStore = rootStore.createChildStore(
@@ -71,7 +71,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
             )
 
             weakChildStore = strongChildStore
-            referencedStore = strongChildStore.strongRefStore()
+            referencedStore = strongChildStore.stateStore()
         }
 
         referencedStore = nil

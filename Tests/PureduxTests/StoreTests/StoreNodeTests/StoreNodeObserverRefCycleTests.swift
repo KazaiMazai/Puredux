@@ -33,7 +33,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             weakRefObject = object
             weakChildStore = store
 
-            let referencedStore = store.strongRefStore()
+            let referencedStore = store.stateStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
@@ -64,7 +64,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             weakRefObject = object
             weakChildStore = store
 
-            let referencedStore = store.strongRefStore()
+            let referencedStore = store.stateStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
