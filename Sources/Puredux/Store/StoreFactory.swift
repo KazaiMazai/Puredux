@@ -8,7 +8,7 @@
 import Foundation
 
 public final class StoreFactory<State, Action> {
-    let rootStoreNode: StateStore<State, Action>
+    let rootStateStore: StateStore<State, Action>
 
     /// Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
     ///
@@ -31,7 +31,7 @@ public final class StoreFactory<State, Action> {
                 qos: DispatchQoS = .userInteractive,
                 reducer: @escaping Reducer<State, Action>) {
 
-        rootStoreNode = StateStore(
+        rootStateStore = StateStore(
             initialState: initialState,
             interceptor: interceptor,
             qos: qos,
@@ -50,7 +50,7 @@ public extension StoreFactory {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
     func rootStore() -> Store<State, Action> {
-        rootStoreNode.weakStore()
+        rootStateStore.weakStore()
     }
 
     /// Initializes a new Store with state mapping to local substate.
@@ -62,7 +62,7 @@ public extension StoreFactory {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
     func scopeStore<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
-        rootStoreNode.weakStore().scope(to: localState)
+        rootStateStore.weakStore().scope(to: localState)
     }
 
     /// Initializes a new Store with state mapping to local substate.
@@ -75,7 +75,7 @@ public extension StoreFactory {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        rootStoreNode.weakStore().scope(toOptional: localState)
+        rootStateStore.weakStore().scope(toOptional: localState)
     }
 
     /// Initializes a new child StateStore with initial state
@@ -112,7 +112,7 @@ public extension StoreFactory {
 
     StateStore<LocalState, Action> {
         
-        rootStoreNode.createChildStore(
+        rootStateStore.createChildStore(
             initialState: initialState,
             stateMapping: stateMapping,
             qos: qos,
