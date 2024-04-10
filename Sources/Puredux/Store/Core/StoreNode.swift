@@ -24,17 +24,13 @@ final class StoreNode<ParentStore, LocalState, State, Action>
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
-
-    private let queue: DispatchQueue
-
+ 
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
          parentStore: ParentStore,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<LocalState, Action>) {
-
-        queue = DispatchQueue(label: Self.queueLabel, qos: qos)
-
+ 
         self.stateMapping = stateMapping
         self.parentStore = parentStore
 
@@ -67,6 +63,7 @@ extension StoreNode where LocalState == State {
             initialState: initialState,
             stateMapping: { _, state in return state },
             parentStore: VoidStore<Action>(
+                queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 actionsInterceptor: ActionsInterceptor(
                     storeId: StoreID(),
                     handler: interceptor,
@@ -79,8 +76,10 @@ extension StoreNode where LocalState == State {
 }
 
 extension StoreNode: StoreProtocol {
-     
-
+    var queue: DispatchQueue {
+        parentStore.queue
+    }
+    
     var actionsInterceptor: ActionsInterceptor<Action>? {
         parentStore.actionsInterceptor
     }

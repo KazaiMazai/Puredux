@@ -8,6 +8,8 @@
 import Foundation
 
 final class VoidStore<Action>: StoreProtocol {
+    let queue: DispatchQueue
+    
     let currentState: Void = Void()
     let actionsInterceptor: ActionsInterceptor<Action>?
 
@@ -19,7 +21,8 @@ final class VoidStore<Action>: StoreProtocol {
 
     func dispatch(scopedAction: ScopedAction<Action>) { }
     
-    init(actionsInterceptor: ActionsInterceptor<Action>? = nil) {
+    init(queue: DispatchQueue, actionsInterceptor: ActionsInterceptor<Action>? = nil) {
+        self.queue = queue
         self.actionsInterceptor = actionsInterceptor
     }
 }
