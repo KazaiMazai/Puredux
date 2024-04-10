@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class PropsEvaluationWithChildStoreTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -64,10 +63,10 @@ extension PropsEvaluationWithChildStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyNonMutatingActionsAndNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryActionTwice() {
+    func test_WhenManyNonMutatingActionsAndNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = (2 * actionsCount) + 1
+        expectation.expectedFulfillmentCount = actionsCount + 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -79,10 +78,10 @@ extension PropsEvaluationWithChildStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryActionTwice() {
+    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = (2 * actionsCount) + 1
+        expectation.expectedFulfillmentCount = actionsCount + 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
