@@ -7,7 +7,9 @@
 
 import Foundation
 
-typealias RootStoreNode<State, Action> = StoreNode<CoreStore<Void, Action>, State, State, Action>
+typealias VoidStore<Action> = CoreStore<Void, Action>
+
+typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
 final class StoreNode<ParentStore, LocalState, State, Action>
     where
