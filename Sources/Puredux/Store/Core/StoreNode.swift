@@ -43,12 +43,6 @@ final class StoreNode<ParentStore, LocalState, State, Action>
                 handler(.dead)
                 return
             }
-
-//            guard let parentState = self.parentStoreObserver.state else {
-//                return
-//            }
-//            
-//            self.observeStateUpdate(root: parentState, local: localState)
         }
     }()
  
