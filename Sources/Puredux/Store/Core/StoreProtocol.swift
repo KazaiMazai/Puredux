@@ -12,8 +12,8 @@ protocol StoreProtocol<State, Action>: AnyObject {
     associatedtype State
 
     func dispatch(_ action: Action)
-
     
+    var queue: DispatchQueue { get }
 
     var actionsInterceptor: ActionsInterceptor<Action>? { get }
 
