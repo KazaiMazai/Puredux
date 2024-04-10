@@ -79,11 +79,7 @@ extension StoreNode where LocalState == State {
 }
 
 extension StoreNode: StoreProtocol {
-    var currentState: State {
-        queue.sync {
-            stateMapping(parentStore.currentState, localStore.currentState)
-        }
-    }
+     
 
     var actionsInterceptor: ActionsInterceptor<Action>? {
         parentStore.actionsInterceptor
@@ -115,7 +111,10 @@ extension StoreNode: StoreProtocol {
             }
 
             self.observers.insert(observer)
-            let state = self.stateMapping(self.parentStore.currentState, self.localStore.currentState)
+            guard let parentStoreState else {
+                return
+            }
+            let state = self.stateMapping(parentStoreState, self.localStoreState)
 
             guard receiveCurrentState else { return }
             self.send(state, to: observer)

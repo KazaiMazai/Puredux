@@ -13,7 +13,7 @@ protocol StoreProtocol<State, Action>: AnyObject {
 
     func dispatch(_ action: Action)
 
-    var currentState: State { get }
+    
 
     var actionsInterceptor: ActionsInterceptor<Action>? { get }
 

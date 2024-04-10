@@ -72,12 +72,6 @@ extension CoreStore {
         scopeAndDispatch(action)
     }
 
-    var currentState: State {
-        queue.sync {
-            state
-        }
-    }
-
     var actionsInterceptor: ActionsInterceptor<Action>? {
         queue.sync {
             interceptor
