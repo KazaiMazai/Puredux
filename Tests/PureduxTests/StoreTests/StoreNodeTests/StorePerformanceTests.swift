@@ -8,7 +8,8 @@
 import XCTest
 @testable import Puredux
 
-final class SingleStorePerformanceTests: XCTestCase {
+@available(iOS 13.0, *)
+final class StorePerformanceTests: XCTestCase {
     
     func test_StoreDispatchPerfomance() {
         measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
