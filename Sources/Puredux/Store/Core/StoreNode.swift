@@ -18,6 +18,9 @@ final class StoreNode<ParentStore, LocalState, State, Action>
 
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
+        
+    private var localStoreState: LocalState
+    private var parentStoreState: ParentStore.State?
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
@@ -37,6 +40,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>
 
         localStore = CoreStore(initialState: initialState,
                                reducer: reducer)
+        localStoreState = initialState
 
         if let parentInterceptor = parentStore.actionsInterceptor {
             let interceptor = ActionsInterceptor(
@@ -132,8 +136,8 @@ private extension StoreNode {
                     handler(.dead)
                     return
                 }
-
-                self.observeStateUpdate(root: rootState, local: self.localStore.currentState)
+                self.parentStoreState = rootState
+                self.observeStateUpdate(root: rootState, local: self.localStoreState)
             }
         }
     }
@@ -150,8 +154,12 @@ private extension StoreNode {
                     handler(.dead)
                     return
                 }
-
-                self.observeStateUpdate(root: self.parentStore.currentState, local: localState)
+                self.localStoreState = localState
+                guard let parentStoreState else {
+                    return
+                }
+                
+                self.observeStateUpdate(root: parentStoreState, local: localState)
             }
         }
     }
