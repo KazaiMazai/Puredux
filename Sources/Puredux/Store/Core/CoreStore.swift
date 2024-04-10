@@ -71,12 +71,6 @@ extension CoreStore {
     func dispatch(_ action: Action) {
         scopeAndDispatch(action)
     }
-
-    var actionsInterceptor: ActionsInterceptor<Action>? {
-        queue.sync {
-            interceptor
-        }
-    }
 }
 
 extension CoreStore {
