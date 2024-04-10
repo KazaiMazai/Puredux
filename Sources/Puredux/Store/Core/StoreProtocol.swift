@@ -22,13 +22,17 @@ protocol StoreProtocol<State, Action>: AnyObject {
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
     func dispatch(scopedAction: ScopedAction<Action>)
+    
+    func unsubscribeSync(observer: Observer<State>)
+
+    func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool)
+
+    func dispatchSync(scopedAction: ScopedAction<Action>)
+    
+    func subscribe(observer: Observer<State>)
 }
 
 extension StoreProtocol {
-    func subscribe(observer: Observer<State>) {
-        subscribe(observer: observer, receiveCurrentState: true)
-    }
-    
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
               subscribe: { [weak self] in self?.subscribe(observer: $0) }
