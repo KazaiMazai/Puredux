@@ -34,7 +34,7 @@ public struct PublishingStoreObject<AppState, Action> {
         self.stateSubject = PassthroughSubject<AppState, Never>()
         storeObject.subscribe(observer: asObserver)
     }
-    
+
     /// Initializes a new PublishingStoreObject
     ///
     /// - Parameter storeObject: actual StoreObject that is wrapped into PubslishingStoreObject

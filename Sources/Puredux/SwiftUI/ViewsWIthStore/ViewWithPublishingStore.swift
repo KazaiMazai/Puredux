@@ -15,7 +15,7 @@ struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
 
     let store: PublishingStore<AppState, Action>
     let content: ViewWithStore<AppState, Action, Props, Content>
-    var presentationSettings: PresentationSettings<AppState> 
+    var presentationSettings: PresentationSettings<AppState>
 
     var body: some View {
         makeContent()
@@ -60,4 +60,3 @@ private extension ViewWithPublishingStore {
             .eraseToAnyPublisher()
     }
 }
-

@@ -59,7 +59,6 @@ extension View {
             )
     }
 
-
     ///  Initializes a View with `ContentView` connected  to the `PublishingStore`.
     ///
     ///  - Parameter store: provided store to connect to
