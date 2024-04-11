@@ -7,30 +7,34 @@
 
 import Foundation
 
-protocol StoreProtocol<State, Action>: AnyObject {
+protocol StoreProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     associatedtype Action
     associatedtype State
-
+    
     func dispatch(_ action: Action)
     
     var queue: DispatchQueue { get }
-
+    
     var actionsInterceptor: ActionsInterceptor<Action>? { get }
-
+    
     func unsubscribe(observer: Observer<State>)
-
+    
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
-
+    
     func dispatch(scopedAction: ScopedAction<Action>)
     
     func subscribe(observer: Observer<State>)
+}
+
+protocol SyncStoreProtocol<State, Action> {
+    associatedtype Action
+    associatedtype State
     
     func unsubscribeSync(observer: Observer<State>)
 
     func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool)
 
     func dispatchSync(scopedAction: ScopedAction<Action>)
-    
 }
 
 extension StoreProtocol {

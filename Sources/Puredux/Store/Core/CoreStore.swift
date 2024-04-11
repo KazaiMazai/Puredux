@@ -13,14 +13,14 @@ public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> V
 
 typealias StoreID = UUID
 
-final class CoreStore<State, Action>: StoreProtocol {
+final class CoreStore<State, Action> {
     let id: StoreID = StoreID()
     
     private static var queueLabel: String { "com.puredux.store" }
     
     private var state: State
     
-    let queue: DispatchQueue
+    let dispatchQueue: DispatchQueue
     private(set) var actionsInterceptor: ActionsInterceptor<Action>?
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
@@ -30,7 +30,7 @@ final class CoreStore<State, Action>: StoreProtocol {
          initialState: State, 
          reducer: @escaping Reducer<State, Action>) {
        
-        self.queue = queue
+        self.dispatchQueue = queue
         self.actionsInterceptor = actionsInterceptor
         self.state = initialState
         self.reducer = reducer
@@ -44,7 +44,17 @@ extension CoreStore {
     }
 }
 
-extension CoreStore {
+//MARK: - StoreProtocol Conformance
+
+extension CoreStore: StoreProtocol {
+    //MARK: - DispatchQueue
+    
+    var queue: DispatchQueue {
+        dispatchQueue
+    }
+
+    //MARK: - Interceptor
+ 
     func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
         queue.async { [weak self] in
             self?.setInterceptorSync(interceptor)
@@ -59,15 +69,13 @@ extension CoreStore {
         
         setInterceptor(interceptor)
     }    
-}
 
-extension CoreStore {
     func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
         self.actionsInterceptor = interceptor
     }
-}
 
-extension CoreStore {
+    //MARK: - Subscribe
+ 
     func unsubscribe(observer: Observer<State>) {
         queue.async { [weak self] in
             self?.unsubscribeSync(observer: observer)
@@ -83,9 +91,7 @@ extension CoreStore {
             self?.subscribeSync(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
-}
 
-extension CoreStore {
     func unsubscribeSync(observer: Observer<State>) {
         observers.remove(observer)
     }
@@ -95,9 +101,10 @@ extension CoreStore {
         guard receiveCurrentState else { return }
         send(self.state, to: observer)
     }
-}
 
-extension CoreStore {
+
+    //MARK: - Dispatch
+
     func scopeAction(_ action: Action) -> ScopedAction<Action> {
         ScopedAction(storeId: id, action: action)
     }
@@ -111,15 +118,15 @@ extension CoreStore {
     func dispatch(_ action: Action) {
         dispatch(scopedAction: scopeAction(action))
     }
-}
 
-extension CoreStore {
     func dispatchSync(scopedAction: ScopedAction<Action>) {
         actionsInterceptor?.interceptIfNeeded(scopedAction)
         reducer(&self.state, scopedAction.action)
         observers.forEach { send(state, to: $0) }
     }
 }
+
+//MARK: - Private
 
 private extension CoreStore {
     
