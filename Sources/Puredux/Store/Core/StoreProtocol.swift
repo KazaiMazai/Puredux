@@ -30,11 +30,11 @@ protocol SyncStoreProtocol<State, Action> {
     associatedtype Action
     associatedtype State
     
-    func unsubscribeSync(observer: Observer<State>)
+    func syncUnsubscribe(observer: Observer<State>)
 
-    func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool)
+    func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
-    func dispatchSync(scopedAction: ScopedAction<Action>)
+    func syncDispatch(scopedAction: ScopedAction<Action>)
 }
 
 extension StoreProtocol {
@@ -60,6 +60,7 @@ extension StoreProtocol {
                 initialState: initialState,
                 stateMapping: stateMapping,
                 parentStore: self,
+                qos: qos,
                 reducer: reducer
             )
         }

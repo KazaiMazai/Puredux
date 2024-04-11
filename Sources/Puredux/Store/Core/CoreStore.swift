@@ -78,7 +78,7 @@ extension CoreStore: StoreProtocol {
  
     func unsubscribe(observer: Observer<State>) {
         queue.async { [weak self] in
-            self?.unsubscribeSync(observer: observer)
+            self?.syncUnsubscribe(observer: observer)
         }
     }
      
@@ -88,15 +88,15 @@ extension CoreStore: StoreProtocol {
     
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool = true) {
         queue.async { [weak self] in
-            self?.subscribeSync(observer: observer, receiveCurrentState: receiveCurrentState)
+            self?.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
 
-    func unsubscribeSync(observer: Observer<State>) {
+    func syncUnsubscribe(observer: Observer<State>) {
         observers.remove(observer)
     }
      
-    func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool) {
+    func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool) {
         observers.insert(observer)
         guard receiveCurrentState else { return }
         send(self.state, to: observer)
@@ -111,7 +111,7 @@ extension CoreStore: StoreProtocol {
     
     func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
-            self?.dispatchSync(scopedAction: scopedAction)
+            self?.syncDispatch(scopedAction: scopedAction)
         }
     }
     
@@ -119,7 +119,7 @@ extension CoreStore: StoreProtocol {
         dispatch(scopedAction: scopeAction(action))
     }
 
-    func dispatchSync(scopedAction: ScopedAction<Action>) {
+    func syncDispatch(scopedAction: ScopedAction<Action>) {
         actionsInterceptor?.interceptIfNeeded(scopedAction)
         reducer(&self.state, scopedAction.action)
         observers.forEach { send(state, to: $0) }
@@ -136,7 +136,7 @@ private extension CoreStore {
                 return
             }
             
-            self?.unsubscribeSync(observer: observer)
+            self?.syncUnsubscribe(observer: observer)
         }
     }
 }

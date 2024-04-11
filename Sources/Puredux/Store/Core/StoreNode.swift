@@ -46,7 +46,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
             localStore.setInterceptorSync(interceptor)
         }
         
-        localStore.subscribeSync(observer: localObserver, receiveCurrentState: true)
+        localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
     }
     
@@ -111,9 +111,9 @@ extension StoreNode: StoreProtocol {
         parentStore.actionsInterceptor
     }
     
-    func dispatchSync(scopedAction: ScopedAction<Action>) {
-        localStore.dispatchSync(scopedAction: scopedAction)
-        parentStore.dispatchSync(scopedAction: scopedAction)
+    func syncDispatch(scopedAction: ScopedAction<Action>) {
+        localStore.syncDispatch(scopedAction: scopedAction)
+        parentStore.syncDispatch(scopedAction: scopedAction)
     }
 
     func dispatch(_ action: Action) {
@@ -122,17 +122,17 @@ extension StoreNode: StoreProtocol {
     
     func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
-            self?.dispatchSync(scopedAction: scopedAction)
+            self?.syncDispatch(scopedAction: scopedAction)
         }
     }
 
     func unsubscribe(observer: Observer<State>) {
         queue.async { [weak self] in
-            self?.unsubscribeSync(observer: observer)
+            self?.syncUnsubscribe(observer: observer)
         }
     }
     
-    func unsubscribeSync(observer: Observer<State>) {
+    func syncUnsubscribe(observer: Observer<State>) {
         observers.remove(observer)
     }
     
@@ -142,11 +142,11 @@ extension StoreNode: StoreProtocol {
     
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool) {
         queue.async { [weak self] in
-            self?.subscribeSync(observer: observer, receiveCurrentState: receiveCurrentState)
+            self?.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
     
-    func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool) {
+    func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool) {
         observers.insert(observer)
          
         guard receiveCurrentState,
@@ -180,7 +180,7 @@ private extension StoreNode {
                 return
             }
 
-            self?.unsubscribeSync(observer: observer)
+            self?.syncUnsubscribe(observer: observer)
         }
     }
 }
