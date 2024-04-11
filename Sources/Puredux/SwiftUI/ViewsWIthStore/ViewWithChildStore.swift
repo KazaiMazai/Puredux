@@ -13,7 +13,7 @@ struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Conte
     where Content: View {
 
     @EnvironmentObject private var storeFactory: EnvStoreFactory<AppState, Action>
-    @State private var publishingChildStore: PublishingStoreObject<LocalState, Action>? = nil
+    @State private var publishingChildStore: PublishingStoreObject<LocalState, Action>?
 
     let initialState: ChildState
     let stateMapping: (AppState, ChildState) -> LocalState

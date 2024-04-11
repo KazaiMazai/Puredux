@@ -7,7 +7,6 @@
 
 import SwiftUI
 
- 
 struct PresentationSettings<AppState> {
     var removeDuplicates: (AppState, AppState) -> Bool
     var queue: PresentationQueue

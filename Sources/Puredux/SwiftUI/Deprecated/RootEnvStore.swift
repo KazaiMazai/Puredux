@@ -5,7 +5,6 @@
 //  Created by Sergey Kazakov on 01.12.2020.
 //
 
-
 import Combine
 import SwiftUI
 
@@ -13,7 +12,6 @@ import SwiftUI
 public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let rootStore: RootStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
-
 
     ///    Initializes a new RootEnvStore with provided RootStore.
     ///    RootEnvStore is an `ObservableObject` wrap around Puredux's RootStore to be used in SwiftUI.

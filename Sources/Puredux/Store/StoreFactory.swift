@@ -111,7 +111,7 @@ public extension StoreFactory {
         reducer: @escaping Reducer<ChildState, Action>) ->
 
     StateStore<LocalState, Action> {
-        
+
         rootStateStore.createChildStore(
             initialState: initialState,
             stateMapping: stateMapping,
@@ -159,4 +159,3 @@ public extension StoreFactory {
 
         }
 }
- 

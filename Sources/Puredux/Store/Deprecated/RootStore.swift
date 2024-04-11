@@ -34,7 +34,7 @@ public final class RootStore<State, Action> {
                 reducer: @escaping Reducer<State, Action>) {
 
         internalStore = CoreStore(
-            queue: queue.dispatchQueue, 
+            queue: queue.dispatchQueue,
             actionsInterceptor: nil,
             initialState: initialState,
             reducer: reducer)

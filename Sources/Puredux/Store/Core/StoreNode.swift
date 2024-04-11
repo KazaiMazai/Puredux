@@ -13,43 +13,42 @@ typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, Sta
 
 final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol,
                                                                     ParentStore.Action == Action {
-    
+
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
-    
+
     private let stateMapping: (ParentStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
-    
+
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
-        
+
         self.stateMapping = stateMapping
         self.parentStore = parentStore
-        
+
         localStore = CoreStore(
             queue: parentStore.queue,
             actionsInterceptor: nil,
             initialState: initialState,
             reducer: reducer
         )
-        
+
         if let parentInterceptor = parentStore.actionsInterceptor {
             let interceptor = ActionsInterceptor(
                 storeId: localStore.id,
                 handler: parentInterceptor.handler,
                 dispatcher: { [weak self] action in self?.dispatch(action) }
             )
-            
+
             localStore.setInterceptorSync(interceptor)
         }
-        
+
         localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
     }
-    
-    
+
     private lazy var parentObserver: Observer<ParentStore.State> = {
         Observer(removeStateDuplicates: .neverEqual) { [weak self] parentState, complete in
             guard let self else {
@@ -60,20 +59,20 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
             complete(.active)
         }
     }()
-    
+
     private lazy var localObserver: Observer<LocalState> = {
         Observer(removeStateDuplicates: .neverEqual) { [weak self] _, complete in
             guard let self else {
                 complete(.dead)
                 return
             }
-            
+
             complete(.active)
         }
     }()
 }
 
-//MARK: - Root Store Init
+// MARK: - Root Store Init
 
 extension StoreNode where LocalState == State {
     static func initRootStore(initialState: State,
@@ -92,24 +91,24 @@ extension StoreNode where LocalState == State {
                     dispatcher: { _ in }
                 ),
                 initialState: Void(),
-                reducer: { _,_ in }
+                reducer: { _, _ in }
             ),
             reducer: reducer
         )
     }
 }
 
-//MARK: - StoreProtocol Conformance
+// MARK: - StoreProtocol Conformance
 
 extension StoreNode: StoreProtocol {
     var queue: DispatchQueue {
         parentStore.queue
     }
-    
+
     var actionsInterceptor: ActionsInterceptor<Action>? {
         parentStore.actionsInterceptor
     }
-    
+
     func syncDispatch(scopedAction: ScopedAction<Action>) {
         localStore.syncDispatch(scopedAction: scopedAction)
         parentStore.syncDispatch(scopedAction: scopedAction)
@@ -118,7 +117,7 @@ extension StoreNode: StoreProtocol {
     func dispatch(_ action: Action) {
         dispatch(scopedAction: localStore.scopeAction(action))
     }
-    
+
     func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
             self?.syncDispatch(scopedAction: scopedAction)
@@ -130,44 +129,44 @@ extension StoreNode: StoreProtocol {
             self?.syncUnsubscribe(observer: observer)
         }
     }
-    
+
     func syncUnsubscribe(observer: Observer<State>) {
         observers.remove(observer)
     }
-    
+
     func subscribe(observer: Observer<State>) {
         subscribe(observer: observer, receiveCurrentState: true)
     }
-    
+
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool) {
         queue.async { [weak self] in
             self?.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
-    
+
     func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool) {
         observers.insert(observer)
-         
+
         guard receiveCurrentState,
               let parentState = parentObserver.state,
               let localState = localObserver.state
         else {
             return
         }
-        
+
         let state = stateMapping(parentState, localState)
         send(state, to: observer)
     }
 }
- 
-//MARK: - Private
+
+// MARK: - Private
 
 private extension StoreNode {
     func observe(_ parentState: ParentStore.State) {
         guard let localState = localObserver.state else {
             return
         }
-        
+
         let state = stateMapping(parentState, localState)
         observers.forEach { send(state, to: $0) }
     }

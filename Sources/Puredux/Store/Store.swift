@@ -7,13 +7,12 @@
 
 import Foundation
 
-
 public extension Store {
-    
+
     /// Closure that handles Store's dispatching Actions
     ///
     typealias Dispatch = (_ action: Action) -> Void
-    
+
     /// Closure that takes Observer as a parameter and handles Store's subscribtions
     ///
     typealias Subscribe = (_ observer: Observer<State>) -> Void
@@ -28,11 +27,11 @@ public extension Store {
     func dispatch(_ action: Action) {
         dispatchHandler(action)
     }
-    
+
     func subscribe(observer: Observer<State>) {
         subscribeHandler(observer)
     }
-    
+
     /// Initializes a new light-weight Store
     ///
     /// - Parameter dispatch: Closure that handles Store's dispatching Actions
@@ -50,7 +49,7 @@ public extension Store {
          subscribe: @escaping Subscribe) {
         self.init(dispatcher: dispatch, subscribe: subscribe)
     }
-    
+
     /// Initializes a mock Store
     ///
     /// - Parameter dispatch: Closure that handles Store's dispatching Actions
@@ -65,13 +64,13 @@ public extension Store {
     ///
     static func mockStore(dispatch: @escaping Dispatch,
                           subscribe: @escaping Subscribe) -> Store<State, Action> {
-        
+
         Store(dispatcher: dispatch, subscribe: subscribe)
     }
 }
 
 public extension Store {
-    
+
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -87,7 +86,7 @@ public extension Store {
 }
 
 public extension Store {
-    
+
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -101,7 +100,7 @@ public extension Store {
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         compactMap(localState)
     }
-    
+
     /// Initializes a new scope Store with state mapping to local substate.
     ///
     /// - Returns: Store with local substate
@@ -115,11 +114,11 @@ public extension Store {
         map(localState)
     }
 }
- 
+
 extension Store {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe) {
-       
+
         dispatchHandler = dispatcher
         subscribeHandler = subscribe
     }

@@ -10,26 +10,26 @@ import Foundation
 protocol StoreProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     associatedtype Action
     associatedtype State
-    
+
     func dispatch(_ action: Action)
-    
+
     var queue: DispatchQueue { get }
-    
+
     var actionsInterceptor: ActionsInterceptor<Action>? { get }
-    
+
     func unsubscribe(observer: Observer<State>)
-    
+
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
-    
+
     func dispatch(scopedAction: ScopedAction<Action>)
-    
+
     func subscribe(observer: Observer<State>)
 }
 
 protocol SyncStoreProtocol<State, Action> {
     associatedtype Action
     associatedtype State
-    
+
     func syncUnsubscribe(observer: Observer<State>)
 
     func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
@@ -43,7 +43,7 @@ extension StoreProtocol {
               subscribe: { [weak self] in self?.subscribe(observer: $0) }
         )
     }
-    
+
     func stateStore() -> StateStore<State, Action> {
         StateStore<State, Action>(storeObject: self)
     }
@@ -56,7 +56,7 @@ extension StoreProtocol {
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
         qos: DispatchQoS,
         reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
-            
+
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
                 stateMapping: stateMapping,
@@ -71,7 +71,7 @@ extension StoreProtocol {
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
         reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
-            
+
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
                 stateMapping: stateMapping,

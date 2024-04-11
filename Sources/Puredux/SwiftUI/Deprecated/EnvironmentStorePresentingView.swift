@@ -24,6 +24,3 @@ struct EnvironmentStorePresentingView<AppState, Action, Props, Content>: View wh
         )
     }
 }
-
-
-

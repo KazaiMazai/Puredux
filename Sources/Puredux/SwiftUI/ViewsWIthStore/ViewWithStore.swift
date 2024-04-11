@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-
-
 /// ViewWithStore connects its `ContentView`  to the store.
 ///
 /// Every time we dispatch an action to the store, it triggers view update cycle.
@@ -409,7 +407,7 @@ public extension ViewWithStore {
                                           reducer: @escaping Reducer<ChildState, Action>) -> some View {
 
         ViewWithChildStore(
-            initialState:initialState,
+            initialState: initialState,
             stateMapping: stateMapping,
             qos: qos,
             reducer: reducer,
@@ -486,7 +484,7 @@ public extension ViewWithStore {
     where ViewState == (AppState, ChildState) {
 
         ViewWithChildStore(
-            initialState:initialState,
+            initialState: initialState,
             stateMapping: { ($0, $1) },
             qos: qos,
             reducer: reducer,

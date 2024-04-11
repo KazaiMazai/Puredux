@@ -17,11 +17,11 @@ public struct Equating<T> {
 
 public extension Equating {
     static var neverEqual: Equating {
-        Equating { _,_ in false }
+        Equating { _, _ in false }
     }
 
     static var alwaysEqual: Equating {
-        Equating { _,_ in true }
+        Equating { _, _ in true }
     }
 
     static func equal<Value: Equatable>(value: @escaping (T) -> Value) -> Equating<T> {

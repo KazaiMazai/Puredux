@@ -26,5 +26,3 @@ struct ViewWithScopeStore<AppState, LocalState, Action, Props, Content>: View
         )
     }
 }
-
- 
