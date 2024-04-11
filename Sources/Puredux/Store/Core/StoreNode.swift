@@ -23,7 +23,6 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
          parentStore: ParentStore,
-         qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<LocalState, Action>) {
         
         self.stateMapping = stateMapping

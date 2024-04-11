@@ -50,6 +50,7 @@ extension StoreProtocol {
 }
 
 extension StoreProtocol {
+    @available(*, deprecated, renamed: "createChildStore(stateStore:stateMapping:reducer:)", message: "qos parameter will have no effect. Root store's QoS is used.")
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
@@ -60,7 +61,21 @@ extension StoreProtocol {
                 initialState: initialState,
                 stateMapping: stateMapping,
                 parentStore: self,
-                qos: qos,
+                reducer: reducer
+            )
+        }
+}
+
+extension StoreProtocol {
+    func createChildStore<LocalState, ResultState>(
+        initialState: LocalState,
+        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
+            
+            StoreNode<Self, LocalState, ResultState, Action>(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                parentStore: self,
                 reducer: reducer
             )
         }
