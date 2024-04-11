@@ -3,7 +3,7 @@
 </p>
 
 
-Puredux is a lightweight MVI architecture framework in Swift.
+Puredux is a lightweight UDF architecture framework in Swift.
 
 <p align="left">
     <a href="https://github.com/KazaiMazai/Puredux/actions">
