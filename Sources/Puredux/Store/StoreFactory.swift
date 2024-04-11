@@ -159,4 +159,3 @@ public extension StoreFactory {
 
         }
 }
-

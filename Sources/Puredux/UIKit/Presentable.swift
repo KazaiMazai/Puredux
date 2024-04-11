@@ -75,4 +75,3 @@ struct Presenter: PresenterProtocol {
         subscribe()
     }
 }
-
