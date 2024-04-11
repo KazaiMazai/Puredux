@@ -23,13 +23,14 @@ protocol StoreProtocol<State, Action>: AnyObject {
 
     func dispatch(scopedAction: ScopedAction<Action>)
     
+    func subscribe(observer: Observer<State>)
+    
     func unsubscribeSync(observer: Observer<State>)
 
     func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool)
 
     func dispatchSync(scopedAction: ScopedAction<Action>)
     
-    func subscribe(observer: Observer<State>)
 }
 
 extension StoreProtocol {

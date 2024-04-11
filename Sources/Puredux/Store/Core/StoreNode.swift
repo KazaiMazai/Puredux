@@ -71,7 +71,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>
                 dispatcher: { [weak self] action in self?.dispatch(action) }
             )
 
-            localStore.setInterceptor(interceptor)
+            localStore.setInterceptorSync(interceptor)
         }
         
         localStore.subscribeSync(observer: localStoreObserver, receiveCurrentState: true)

@@ -51,10 +51,6 @@ extension CoreStore {
         }
     }
     
-    func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
-        self.actionsInterceptor = interceptor
-    }
-    
     func setInterceptor(with handler: @escaping Interceptor<Action>) {
         let interceptor = ActionsInterceptor(
             storeId: self.id,
@@ -62,10 +58,12 @@ extension CoreStore {
             dispatcher: { [weak self] in self?.dispatch($0) })
         
         setInterceptor(interceptor)
-    }
-    
-    func dispatch(_ action: Action) {
-        scopeAndDispatch(action)
+    }    
+}
+
+extension CoreStore {
+    func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
+        self.actionsInterceptor = interceptor
     }
 }
 
@@ -75,11 +73,7 @@ extension CoreStore {
             self?.unsubscribeSync(observer: observer)
         }
     }
-    
-    func unsubscribeSync(observer: Observer<State>) {
-        observers.remove(observer)
-    }
-    
+     
     func subscribe(observer: Observer<State>) {
         subscribe(observer: observer, receiveCurrentState: true)
     }
@@ -89,7 +83,13 @@ extension CoreStore {
             self?.subscribeSync(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
-    
+}
+
+extension CoreStore {
+    func unsubscribeSync(observer: Observer<State>) {
+        observers.remove(observer)
+    }
+     
     func subscribeSync(observer: Observer<State>, receiveCurrentState: Bool) {
         observers.insert(observer)
         guard receiveCurrentState else { return }
@@ -102,16 +102,18 @@ extension CoreStore {
         ScopedAction(storeId: id, action: action)
     }
     
-    private func scopeAndDispatch(_ action: Action) {
-        dispatch(scopedAction: scopeAction(action))
-    }
-    
     func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
             self?.dispatchSync(scopedAction: scopedAction)
         }
     }
     
+    func dispatch(_ action: Action) {
+        dispatch(scopedAction: scopeAction(action))
+    }
+}
+
+extension CoreStore {
     func dispatchSync(scopedAction: ScopedAction<Action>) {
         actionsInterceptor?.interceptIfNeeded(scopedAction)
         reducer(&self.state, scopedAction.action)
@@ -119,9 +121,9 @@ extension CoreStore {
     }
 }
 
-extension CoreStore {
+private extension CoreStore {
     
-    private func send(_ state: State, to observer: Observer<State>) {
+    func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in
             guard status == .dead else {
                 return
