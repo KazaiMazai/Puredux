@@ -72,7 +72,7 @@ extension ChildStoreSwiftUITests {
 
     func test_WhenActionDispatchedToChildStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
-        receivedState.expectedFulfillmentCount = 2
+        receivedState.expectedFulfillmentCount = 1
         let expectedIndex = 100
 
         var lastAppStateIndex: Int?
@@ -82,6 +82,10 @@ extension ChildStoreSwiftUITests {
             lastAppStateIndex = appState.subStateWithIndex.index
             lastChildStateIndex = childState.index
 
+            guard lastAppStateIndex == expectedIndex,
+                  lastChildStateIndex == expectedIndex else {
+                return
+            }
             receivedState.fulfill()
         }
 
