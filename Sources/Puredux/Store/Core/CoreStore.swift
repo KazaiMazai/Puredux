@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Sergey Kazakov on 01.12.2020.
 //
@@ -14,30 +14,26 @@ public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> V
 typealias StoreID = UUID
 
 final class CoreStore<State, Action> {
-
     let id: StoreID = StoreID()
-
+    
     private static var queueLabel: String { "com.puredux.store" }
-
+    
     private var state: State
-
-    private let queue: DispatchQueue
-    private var interceptor: ActionsInterceptor<Action>?
+    
+    let dispatchQueue: DispatchQueue
+    private(set) var actionsInterceptor: ActionsInterceptor<Action>?
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
-
-    init(queue: StoreQueue = .global(),
-         initialState: State, reducer: @escaping Reducer<State, Action>) {
-
-        self.reducer = reducer
+    
+    init(queue: DispatchQueue,
+         actionsInterceptor: ActionsInterceptor<Action>?,
+         initialState: State, 
+         reducer: @escaping Reducer<State, Action>) {
+       
+        self.dispatchQueue = queue
+        self.actionsInterceptor = actionsInterceptor
         self.state = initialState
-
-        switch queue {
-        case .main:
-            self.queue = DispatchQueue.main
-        case let .global(qos):
-            self.queue = DispatchQueue(label: Self.queueLabel, qos: qos, attributes: .concurrent)
-        }
+        self.reducer = reducer
     }
 }
 
@@ -48,97 +44,99 @@ extension CoreStore {
     }
 }
 
-extension CoreStore {
-    func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
-        queue.async(flags: .barrier) { [weak self] in
-            guard let self = self else {
-                return
-            }
+//MARK: - StoreProtocol Conformance
 
-            self.interceptor = interceptor
-        }
+extension CoreStore: StoreProtocol {
+    //MARK: - DispatchQueue
+    
+    var queue: DispatchQueue {
+        dispatchQueue
     }
 
+    //MARK: - Interceptor
+ 
+    func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
+        queue.async { [weak self] in
+            self?.setInterceptorSync(interceptor)
+        }
+    }
+    
     func setInterceptor(with handler: @escaping Interceptor<Action>) {
         let interceptor = ActionsInterceptor(
             storeId: self.id,
             handler: handler,
             dispatcher: { [weak self] in self?.dispatch($0) })
-
+        
         setInterceptor(interceptor)
+    }    
+
+    func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
+        self.actionsInterceptor = interceptor
     }
 
-    func dispatch(_ action: Action) {
-        scopeAndDispatch(action)
-    }
-
-    var currentState: State {
-        queue.sync {
-            state
-        }
-    }
-
-    var actionsInterceptor: ActionsInterceptor<Action>? {
-        queue.sync {
-            interceptor
-        }
-    }
-}
-
-extension CoreStore {
-
+    //MARK: - Subscribe
+ 
     func unsubscribe(observer: Observer<State>) {
-        queue.async(flags: .barrier) { [weak self] in
-            self?.observers.remove(observer)
+        queue.async { [weak self] in
+            self?.syncUnsubscribe(observer: observer)
         }
     }
-
+     
+    func subscribe(observer: Observer<State>) {
+        subscribe(observer: observer, receiveCurrentState: true)
+    }
+    
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool = true) {
-        queue.async(flags: .barrier) { [weak self] in
-            guard let self = self else {
-                return
-            }
-
-            self.observers.insert(observer)
-
-            guard receiveCurrentState else { return }
-            self.send(self.state, to: observer)
+        queue.async { [weak self] in
+            self?.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
     }
-}
 
-extension CoreStore {
+    func syncUnsubscribe(observer: Observer<State>) {
+        observers.remove(observer)
+    }
+     
+    func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool) {
+        observers.insert(observer)
+        guard receiveCurrentState else { return }
+        send(self.state, to: observer)
+    }
+
+
+    //MARK: - Dispatch
+
     func scopeAction(_ action: Action) -> ScopedAction<Action> {
         ScopedAction(storeId: id, action: action)
     }
-
-    private func scopeAndDispatch(_ action: Action) {
+    
+    func dispatch(scopedAction: ScopedAction<Action>) {
+        queue.async { [weak self] in
+            self?.syncDispatch(scopedAction: scopedAction)
+        }
+    }
+    
+    func dispatch(_ action: Action) {
         dispatch(scopedAction: scopeAction(action))
     }
 
-    func dispatch(scopedAction: ScopedAction<Action>) {
-        queue.async(flags: .barrier) { [weak self] in
-            guard let self = self else {
-                return
-            }
-
-            self.interceptor?.interceptIfNeeded(scopedAction)
-
-            self.reducer(&self.state, scopedAction.action)
-            self.observers.forEach { self.send(self.state, to: $0) }
-        }
+    func syncDispatch(scopedAction: ScopedAction<Action>) {
+        actionsInterceptor?.interceptIfNeeded(scopedAction)
+        reducer(&self.state, scopedAction.action)
+        observers.forEach { send(state, to: $0) }
     }
 }
 
-extension CoreStore {
+//MARK: - Private
 
-    private func send(_ state: State, to observer: Observer<State>) {
+private extension CoreStore {
+    
+    func send(_ state: State, to observer: Observer<State>) {
         observer.send(state) { [weak self] status in
             guard status == .dead else {
                 return
             }
-
-            self?.unsubscribe(observer: observer)
+            
+            self?.syncUnsubscribe(observer: observer)
         }
     }
 }

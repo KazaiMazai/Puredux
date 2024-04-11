@@ -34,7 +34,8 @@ public final class RootStore<State, Action> {
                 reducer: @escaping Reducer<State, Action>) {
 
         internalStore = CoreStore(
-            queue: queue,
+            queue: queue.dispatchQueue, 
+            actionsInterceptor: nil,
             initialState: initialState,
             reducer: reducer)
     }
@@ -67,6 +68,17 @@ public extension RootStore {
     func interceptActions(with interceptor: @escaping (Action) -> Void ) {
         internalStore.setInterceptor { action, _ in
             interceptor(action)
+        }
+    }
+}
+
+extension StoreQueue {
+    var dispatchQueue: DispatchQueue {
+        switch self {
+        case .main:
+            return DispatchQueue.main
+        case let .global(qos):
+            return DispatchQueue(label: "com.puredux.store", qos: qos)
         }
     }
 }

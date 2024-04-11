@@ -7,28 +7,37 @@
 
 import Foundation
 
-protocol StoreProtocol<State, Action>: AnyObject {
+protocol StoreProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     associatedtype Action
     associatedtype State
-
+    
     func dispatch(_ action: Action)
-
-    var currentState: State { get }
-
+    
+    var queue: DispatchQueue { get }
+    
     var actionsInterceptor: ActionsInterceptor<Action>? { get }
-
+    
     func unsubscribe(observer: Observer<State>)
-
+    
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
-
+    
     func dispatch(scopedAction: ScopedAction<Action>)
+    
+    func subscribe(observer: Observer<State>)
+}
+
+protocol SyncStoreProtocol<State, Action> {
+    associatedtype Action
+    associatedtype State
+    
+    func syncUnsubscribe(observer: Observer<State>)
+
+    func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
+
+    func syncDispatch(scopedAction: ScopedAction<Action>)
 }
 
 extension StoreProtocol {
-    func subscribe(observer: Observer<State>) {
-        subscribe(observer: observer, receiveCurrentState: true)
-    }
-    
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
               subscribe: { [weak self] in self?.subscribe(observer: $0) }
@@ -41,10 +50,26 @@ extension StoreProtocol {
 }
 
 extension StoreProtocol {
+    @available(*, deprecated, renamed: "createChildStore(stateStore:stateMapping:reducer:)", message: "qos parameter will have no effect. Root store's QoS is used.")
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
         qos: DispatchQoS,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
+            
+            StoreNode<Self, LocalState, ResultState, Action>(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                parentStore: self,
+                reducer: reducer
+            )
+        }
+}
+
+extension StoreProtocol {
+    func createChildStore<LocalState, ResultState>(
+        initialState: LocalState,
+        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
         reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
             
             StoreNode<Self, LocalState, ResultState, Action>(

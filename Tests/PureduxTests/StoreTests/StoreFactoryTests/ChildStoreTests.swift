@@ -64,7 +64,7 @@ final class ChildStoreTests: XCTestCase {
         var lastReceivedState: StateComposition?
 
         let asyncExpectation = expectation(description: "Observer state handler")
-        asyncExpectation.expectedFulfillmentCount = 3
+        asyncExpectation.expectedFulfillmentCount = 2
 
         let observer = Observer<StateComposition> { receivedState, complete in
             asyncExpectation.fulfill()
@@ -113,7 +113,7 @@ final class ChildStoreTests: XCTestCase {
         var lastReceivedState: StateComposition?
 
         let asyncExpectation = expectation(description: "Observer state handler")
-        asyncExpectation.expectedFulfillmentCount = 5
+        asyncExpectation.expectedFulfillmentCount = 4
 
         let observer = Observer<StateComposition> { receivedState, complete in
             asyncExpectation.fulfill()
