@@ -89,6 +89,7 @@ extension StateStore {
     }
 }
 
+// swiftlint:disable large_tuple identifier_name
 extension Store {
     func flatMap<T1, T2, T3>() ->
         Store<(T1, T2, T3), Action>
@@ -244,3 +245,4 @@ extension StateStore {
         strongStore().flatMap()
     }
 }
+// swiftlint:enable large_tuple identifier_name
