@@ -161,7 +161,6 @@ extension StoreNode: StoreProtocol {
     }
 }
  
-
 //MARK: - Private
 
 private extension StoreNode {
