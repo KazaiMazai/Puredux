@@ -67,6 +67,21 @@ extension StateStore {
             )
         )
     }
+    
+    func createChildStore<LocalState, ResultState, LocalAction>(initialState: LocalState,
+                                                   stateMapping: @escaping (State, LocalState) -> ResultState,
+                                                   actionsMapping: ActionsMapping<Action, LocalAction>,
+                                                   reducer: @escaping Reducer<LocalState, LocalAction>) -> StateStore<ResultState, LocalAction> {
+
+        StateStore<ResultState, LocalAction>(
+            storeObject: storeObject.createChildStore(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                actionsMapping: actionsMapping,
+                reducer: reducer
+            )
+        )
+    }
 
     func appending<T>(_ state: T,
                       qos: DispatchQoS = .userInitiated,
@@ -76,6 +91,18 @@ extension StateStore {
             initialState: state,
             stateMapping: { ($0, $1) },
             qos: qos,
+            reducer: reducer
+        )
+    }
+    
+    func appending<T, A>(_ state: T,
+                         actionsMapping: ActionsMapping<Action, A>,
+                         reducer: @escaping Reducer<T, A>) -> StateStore<(State, T), A> {
+
+        createChildStore(
+            initialState: state,
+            stateMapping: { ($0, $1) },
+            actionsMapping: actionsMapping,
             reducer: reducer
         )
     }

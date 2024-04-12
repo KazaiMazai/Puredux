@@ -11,21 +11,36 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol,
-                                                                    ParentStore.Action == Action {
+
+struct ActionsMapping<ParentAction, ChildAction> {
+    let parent: (ChildAction) -> ParentAction
+    let local: (ParentAction) -> ChildAction
+    
+    static func equivalent<A>() -> ActionsMapping<A, A> {
+        ActionsMapping<A, A>(
+            parent: { $0 },
+            local: { $0 }
+        )
+    }
+}
+
+final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol {
 
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
     private var observers: Set<Observer<State>> = []
+    private let actionsMapping: ActionsMapping<ParentStore.Action, Action>
 
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
+         actionsMapping: ActionsMapping<ParentStore.Action, Action>,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
 
         self.stateMapping = stateMapping
+        self.actionsMapping = actionsMapping
         self.parentStore = parentStore
 
         localStore = CoreStore(
@@ -36,10 +51,19 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
         )
 
         if let parentInterceptor = parentStore.actionsInterceptor {
-            let interceptor = ActionsInterceptor(
+            let interceptor = ActionsInterceptor<Action>(
                 storeId: localStore.id,
-                handler: parentInterceptor.handler,
-                dispatcher: { [weak self] action in self?.dispatch(action) }
+                handler: { [weak self] action, dispatcher in
+                    guard let self else { return }
+                    parentInterceptor.handler(
+                        self.actionsMapping.parent(action), 
+                        { dispatcher(self.actionsMapping.local($0)) }
+                    )
+                },
+                dispatcher: { [weak self] action in
+                    guard let self else { return }
+                    self.dispatch(action)
+                }
             )
 
             localStore.setInterceptorSync(interceptor)
@@ -82,7 +106,8 @@ extension StoreNode where LocalState == State {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
-            stateMapping: { _, state in return state },
+            stateMapping: { _, state in return state }, 
+            actionsMapping: .equivalent(),
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 actionsInterceptor: ActionsInterceptor(
@@ -106,12 +131,15 @@ extension StoreNode: StoreProtocol {
     }
 
     var actionsInterceptor: ActionsInterceptor<Action>? {
-        parentStore.actionsInterceptor
+        localStore.actionsInterceptor
     }
 
     func syncDispatch(scopedAction: ScopedAction<Action>) {
         localStore.syncDispatch(scopedAction: scopedAction)
-        parentStore.syncDispatch(scopedAction: scopedAction)
+        parentStore.syncDispatch(scopedAction: ScopedAction(
+            storeId: scopedAction.storeId,
+            action: actionsMapping.parent(scopedAction.action)
+        ))
     }
 
     func dispatch(_ action: Action) {
