@@ -11,19 +11,6 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-
-struct ActionsMapping<ParentAction, ChildAction> {
-    let parent: (ChildAction) -> ParentAction
-    let local: (ParentAction) -> ChildAction
-    
-    static func equivalent<A>() -> ActionsMapping<A, A> {
-        ActionsMapping<A, A>(
-            parent: { $0 },
-            local: { $0 }
-        )
-    }
-}
-
 final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol {
 
     private let localStore: CoreStore<LocalState, Action>

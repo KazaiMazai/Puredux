@@ -1,93 +1,11 @@
 //
 //  File.swift
+//  
 //
-//
-//  Created by Sergey Kazakov on 04/04/2024.
+//  Created by Sergey Kazakov on 12/04/2024.
 //
 
 import Foundation
-
-extension Store {
-    func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: dispatch,
-            subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    let localState = transform(state)
-                    localStateObserver.send(localState, complete: complete)
-                })
-            }
-        )
-    }
-
-    func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: dispatch,
-            subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    guard let localState = transform(state) else {
-                        complete(.active)
-                        return
-                    }
-
-                    localStateObserver.send(localState, complete: complete)
-                })
-            }
-        )
-    }
-
-    func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        Store<T?, Action>(
-            dispatcher: dispatch,
-            subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    let localState = transform(state)
-                    localStateObserver.send(localState, complete: complete)
-                })
-            }
-        )
-    }
-}
-
-extension Store {
-    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
-        map { $0[keyPath: keyPath] }
-    }
-
-    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
-        compactMap { $0[keyPath: keyPath] }
-    }
-
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
-        flatMap { $0[keyPath: keyPath] }
-    }
-}
-
-extension StateStore {
-    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
-        strongStore().map(keyPath)
-    }
-
-    func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-        strongStore().map(transform)
-    }
-
-    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
-        strongStore().compactMap(keyPath)
-    }
-
-    func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-        strongStore().compactMap(transform)
-    }
-
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
-        strongStore().flatMap(keyPath)
-    }
-
-    func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        strongStore().flatMap(transform)
-    }
-}
 
 // swiftlint:disable large_tuple identifier_name
 extension Store {
@@ -246,20 +164,3 @@ extension StateStore {
     }
 }
 // swiftlint:enable large_tuple identifier_name
-
-extension Store {
-    
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        Store<State, A>(
-            dispatcher: { action in dispatch(transform(action)) },
-            subscribe: subscribe
-        )
-    }
-}
-
-extension StateStore {
-    
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        strongStore().map(transform)
-    }
-}
