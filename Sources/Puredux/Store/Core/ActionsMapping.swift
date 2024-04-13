@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct ActionsMapping<ParentAction, ChildAction> {
-    let toParent: (ChildAction) -> ParentAction
-    let toChild: (ParentAction) -> ChildAction
+struct ActionsMapping<GlobalAction, LocalAction> {
+    let toGlobal: (LocalAction) -> GlobalAction
+    let toLocal: (GlobalAction) -> LocalAction
     
     static func passthrough<A>() -> ActionsMapping<A, A> {
         ActionsMapping<A, A>(
-            toParent: { $0 },
-            toChild: { $0 }
+            toGlobal: { $0 },
+            toLocal: { $0 }
         )
     }
 }

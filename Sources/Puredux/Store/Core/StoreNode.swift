@@ -117,7 +117,7 @@ extension StoreNode: StoreProtocol {
         localStore.syncDispatch(scopedAction: scopedAction)
         parentStore.syncDispatch(scopedAction: ScopedAction(
             storeId: scopedAction.storeId,
-            action: actionsMapping.toParent(scopedAction.action)
+            action: actionsMapping.toGlobal(scopedAction.action)
         ))
     }
 
