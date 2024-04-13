@@ -36,7 +36,8 @@ extension StateStore {
             initialState: initialState,
             interceptor: interceptor,
             qos: qos,
-            reducer: reducer)
+            reducer: reducer
+        )
     }
 }
 
@@ -50,7 +51,8 @@ extension StateStore {
     func strongStore() -> Store<State, Action> {
         Store<State, Action>(
             dispatcher: dispatch,
-            subscribe: subscribe)
+            subscribe: subscribe
+        )
     }
 
     func createChildStore<LocalState, ResultState>(initialState: LocalState,
