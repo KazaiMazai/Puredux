@@ -31,8 +31,8 @@ struct ActionsInterceptor<Action> {
             storeId: localStoreId,
             handler: { action, dispatcher in
                 handler(
-                    actionsMapping.toParent(action),
-                    { dispatcher(actionsMapping.toChild($0)) }
+                    actionsMapping.toGlobal(action),
+                    { dispatcher(actionsMapping.toLocal($0)) }
                 )
             },
             dispatcher: { action in

@@ -17,8 +17,8 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     private let parentStore: ParentStore
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
-    private var observers: Set<Observer<State>> = []
     private let actionsMapping: ActionsMapping<ParentStore.Action, Action>
+    private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
