@@ -60,7 +60,7 @@ extension StoreProtocol {
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
                 stateMapping: stateMapping, 
-                actionsMapping: .equivalent(),
+                actionsMapping: .passthrough(),
                 parentStore: self,
                 reducer: reducer
             )
@@ -76,7 +76,7 @@ extension StoreProtocol {
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
                 stateMapping: stateMapping, 
-                actionsMapping: .equivalent(),
+                actionsMapping: .passthrough(),
                 parentStore: self,
                 reducer: reducer
             )

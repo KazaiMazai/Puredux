@@ -8,13 +8,13 @@
 import Foundation
 
 struct ActionsMapping<ParentAction, ChildAction> {
-    let parent: (ChildAction) -> ParentAction
-    let local: (ParentAction) -> ChildAction
+    let toParent: (ChildAction) -> ParentAction
+    let toChild: (ParentAction) -> ChildAction
     
-    static func equivalent<A>() -> ActionsMapping<A, A> {
+    static func passthrough<A>() -> ActionsMapping<A, A> {
         ActionsMapping<A, A>(
-            parent: { $0 },
-            local: { $0 }
+            toParent: { $0 },
+            toChild: { $0 }
         )
     }
 }

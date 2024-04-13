@@ -43,13 +43,12 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
                 handler: { [weak self] action, dispatcher in
                     guard let self else { return }
                     parentInterceptor.handler(
-                        self.actionsMapping.parent(action), 
-                        { dispatcher(self.actionsMapping.local($0)) }
+                        self.actionsMapping.toParent(action), 
+                        { dispatcher(self.actionsMapping.toChild($0)) }
                     )
                 },
                 dispatcher: { [weak self] action in
-                    guard let self else { return }
-                    self.dispatch(action)
+                    self?.dispatch(action)
                 }
             )
 
@@ -94,7 +93,7 @@ extension StoreNode where LocalState == State {
         RootStoreNode<State, Action>(
             initialState: initialState,
             stateMapping: { _, state in return state }, 
-            actionsMapping: .equivalent(),
+            actionsMapping: .passthrough(),
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 actionsInterceptor: ActionsInterceptor(
@@ -125,7 +124,7 @@ extension StoreNode: StoreProtocol {
         localStore.syncDispatch(scopedAction: scopedAction)
         parentStore.syncDispatch(scopedAction: ScopedAction(
             storeId: scopedAction.storeId,
-            action: actionsMapping.parent(scopedAction.action)
+            action: actionsMapping.toParent(scopedAction.action)
         ))
     }
 
