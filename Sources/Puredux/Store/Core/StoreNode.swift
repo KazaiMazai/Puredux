@@ -38,23 +38,16 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
         )
 
         if let parentInterceptor = parentStore.actionsInterceptor {
-            let interceptor = ActionsInterceptor<Action>(
-                storeId: localStore.id,
-                handler: { [weak self] action, dispatcher in
-                    guard let self else { return }
-                    parentInterceptor.handler(
-                        self.actionsMapping.toParent(action), 
-                        { dispatcher(self.actionsMapping.toChild($0)) }
-                    )
-                },
+            let interceptor = parentInterceptor.localInterceptor(
+                localStore.id,
+                actionsMapping: actionsMapping,
                 dispatcher: { [weak self] action in
                     self?.dispatch(action)
-                }
-            )
-
+                })
+            
             localStore.setInterceptorSync(interceptor)
         }
-
+        
         localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
     }

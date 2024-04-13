@@ -21,4 +21,23 @@ struct ActionsInterceptor<Action> {
         guard action.storeId == storeId else { return }
         handler(action.action, dispatcher)
     }
+    
+    func localInterceptor<LocalAction>(_ localStoreId: StoreID,
+                                       actionsMapping: ActionsMapping<Action, LocalAction>,
+                                       dispatcher: @escaping Dispatch<LocalAction>
+    ) -> ActionsInterceptor<LocalAction> {
+        
+        ActionsInterceptor<LocalAction>(
+            storeId: localStoreId,
+            handler: { action, dispatcher in
+                handler(
+                    actionsMapping.toParent(action),
+                    { dispatcher(actionsMapping.toChild($0)) }
+                )
+            },
+            dispatcher: { action in
+                dispatcher(action)
+            }
+        )
+    }
 }
