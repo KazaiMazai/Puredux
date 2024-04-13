@@ -12,6 +12,18 @@ struct ScopedAction<Action> {
     let action: Action
 }
 
+struct ActionsMapping<GlobalAction, LocalAction> {
+    let toGlobal: (LocalAction) -> GlobalAction
+    let toLocal: (GlobalAction) -> LocalAction
+    
+    static func passthrough<A>() -> ActionsMapping<A, A> {
+        ActionsMapping<A, A>(
+            toGlobal: { $0 },
+            toLocal: { $0 }
+        )
+    }
+}
+
 struct ActionsInterceptor<Action> {
     let storeId: StoreID
     let handler: (Action, @escaping Dispatch<Action>) -> Void
