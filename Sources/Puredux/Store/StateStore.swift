@@ -36,7 +36,8 @@ extension StateStore {
             initialState: initialState,
             interceptor: interceptor,
             qos: qos,
-            reducer: reducer)
+            reducer: reducer
+        )
     }
 }
 
@@ -50,7 +51,8 @@ extension StateStore {
     func strongStore() -> Store<State, Action> {
         Store<State, Action>(
             dispatcher: dispatch,
-            subscribe: subscribe)
+            subscribe: subscribe
+        )
     }
 
     func createChildStore<LocalState, ResultState>(initialState: LocalState,
@@ -67,6 +69,21 @@ extension StateStore {
             )
         )
     }
+    
+    func createChildStore<LocalState, ResultState, LocalAction>(initialState: LocalState,
+                                                   stateMapping: @escaping (State, LocalState) -> ResultState,
+                                                   actionsMapping: ActionsMapping<Action, LocalAction>,
+                                                   reducer: @escaping Reducer<LocalState, LocalAction>) -> StateStore<ResultState, LocalAction> {
+
+        StateStore<ResultState, LocalAction>(
+            storeObject: storeObject.createChildStore(
+                initialState: initialState,
+                stateMapping: stateMapping,
+                actionsMapping: actionsMapping,
+                reducer: reducer
+            )
+        )
+    }
 
     func appending<T>(_ state: T,
                       qos: DispatchQoS = .userInitiated,
@@ -76,6 +93,18 @@ extension StateStore {
             initialState: state,
             stateMapping: { ($0, $1) },
             qos: qos,
+            reducer: reducer
+        )
+    }
+    
+    func appending<T, A>(_ state: T,
+                         actionsMapping: ActionsMapping<Action, A>,
+                         reducer: @escaping Reducer<T, A>) -> StateStore<(State, T), A> {
+
+        createChildStore(
+            initialState: state,
+            stateMapping: { ($0, $1) },
+            actionsMapping: actionsMapping,
             reducer: reducer
         )
     }
