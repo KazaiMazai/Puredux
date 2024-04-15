@@ -37,8 +37,53 @@ extension Store {
         subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [sideEffects] state, prevState, complete in
                 
-                let effects = [state[keyPath: keyPath]]
-                sideEffects.run(effects, on: queue, state: state, create: create)
+                let effect = state[keyPath: keyPath]
+                sideEffects.run([effect], on: queue, state: state, create: create)
+                complete(.active)
+                return sideEffects.isSynced ? state : prevState
+            }
+        )
+    }
+    
+    func sideEffect<T>(_ keyPath: KeyPath<State, T>,
+                       on queue: DispatchQueue = .main,
+                       create: @escaping (State) -> Effect?) where T: Equatable {
+        
+        let sideEffects = SideEffects()
+        
+        subscribe(observer: Observer(
+            removeStateDuplicates: .keyPath(keyPath)) { [sideEffects] state, prevState, complete in
+                
+                var effect = Effect.State()
+                effect.run()
+                sideEffects.run([effect], on: queue, state: state) { state, _ in
+                    create(state)
+                }
+                complete(.active)
+                return sideEffects.isSynced ? state : prevState
+            }
+        )
+    }
+    
+    func sideEffect(if keyPath: KeyPath<State, Bool>,
+                    on queue: DispatchQueue = .main,
+                    create: @escaping (State) -> Effect?) {
+        
+        let sideEffects = SideEffects()
+        
+        subscribe(observer: Observer(
+            removeStateDuplicates: .keyPath(keyPath)) { [sideEffects] state, prevState, complete in
+                
+                var effect = Effect.State()
+                let isRunning = state[keyPath: keyPath]
+                
+                if isRunning {
+                    effect.run()
+                }
+                
+                sideEffects.run([effect], on: queue, state: state) { state, _ in
+                    create(state)
+                }
                 complete(.active)
                 return sideEffects.isSynced ? state : prevState
             }
@@ -82,3 +127,5 @@ extension Store {
         )
     }
 }
+
+
