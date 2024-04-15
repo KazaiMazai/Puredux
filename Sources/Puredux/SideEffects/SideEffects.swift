@@ -15,7 +15,7 @@ final class SideEffects {
     func run<State, Effects>(_ effects: Effects,
                              on queue: DispatchQueue,
                              state: State,
-                             create: @escaping (State, Effect.State) -> Effect?)
+                             create: @escaping (State, Effect.State) -> Effect)
     where
     Effects: Collection & Hashable,
     Effects.Element == Effect.State {
@@ -31,9 +31,8 @@ final class SideEffects {
     
         expectedToRun
             .filter { !executing.keys.contains($0) }
-            .compactMap { effectState in
-                create(state, effectState).map { (effectState, $0) }
-            }
+            .map { effectState in (effectState, create(state, effectState)) }
+            .filter { _, effect in effect.canBeExecuted }
             .forEach { effectState, effect in
                 let workItem = DispatchWorkItem(block: effect.operation)
                 executing[effectState] = Weak(workItem)

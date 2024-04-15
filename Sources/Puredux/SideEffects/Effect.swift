@@ -8,20 +8,38 @@
 import Foundation
 
 struct Effect {
-    let operation: () -> Void
+    typealias Operation = () -> Void
+   
+    private let perform: Operation?
     
-    init(operation: @escaping () -> Void) {
-        self.operation = operation
+    var operation: Operation {
+        perform ?? { }
+    }
+    
+    init(_ operation: @escaping () -> Void) {
+        self.perform = operation
+    }
+    
+    private init(operation: Operation?) {
+        self.perform = operation
+    }
+   
+    static let skip: Effect = Effect(operation: nil)
+    
+
+    var canBeExecuted: Bool {
+        perform != nil
     }
     
     @available(iOS 13.0, *)
     init(operation: @escaping () async -> Void) {
-        self.operation = {
+        self.perform = {
             Task {
                 await operation()
             }
         }
     }
+    
 }
 
 extension Effect {
@@ -66,6 +84,20 @@ extension Effect {
         var currentAttemptDelay: TimeInterval? {
             state.currentAttempt?.delay
         }
+    }
+}
+
+extension Effect.State {
+    static func running(maxAttemptCount: Int = 1,
+                        delay: TimeInterval = .zero) -> Effect.State {
+        
+        var effect = Effect.State()
+        effect.run(maxAttemptCount: maxAttemptCount, delay: delay)
+        return effect
+    }
+    
+    static func idle() -> Effect.State {
+        Effect.State()
     }
 }
 

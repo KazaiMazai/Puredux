@@ -10,7 +10,7 @@ import Dispatch
 extension Store {
     func sideEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
                              on queue: DispatchQueue = .main,
-                             create: @escaping (State, Effect.State) -> Effect?)
+                             create: @escaping (State, Effect.State) -> Effect)
     where
     Effects: Collection & Hashable,
     Effects.Element == Effect.State {
@@ -30,7 +30,7 @@ extension Store {
     
     func sideEffect(_ keyPath: KeyPath<State, Effect.State>,
                     on queue: DispatchQueue = .main,
-                    create: @escaping (State, Effect.State) -> Effect?) {
+                    create: @escaping (State, Effect.State) -> Effect) {
         
         let sideEffects = SideEffects()
         
@@ -47,15 +47,14 @@ extension Store {
     
     func sideEffect<T>(_ keyPath: KeyPath<State, T>,
                        on queue: DispatchQueue = .main,
-                       create: @escaping (State) -> Effect?) where T: Equatable {
+                       create: @escaping (State) -> Effect) where T: Equatable {
         
         let sideEffects = SideEffects()
         
         subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [sideEffects] state, prevState, complete in
                 
-                var effect = Effect.State()
-                effect.run()
+                let effect = Effect.State.running()
                 sideEffects.run([effect], on: queue, state: state) { state, _ in
                     create(state)
                 }
@@ -65,21 +64,17 @@ extension Store {
         )
     }
     
-    func sideEffect(if keyPath: KeyPath<State, Bool>,
+    func sideEffect(_ keyPath: KeyPath<State, Bool>,
                     on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect?) {
+                    create: @escaping (State) -> Effect) {
         
         let sideEffects = SideEffects()
         
         subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [sideEffects] state, prevState, complete in
-                
-                var effect = Effect.State()
+              
                 let isRunning = state[keyPath: keyPath]
-                
-                if isRunning {
-                    effect.run()
-                }
+                let effect: Effect.State = isRunning ? .running() : .idle()
                 
                 sideEffects.run([effect], on: queue, state: state) { state, _ in
                     create(state)
@@ -89,11 +84,20 @@ extension Store {
             }
         )
     }
+    
+    func sideEffect(_ keyPath: KeyPath<State, Bool>,
+                    on queue: DispatchQueue = .main,
+                    run: @escaping (State) -> Void) {
+        
+        sideEffect(keyPath, on: queue) { state in
+            Effect { run(state) }
+        }
+    }
 }
 
 extension Store where State == Effect.State {
     func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State, Effect.State) -> Effect?) {
+                    create: @escaping (State, Effect.State) -> Effect) {
         let sideEffects = SideEffects()
         
         subscribe(observer: Observer(
@@ -110,7 +114,7 @@ extension Store where State == Effect.State {
 
 extension Store {
     func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State, Effect.State) -> Effect?)
+                    create: @escaping (State, Effect.State) -> Effect)
     where
     State: Collection & Hashable,
     State.Element == Effect.State {
@@ -129,3 +133,28 @@ extension Store {
 }
 
 
+func foo() {
+    let store = Store<(isAuth: Bool, inProgess: Bool), Int>(dispatcher: {_ in }, subscribe: {_ in})
+    
+    store.sideEffect(\.inProgess) { state in
+        !state.isAuth ? .skip : Effect {
+            
+        }
+    }
+}
+ 
+
+func foo2() {
+    let store = Store<(isAuth: Bool, count: Int), Int>(dispatcher: {_ in }, subscribe: {_ in})
+    
+    store.sideEffect(\.count) { state in
+        
+        guard state.isAuth else {
+            return .skip
+        }
+        
+        return Effect {
+            
+        }
+    }
+}
