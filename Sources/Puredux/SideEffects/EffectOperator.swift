@@ -8,7 +8,7 @@
 import Dispatch
 import Foundation
 
-final class Scheduler {
+final class EffectOperator {
     private(set) var executing: [Effect.State: Weak<DispatchWorkItem>] = [:]
     private(set) var isSynced = true
     
