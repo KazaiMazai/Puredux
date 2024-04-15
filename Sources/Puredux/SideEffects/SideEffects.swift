@@ -6,6 +6,7 @@
 //
 
 import Dispatch
+import Foundation
 
 final class SideEffects {
     private(set) var executing: [Effect.State: Weak<DispatchWorkItem>] = [:]
@@ -20,29 +21,24 @@ final class SideEffects {
     Effects.Element == Effect.State {
         
         let expectedToRun = Set(effects).filter { $0.isInProgress }
-        let toBeCancelled = Set(executing.keys).subtracting(expectedToRun)
         
-        toBeCancelled.forEach {
-            executing[$0]?.object?.cancel()
-            executing[$0] = nil
-        }
-        
-        let toBeStarted = expectedToRun.subtracting(executing.keys)
-        let createdEffects = toBeStarted.compactMap { effectState in
-            create(state, effectState).map { (effectState, $0) }
-        }
-        
-        createdEffects.forEach { effectState, effect in
-            let workItem = DispatchWorkItem(block: effect.operation)
-            let weakWorkItem = Weak<DispatchWorkItem>(workItem)
-            executing[effectState] = weakWorkItem
-            
-            if let delay = effectState.currentAttemptDelay, delay > .zero {
-                queue.asyncAfter(deadline: .now() + delay, execute: workItem)
-            } else {
-                queue.async(execute: workItem)
+        executing.keys
+            .filter { !expectedToRun.contains($0) }
+            .forEach {
+                executing[$0]?.object?.cancel()
+                executing[$0] = nil
             }
-        }
+    
+        expectedToRun
+            .filter { !executing.keys.contains($0) }
+            .compactMap { effectState in
+                create(state, effectState).map { (effectState, $0) }
+            }
+            .forEach { effectState, effect in
+                let workItem = DispatchWorkItem(block: effect.operation)
+                executing[effectState] = Weak(workItem)
+                queue.asyncAfter(delay: effectState.currentAttemptDelay, execute: workItem)
+            }
         
         isSynced = expectedToRun.count == executing.count
     }
@@ -56,3 +52,13 @@ final class Weak<T: AnyObject> {
     }
 }
   
+extension DispatchQueue {
+    func asyncAfter(delay: TimeInterval?, execute workItem: DispatchWorkItem) {
+        guard let delay, delay > .zero else {
+            async(execute: workItem)
+            return
+        }
+        
+        asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+}
