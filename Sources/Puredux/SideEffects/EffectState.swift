@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Job {
-    enum State: Codable & Equatable {
+extension Effect.State {
+    enum InternalState: Codable, Equatable, Hashable {
         case none
         case inProgress(Attempt)
         case success
@@ -25,8 +25,8 @@ extension Job {
     }
 }
 
-extension Job.State {
-    var status: Job.Status {
+extension Effect.State.InternalState {
+    var status: Effect.State.Status {
         switch self {
         case .none:
             return .none
@@ -82,8 +82,8 @@ extension Job.State {
     }
 }
 
-extension Job.State {
-    struct Failure: Codable, Equatable, Error {
+extension Effect.State.InternalState {
+    struct Failure: Codable, Equatable, Hashable, Error {
         let descriptionString: String
         private(set) var underlyingError: Error?
         
@@ -103,6 +103,10 @@ extension Job.State {
         static func == (lhs: Failure, rhs: Failure) -> Bool {
             lhs.descriptionString == rhs.descriptionString
         }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(descriptionString)
+        }
     }
     
     enum Errors: Error {
@@ -110,7 +114,7 @@ extension Job.State {
     }
 }
 
-extension Job.State  {
+extension Effect.State.InternalState  {
     mutating func run(maxAttemptCount: Int,
                       delay: TimeInterval) {
         
@@ -158,9 +162,9 @@ extension Job.State  {
     }
 }
 
-extension Job.State {
+extension Effect.State.InternalState {
     
-    func nextAttemptOrFailWith(_ error: Error) -> Job.State {
+    func nextAttemptOrFailWith(_ error: Error) -> Effect.State.InternalState {
         guard let job = currentAttempt,
               let next = job.nextAttempt()
         else {
@@ -171,12 +175,14 @@ extension Job.State {
     }
 }
 
-extension Job.State {
+
+extension Effect.State.InternalState {
     
-    struct Attempt: Codable & Equatable {
-        private(set) var id: UUID = UUID()
-        private(set) var attempt: Int = 0
-        private(set) var maxAttemptCount: Int = 1
+    struct Attempt: Codable, Equatable, Hashable {
+        typealias ID = UUID
+        
+        private(set) var attempt = 0
+        private(set) var maxAttemptCount = 1
         private(set) var delay: TimeInterval = .zero
         
         var hasMoreAttempts: Bool {
@@ -189,7 +195,6 @@ extension Job.State {
             }
             
             return Attempt(
-                id: UUID(),
                 attempt: attempt + 1,
                 maxAttemptCount: maxAttemptCount,
                 delay: pow(2.0, Double(attempt + 1))
