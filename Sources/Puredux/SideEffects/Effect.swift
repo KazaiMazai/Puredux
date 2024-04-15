@@ -16,30 +16,29 @@ struct Effect {
         perform ?? { }
     }
     
-    init(_ operation: @escaping () -> Void) {
-        self.perform = operation
-    }
-    
-    private init(operation: Operation?) {
-        self.perform = operation
-    }
-   
-    static let skip: Effect = Effect(operation: nil)
-    
-
     var canBeExecuted: Bool {
         perform != nil
     }
     
+    init(_ operation: @escaping () -> Void) {
+        perform = operation
+    }
+    
+    private init(operation: Operation?) {
+        perform = operation
+    }
+   
+   
     @available(iOS 13.0, *)
     init(operation: @escaping () async -> Void) {
-        self.perform = {
+        perform = {
             Task {
                 await operation()
             }
         }
     }
     
+    static let skip: Effect = Effect(operation: nil)
 }
 
 extension Effect {
@@ -81,7 +80,7 @@ extension Effect {
             state.currentAttempt?.attempt
         }
         
-        var currentAttemptDelay: TimeInterval? {
+        var delay: TimeInterval? {
             state.currentAttempt?.delay
         }
     }
