@@ -52,7 +52,7 @@ final class Weak<T: AnyObject> {
     }
 }
   
-extension DispatchQueue {
+fileprivate extension DispatchQueue {
     func asyncAfter(delay: TimeInterval?, execute workItem: DispatchWorkItem) {
         guard let delay, delay > .zero else {
             async(execute: workItem)
