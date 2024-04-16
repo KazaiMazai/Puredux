@@ -12,15 +12,14 @@ final class EffectOperator {
     private(set) var executing: [Effect.State: Weak<DispatchWorkItem>] = [:]
     private(set) var isSynced = true
     
-    func run<State, Effects>(_ effects: Effects,
-                             on queue: DispatchQueue,
-                             state: State,
-                             create: @escaping (State, Effect.State) -> Effect)
+    func run<Effects>(_ effects: Effects,
+                      on queue: DispatchQueue,
+                      create: (Effect.State) -> Effect)
     where
     Effects: Collection & Hashable,
     Effects.Element == Effect.State {
         
-        let expectedToRun = Set(effects).filter { $0.isInProgress }
+        let expectedToRun = Set(effects.filter { $0.isInProgress })
         
         executing.keys
             .filter { !expectedToRun.contains($0) }
@@ -31,12 +30,12 @@ final class EffectOperator {
     
         expectedToRun
             .filter { !executing.keys.contains($0) }
-            .map { effectState in (effectState, create(state, effectState)) }
+            .map { state in (state, create(state)) }
             .filter { _, effect in effect.canBeExecuted }
-            .forEach { effectState, effect in
+            .forEach { state, effect in
                 let workItem = DispatchWorkItem(block: effect.operation)
-                executing[effectState] = Weak(workItem)
-                queue.asyncAfter(delay: effectState.delay, execute: workItem)
+                executing[state] = Weak(workItem)
+                queue.asyncAfter(delay: state.delay, execute: workItem)
             }
         
         isSynced = expectedToRun.count == executing.count

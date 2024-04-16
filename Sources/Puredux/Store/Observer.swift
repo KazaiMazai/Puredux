@@ -115,7 +115,14 @@ extension Observer {
          observe: @escaping StatesObserver) {
         self.id = id
         self.removeStateDuplicates = equating
-        self.stateHandler = observe
+        self.stateHandler = { state, prevState, complete in
+            guard !equating.isEqual(state, to: prevState) else {
+                complete(.active)
+                return state
+            }
+ 
+            return observe(state, prevState, complete)
+        }
     }
 
     init(id: UUID = UUID(), observe: @escaping StateObserver) {
