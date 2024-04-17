@@ -141,7 +141,7 @@ extension Effect.State {
         state.reset()
     }
     
-    mutating func fail(_ error: Error) {
+    mutating func fail(_ error: Error?) {
         state.fail(error)
     }
 }
