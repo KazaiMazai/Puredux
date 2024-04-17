@@ -19,16 +19,17 @@ final class EffectOperator {
     Effects: Collection & Hashable,
     Effects.Element == Effect.State {
         
-        let expectedToRun = Set(effects.filter { $0.isInProgress })
+        let effectsInProgress = effects.filter { $0.isInProgress }
+        let expectedToBeExecuting = Set(effectsInProgress)
         
         executing.keys
-            .filter { !expectedToRun.contains($0) }
+            .filter { !expectedToBeExecuting.contains($0) }
             .forEach {
                 executing[$0]?.object?.cancel()
                 executing[$0] = nil
             }
     
-        expectedToRun
+        effectsInProgress
             .filter { !executing.keys.contains($0) }
             .map { state in (state, create(state)) }
             .filter { _, effect in effect.canBeExecuted }
@@ -38,7 +39,7 @@ final class EffectOperator {
                 queue.asyncAfter(delay: state.delay, execute: workItem)
             }
         
-        isSynced = expectedToRun.count == executing.count
+        isSynced = expectedToBeExecuting.count == executing.count
     }
 }
 
