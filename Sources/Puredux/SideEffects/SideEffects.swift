@@ -44,6 +44,7 @@ extension StateStore {
     
     func forEachEffect(on queue: DispatchQueue = .main,
                        create: @escaping (State, Effect.State) -> Effect)
+    
     where State: Collection & Hashable, State.Element == Effect.State {
         
         forEachEffect(\.self, on: queue, create: create)
@@ -125,7 +126,7 @@ extension Store {
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let effect = state[keyPath: keyPath]
-                effectOperator.run([effect], on: queue) { _ in
+                effectOperator.run(effect, on: queue) { _ in
                     create(state)
                 }
                 complete(.active)
@@ -143,7 +144,7 @@ extension Store {
         subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
-                effectOperator.run([effect], on: queue) { _ in
+                effectOperator.run(effect, on: queue) { _ in
                     create(state)
                 }
                 complete(.active)
@@ -162,9 +163,7 @@ extension Store {
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let isRunning = state[keyPath: keyPath]
-                let effect: Effect.State = isRunning ? .running() : .idle()
-                
-                effectOperator.run([effect], on: queue) { _ in
+                effectOperator.run(isRunning, on: queue) { _ in
                     create(state)
                 }
                 complete(.active)
