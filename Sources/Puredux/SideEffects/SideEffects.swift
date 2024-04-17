@@ -8,103 +8,97 @@
 import Dispatch
 
 extension Store {
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State == Effect.State  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State == Effect.State  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
     
-    func sideEffectForEach(on queue: DispatchQueue = .main,
-                           create: @escaping (State, Effect.State) -> Effect)
-    where
-    State: Collection & Hashable,
-    State.Element == Effect.State {
+    func forEachEffect(on queue: DispatchQueue = .main,
+                       create: @escaping (State, Effect.State) -> Effect)
+    
+    where State: Collection & Hashable, State.Element == Effect.State {
         
-        sideEffectForEach(\.self, on: queue, create: create)
+        forEachEffect(\.self, on: queue, create: create)
     }
     
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State: Equatable  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State: Equatable  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
     
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State == Bool  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State == Bool  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
 }
 
 extension StateStore {
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State == Effect.State  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State == Effect.State  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
     
-    func sideEffectForEach(on queue: DispatchQueue = .main,
-                           create: @escaping (State, Effect.State) -> Effect)
-    where
-    State: Collection & Hashable,
-    State.Element == Effect.State {
+    func forEachEffect(on queue: DispatchQueue = .main,
+                       create: @escaping (State, Effect.State) -> Effect)
+    where State: Collection & Hashable, State.Element == Effect.State {
         
-        sideEffectForEach(\.self, on: queue, create: create)
+        forEachEffect(\.self, on: queue, create: create)
     }
     
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State: Equatable  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State: Equatable  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
     
-    func sideEffect(on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) where State == Bool  {
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) where State == Bool  {
         
-        sideEffect(\.self, on: queue, create: create)
+        effect(\.self, on: queue, create: create)
     }
 }
 
 extension StateStore {
-    func sideEffectForEach<Effects>(_ keyPath: KeyPath<State, Effects>,
-                                    on queue: DispatchQueue = .main,
-                                    create: @escaping (State, Effect.State) -> Effect)
-    where
-    Effects: Collection & Hashable,
-    Effects.Element == Effect.State {
+    func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
+                                on queue: DispatchQueue = .main,
+                                create: @escaping (State, Effect.State) -> Effect)
+    
+    where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
-        strongStore().sideEffectForEach(keyPath, on: queue, create: create)
+        strongStore().forEachEffect(keyPath, on: queue, create: create)
     }
     
-    func sideEffect(_ keyPath: KeyPath<State, Effect.State>,
-                    on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) {
+    func effect(_ keyPath: KeyPath<State, Effect.State>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
         
-        strongStore().sideEffect(keyPath, on: queue, create: create)
+        strongStore().effect(keyPath, on: queue, create: create)
     }
     
-    func sideEffect<T>(_ keyPath: KeyPath<State, T>,
-                       on queue: DispatchQueue = .main,
-                       create: @escaping (State) -> Effect) where T: Equatable {
+    func effect<T>(_ keyPath: KeyPath<State, T>,
+                   on queue: DispatchQueue = .main,
+                   create: @escaping (State) -> Effect) where T: Equatable {
         
-        strongStore().sideEffect(keyPath, on: queue, create: create)
+        strongStore().effect(keyPath, on: queue, create: create)
     }
     
-    func sideEffect(_ keyPath: KeyPath<State, Bool>,
-                    on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) {
+    func effect(_ keyPath: KeyPath<State, Bool>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
         
-        strongStore().sideEffect(keyPath, on: queue, create: create)
+        strongStore().effect(keyPath, on: queue, create: create)
     }
 }
 
 extension Store {
-    func sideEffectForEach<Effects>(_ keyPath: KeyPath<State, Effects>,
-                                    on queue: DispatchQueue = .main,
-                                    create: @escaping (State, Effect.State) -> Effect)
-    where
-    Effects: Collection & Hashable,
-    Effects.Element == Effect.State {
+    func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
+                                on queue: DispatchQueue = .main,
+                                create: @escaping (State, Effect.State) -> Effect)
+    where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
         let effectOperator = EffectOperator()
         
@@ -121,9 +115,9 @@ extension Store {
         )
     }
     
-    func sideEffect(_ keyPath: KeyPath<State, Effect.State>,
-                    on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) {
+    func effect(_ keyPath: KeyPath<State, Effect.State>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
         
         let effectOperator = EffectOperator()
         
@@ -140,9 +134,9 @@ extension Store {
         )
     }
     
-    func sideEffect<T>(_ keyPath: KeyPath<State, T>,
-                       on queue: DispatchQueue = .main,
-                       create: @escaping (State) -> Effect) where T: Equatable {
+    func effect<T>(_ keyPath: KeyPath<State, T>,
+                   on queue: DispatchQueue = .main,
+                   create: @escaping (State) -> Effect) where T: Equatable {
         
         let effectOperator = EffectOperator()
         
@@ -158,9 +152,9 @@ extension Store {
         )
     }
     
-    func sideEffect(_ keyPath: KeyPath<State, Bool>,
-                    on queue: DispatchQueue = .main,
-                    create: @escaping (State) -> Effect) {
+    func effect(_ keyPath: KeyPath<State, Bool>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
         
         let effectOperator = EffectOperator()
         

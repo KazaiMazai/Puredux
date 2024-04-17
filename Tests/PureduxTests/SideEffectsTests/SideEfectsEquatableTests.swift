@@ -18,7 +18,7 @@ final class SideEfectsForEquatableStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         
-        store.sideEffect(on: .main) { _ in
+        store.effect(on: .main) { _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -38,7 +38,7 @@ final class SideEfectsForEquatableStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.sideEffect(on: .main) { _ in
+        store.effect(on: .main) { _ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -57,7 +57,7 @@ final class SideEfectsForEquatableStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.sideEffect(on: .main) { _ in
+        store.effect(on: .main) { _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -77,7 +77,7 @@ final class SideEfectsForEquatableStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.sideEffect(on: .main) { _ in
+        store.effect(on: .main) { _ in
             asyncExpectation.fulfill()
             return .skip
         }
