@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 @testable import Puredux
 
-final class SideEfectsForEffectStateTests: XCTestCase {
+final class SideEfectsStateTests: XCTestCase {
     let timeout: TimeInterval = 3.0
     
     func test_WhenStateIsRun_EffectExecuted() {

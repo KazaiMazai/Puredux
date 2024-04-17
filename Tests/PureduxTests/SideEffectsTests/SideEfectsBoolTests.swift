@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import Puredux
 
-final class SideEfectsForBoolStateTests: XCTestCase {
+final class SideEfectsBoolTests: XCTestCase {
     let timeout: TimeInterval = 3.0
     
     func test_WhenStateIsToggledToTrue_EffectExecuted() {

@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import Puredux
 
-final class SideEfectsForEquatableStateTests: XCTestCase {
+final class SideEfectsEquatableTests: XCTestCase {
     let timeout: TimeInterval = 3.0
     
     func test_WhenStateChanged_EffectExecuted() {
