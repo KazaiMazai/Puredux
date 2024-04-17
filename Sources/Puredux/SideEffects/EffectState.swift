@@ -115,7 +115,7 @@ extension Effect.State.InternalState {
 }
 
 extension Effect.State.InternalState  {
-    mutating func run(maxAttemptCount: Int,
+    mutating func run(maxAttempts: Int,
                       delay: TimeInterval) {
         
         guard !isInProgress else {
@@ -124,18 +124,18 @@ extension Effect.State.InternalState  {
         
         self = .inProgress(
             Attempt(
-                maxAttemptCount: maxAttemptCount,
+                maxAttempts: maxAttempts,
                 delay: delay
             )
         )
     }
     
-    mutating func restart(maxAttemptCount: Int,
+    mutating func restart(maxAttempts: Int,
                           delay: TimeInterval) {
         
         self = .inProgress(
             Attempt(
-                maxAttemptCount: maxAttemptCount,
+                maxAttempts: maxAttempts,
                 delay: delay
             )
         )
@@ -146,7 +146,7 @@ extension Effect.State.InternalState  {
     }
     
     mutating func fail(_ error: Error?) {
-       self = .failure(Failure(error ?? Errors.unknownError))
+        self = .failure(Failure(error ?? Errors.unknownError))
     }
     
     mutating func cancel() {
@@ -182,11 +182,11 @@ extension Effect.State.InternalState {
         typealias ID = UUID
         
         private(set) var attempt = 0
-        private(set) var maxAttemptCount = 1
+        private(set) var maxAttempts = 1
         private(set) var delay: TimeInterval = .zero
         
         var hasMoreAttempts: Bool {
-            attempt < (maxAttemptCount - 1)
+            attempt < (maxAttempts - 1)
         }
         
         func nextAttempt() -> Attempt? {
@@ -196,7 +196,7 @@ extension Effect.State.InternalState {
             
             return Attempt(
                 attempt: attempt + 1,
-                maxAttemptCount: maxAttemptCount,
+                maxAttempts: maxAttempts,
                 delay: pow(2.0, Double(attempt + 1))
             )
         }

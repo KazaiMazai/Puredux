@@ -87,11 +87,11 @@ extension Effect {
 }
 
 extension Effect.State {
-    static func running(maxAttemptCount: Int = 1,
+    static func running(maxAttempts: Int = 1,
                         delay: TimeInterval = .zero) -> Effect.State {
         
         var effect = Effect.State()
-        effect.run(maxAttemptCount: maxAttemptCount, delay: delay)
+        effect.run(maxAttempts: maxAttempts, delay: delay)
         return effect
     }
     
@@ -113,16 +113,16 @@ extension Effect.State {
 
 extension Effect.State {
      
-    mutating func run(maxAttemptCount: Int = 1,
+    mutating func run(maxAttempts: Int = 1,
                       delay: TimeInterval = .zero) {
         
-        state.run(maxAttemptCount: maxAttemptCount, delay: delay)
+        state.run(maxAttempts: maxAttempts, delay: delay)
     }
     
-    mutating func restart(maxAttemptCount: Int = 1,
+    mutating func restart(maxAttempts: Int = 1,
                           delay: TimeInterval = .zero) {
         
-        state.restart(maxAttemptCount: maxAttemptCount, delay: delay)
+        state.restart(maxAttempts: maxAttempts, delay: delay)
     }
    
     mutating func retryOrFailWith(_ error: Error?) {
