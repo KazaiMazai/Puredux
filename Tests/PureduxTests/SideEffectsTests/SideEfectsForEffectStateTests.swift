@@ -185,7 +185,7 @@ final class SideEfectsForEffectStateTests: XCTestCase {
             initialState: Effect.State(),
             reducer: { state, action in
                 action ?
-                    state.run(maxAttemptCount: 2)
+                    state.run(maxAttempts: 2)
                     : state.retryOrFailWith(nil)
             })
         
@@ -213,7 +213,7 @@ final class SideEfectsForEffectStateTests: XCTestCase {
             initialState: Effect.State(),
             reducer: { state, action in
                 action ?
-                    state.run(maxAttemptCount: 1)
+                    state.run(maxAttempts: 1)
                     : state.retryOrFailWith(nil)
             })
         
