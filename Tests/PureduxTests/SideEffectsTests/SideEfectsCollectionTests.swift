@@ -28,7 +28,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -57,7 +57,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -86,7 +86,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 6
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -117,7 +117,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 6
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -147,7 +147,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -177,7 +177,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -207,7 +207,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -233,10 +233,10 @@ final class SideEffectsCollectionTests: XCTestCase {
             }
         )
         
-        let asyncExpectation = expectation(description: "Effect creation executed")
+        let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 4
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -264,10 +264,10 @@ final class SideEffectsCollectionTests: XCTestCase {
             }
         )
         
-        let asyncExpectation = expectation(description: "Effect creation executed")
+        let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -298,7 +298,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
         
-        store.sideEffects(on: .main) { _,_ in
+        store.sideEffectForEach(on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
