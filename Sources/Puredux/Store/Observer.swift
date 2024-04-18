@@ -169,17 +169,6 @@ extension Observer {
     }
 }
  
-
-private extension Observer {
-    final class Referenced<T> {
-        var value: T
-        
-        init(_ value: T) {
-            self.value = value
-        }
-    }
-}
-
 extension Observer {
     typealias StatesObserver = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> State?
     

@@ -56,22 +56,3 @@ final class EffectOperator {
         isSynced = expectedToBeExecuting.count == executing.count
     }
 }
-
-final class Weak<T: AnyObject> {
-    weak var object: T?
-    
-    init(_ object: T?) {
-        self.object = object
-    }
-}
-  
-fileprivate extension DispatchQueue {
-    func asyncAfter(delay: TimeInterval?, execute workItem: DispatchWorkItem) {
-        guard let delay, delay > .zero else {
-            async(execute: workItem)
-            return
-        }
-        
-        asyncAfter(deadline: .now() + delay, execute: workItem)
-    }
-}
