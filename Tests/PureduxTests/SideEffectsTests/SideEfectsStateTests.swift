@@ -167,8 +167,9 @@ final class SideEfectsStateTests: XCTestCase {
         asyncExpectation.isInverted = true
         
         store.effect(on: .main) { _ in
-            asyncExpectation.fulfill()
-            return .skip
+            Effect {
+                asyncExpectation.fulfill()
+            }
         }
         
         store.dispatch(false)
