@@ -103,7 +103,7 @@ extension Store {
         
         let effectOperator = EffectOperator()
         
-        subscribe(observer: .alwaysActive(
+        subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let allEffects = state[keyPath: keyPath]
@@ -122,7 +122,7 @@ extension Store {
         
         let effectOperator = EffectOperator()
         
-        subscribe(observer: .alwaysActive(
+        subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let effect = state[keyPath: keyPath]
@@ -141,7 +141,7 @@ extension Store {
         
         let effectOperator = EffectOperator()
         
-        subscribe(observer: .alwaysActive(
+        subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
@@ -159,7 +159,7 @@ extension Store {
         
         let effectOperator = EffectOperator()
         
-        subscribe(observer: .alwaysActive(
+        subscribe(observer: Observer(
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let isRunning = state[keyPath: keyPath]

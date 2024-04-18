@@ -145,19 +145,19 @@ extension Observer {
         }
     }
     
-    private init(id: UUID = UUID(),
-                 keepsCurrentState: Bool,
-                 observe: @escaping StatesObserver) {
+    init(id: UUID = UUID(),
+         keepsCurrentState: Bool,
+         observe: @escaping StatesObserver) {
         self.id = id
         self.keepsCurrentState = keepsCurrentState
         self.stateHandler = observe
     }
     
-    static func alwaysActive(id: UUID = UUID(),
-                             removeStateDuplicates equating: Equating<State>,
-                             observe: @escaping StatesObserver) -> Observer {
+    init(id: UUID = UUID(),
+         removeStateDuplicates equating: Equating<State>,
+         observe: @escaping StatesObserver) {
         
-        Observer(id: id, keepsCurrentState: true) { state, prevState, complete in
+        self.init(id: id, keepsCurrentState: true) { state, prevState, complete in
             
             guard !equating.isEqual(state, to: prevState) else {
                 complete(.active)
