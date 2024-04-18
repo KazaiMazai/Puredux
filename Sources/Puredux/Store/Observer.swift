@@ -47,7 +47,7 @@ public struct Observer<State>: Hashable {
     }
 
     func send(_ state: State, complete: @escaping StatusHandler) {
-        guard removesStateDuplicates else {
+        guard keepsPrevState else {
             let _ = stateHandler(state, nil, complete)
             prevState.value = nil
             return
@@ -177,7 +177,7 @@ extension Observer {
 }
 
 private extension Observer {
-    var removesStateDuplicates: Bool {
+    var keepsPrevState: Bool {
         removeStateDuplicates != nil
     }
 }
