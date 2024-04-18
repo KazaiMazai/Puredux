@@ -53,7 +53,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     }
 
     private lazy var parentObserver: Observer<ParentStore.State> = {
-        Observer(removeStateDuplicates: .neverEqual) { [weak self] parentState, complete in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] parentState, complete in
             guard let self else {
                 complete(.dead)
                 return
@@ -64,7 +64,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     }()
 
     private lazy var localObserver: Observer<LocalState> = {
-        Observer(removeStateDuplicates: .neverEqual) { [weak self] _, complete in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] _, complete in
             guard let self else {
                 complete(.dead)
                 return
@@ -188,3 +188,4 @@ private extension StoreNode {
         }
     }
 }
+
