@@ -41,30 +41,6 @@ extension Effect.State.InternalState {
         }
     }
     
-    var isInProgress: Bool {
-        currentAttempt != nil
-    }
-    
-    var isSuccess: Bool {
-        self == .success
-    }
-    
-    var isCancelled: Bool {
-        self == .cancelled
-    }
-    
-    var isIdle: Bool {
-        self == .none
-    }
-    
-    var isFailed: Bool {
-        guard case .failure = self else {
-            return false
-        }
-        
-        return true
-    }
-    
     var error: Error? {
         guard case .failure(let jobError) = self else {
             return nil
@@ -79,6 +55,10 @@ extension Effect.State.InternalState {
         }
         
         return attempt
+    }
+    
+    var isInProgress: Bool {
+        currentAttempt != nil
     }
 }
 
@@ -181,6 +161,7 @@ extension Effect.State.InternalState {
     struct Attempt: Codable, Equatable, Hashable {
         typealias ID = UUID
         
+        private(set) var id = ID()
         private(set) var attempt = 0
         private(set) var maxAttempts = 1
         private(set) var delay: TimeInterval = .zero

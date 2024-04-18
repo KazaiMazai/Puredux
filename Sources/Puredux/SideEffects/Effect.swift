@@ -53,23 +53,23 @@ extension Effect {
         }
         
         var isInProgress: Bool {
-            state.isInProgress
+            status.isInProgress
         }
         
         var isSuccess: Bool {
-            state.isSuccess
+            status.isSuccess
         }
         
         var isCancelled: Bool {
-            state.isCancelled
+            status.isCancelled
         }
         
         var isIdle: Bool {
-            state.isIdle
+            status.isIdle
         }
         
         var isFailed: Bool {
-            state.isFailed
+            status.isFailed
         }
         
         var error: Error? {
@@ -108,6 +108,28 @@ extension Effect.State {
         case success
         case failure
         case cancelled
+    }
+}
+
+extension Effect.State.Status {
+    var isInProgress: Bool {
+        self == .inProgress
+    }
+    
+    var isSuccess: Bool {
+        self == .success
+    }
+    
+    var isCancelled: Bool {
+        self == .cancelled
+    }
+    
+    var isIdle: Bool {
+        self == .none
+    }
+    
+    var isFailed: Bool {
+        self == .failure
     }
 }
 
