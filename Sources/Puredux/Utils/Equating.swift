@@ -29,6 +29,10 @@ public extension Equating {
             value($0) == value($1)
         }
     }
+    
+    static func keyPath<Value: Equatable>(_ keyPath: KeyPath<T, Value>) -> Equating<T> {
+        .equal(value: { $0[keyPath: keyPath]} )
+    }
 }
 
 public extension Equating {
