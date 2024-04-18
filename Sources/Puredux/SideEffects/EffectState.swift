@@ -18,10 +18,6 @@ extension Effect.State {
         init() {
             self = .none
         }
-        
-        init(_ error: Error) {
-            self = .failure(Failure(error))
-        }
     }
 }
 
@@ -42,11 +38,11 @@ extension Effect.State.InternalState {
     }
     
     var error: Error? {
-        guard case .failure(let jobError) = self else {
+        guard case .failure(let effectFailure) = self else {
             return nil
         }
         
-        return jobError.underlyingError
+        return effectFailure
     }
     
     var currentAttempt: Attempt? {
@@ -63,34 +59,38 @@ extension Effect.State.InternalState {
 }
 
 extension Effect.State.InternalState {
-    struct Failure: Codable, Equatable, Hashable, Error {
-        let descriptionString: String
+    struct Failure: Codable, Equatable, Hashable, LocalizedError {
+        let underlyingErrorDescription: String
         private(set) var underlyingError: Error?
         
         private enum CodingKeys: String, CodingKey {
-            case descriptionString
+            case underlyingErrorDescription
         }
         
-        var localizedDescription: String {
-            descriptionString
+        var errorDescription: String? {
+            underlyingErrorDescription
         }
         
         init(_ error: Error) {
-            self.descriptionString = error.localizedDescription
+            self.underlyingErrorDescription = error.localizedDescription
             self.underlyingError = error
         }
         
         static func == (lhs: Failure, rhs: Failure) -> Bool {
-            lhs.descriptionString == rhs.descriptionString
+            lhs.underlyingErrorDescription == rhs.underlyingErrorDescription
         }
         
         func hash(into hasher: inout Hasher) {
-            hasher.combine(descriptionString)
+            hasher.combine(underlyingErrorDescription)
         }
     }
     
-    enum Errors: Error {
-        case unknownError
+    enum Errors: LocalizedError {
+        case unknownEffectExecutionError
+        
+        var errorDescription: String? {
+            "Unknown effect execution error"
+        }
     }
 }
 
@@ -122,11 +122,11 @@ extension Effect.State.InternalState  {
     }
     
     mutating func retryOrFailWith(_ error: Error?) {
-        self = nextAttemptOrFailWith(error ?? Errors.unknownError)
+        self = nextAttemptOrFailWith(error ?? Errors.unknownEffectExecutionError)
     }
     
     mutating func fail(_ error: Error?) {
-        self = .failure(Failure(error ?? Errors.unknownError))
+        self = .failure(Failure(error ?? Errors.unknownEffectExecutionError))
     }
     
     mutating func cancel() {
@@ -162,9 +162,9 @@ extension Effect.State.InternalState {
         typealias ID = UUID
         
         private(set) var id = ID()
-        private(set) var attempt = 0
-        private(set) var maxAttempts = 1
-        private(set) var delay: TimeInterval = .zero
+        private(set) var attempt: Int = 0
+        private(set) var maxAttempts: Int
+        private(set) var delay: TimeInterval
         
         var hasMoreAttempts: Bool {
             attempt < (maxAttempts - 1)

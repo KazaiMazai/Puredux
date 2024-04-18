@@ -11,8 +11,12 @@ import XCTest
 @testable import Puredux
 
 final class EfectsStateTests: XCTestCase {
-    struct DummyError: Equatable, Error {
-        let localizedDescription: String
+    struct DummyError: Equatable, LocalizedError {
+        let message: String
+        
+        var errorDescription: String? {
+            message
+        }
     }
     
     func test_WhenMutated_ThenStateChanges() {
@@ -65,10 +69,17 @@ final class EfectsStateTests: XCTestCase {
     
     func test_WhenFailed_ThenErrorLocalizedDescription() {
         var effect = Effect.State()
-        let error = DummyError(localizedDescription: "something happened")
+        let error = DummyError(message: "something happened")
         effect.fail(error)
         
-        XCTAssertEqual((effect.error as! DummyError), error)
+        XCTAssertEqual(effect.error?.localizedDescription, "something happened")
+    }
+    
+    func test_WhenFailedWithUnknownError_ThenErrorLocalizedDescription() {
+        var effect = Effect.State()
+        effect.fail(nil)
+        
+        XCTAssertEqual(effect.error?.localizedDescription, "Unknown effect execution error")
     }
     
     func test_WhenHasNewAttempts_ThenRestartThenFail() {
@@ -80,27 +91,33 @@ final class EfectsStateTests: XCTestCase {
         XCTAssertTrue(effect.isInProgress)
         
         effect.retryOrFailWith(nil)
+        XCTAssertNil(effect.error)
         XCTAssertEqual(effect.currentAttempt, 1)
         XCTAssertEqual(effect.delay, 2)
         XCTAssertTrue(effect.isInProgress)
         
         effect.retryOrFailWith(nil)
+        XCTAssertNil(effect.error)
         XCTAssertEqual(effect.currentAttempt, 2)
         XCTAssertEqual(effect.delay, 4)
         XCTAssertTrue(effect.isInProgress)
         
         effect.retryOrFailWith(nil)
+        XCTAssertNil(effect.error)
         XCTAssertEqual(effect.currentAttempt, 3)
         XCTAssertEqual(effect.delay, 8)
         XCTAssertTrue(effect.isInProgress)
         
         effect.retryOrFailWith(nil)
+        XCTAssertNil(effect.error)
         XCTAssertEqual(effect.currentAttempt, 4)
         XCTAssertEqual(effect.delay, 16)
         XCTAssertTrue(effect.isInProgress)
         
         effect.retryOrFailWith(nil)
+        XCTAssertNotNil(effect.error)
         XCTAssertEqual(effect.currentAttempt, nil)
         XCTAssertTrue(effect.isFailed)
+        
     }
 }
