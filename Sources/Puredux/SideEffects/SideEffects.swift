@@ -39,7 +39,7 @@ extension StateStore {
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) where State == Effect.State  {
         
-        effect(\.self, on: queue, create: create)
+        strongStore().effect(on: queue, create: create)
     }
     
     func forEachEffect(on queue: DispatchQueue = .main,
@@ -47,19 +47,19 @@ extension StateStore {
     
     where State: Collection & Hashable, State.Element == Effect.State {
         
-        forEachEffect(\.self, on: queue, create: create)
+        strongStore().forEachEffect(on: queue, create: create)
     }
     
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) where State: Equatable  {
         
-        effect(\.self, on: queue, create: create)
+        strongStore().effect(on: queue, create: create)
     }
     
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) where State == Bool  {
         
-        effect(\.self, on: queue, create: create)
+        strongStore().effect(on: queue, create: create)
     }
 }
 
