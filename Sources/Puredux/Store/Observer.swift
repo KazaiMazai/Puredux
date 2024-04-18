@@ -149,7 +149,7 @@ extension Observer {
                  keepsCurrentState: Bool,
                  observe: @escaping StatesObserver) {
         self.id = id
-        self.keepsCurrentState = false
+        self.keepsCurrentState = keepsCurrentState
         self.stateHandler = observe
     }
     
