@@ -40,7 +40,7 @@ public struct Observer<State>: Hashable {
 
     private let stateHandler: StatesObserver
     private let removeStateDuplicates: Equating<State>?
-    private let prevState: Referenced<State?> = Referenced(value: nil)
+    private let prevState: Referenced<State?> = Referenced(nil)
 
     var state: State? {
         prevState.value
@@ -186,7 +186,7 @@ private extension Observer {
     final class Referenced<T> {
         var value: T
 
-        init(value: T) {
+        init(_ value: T) {
             self.value = value
         }
     }
