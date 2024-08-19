@@ -29,7 +29,7 @@ public extension Presentable {
         let weakRefStore = store.weakStore()
         presenter = Presenter { [weak self] in
             store.uiEffect(equating ?? .neverEqual,
-                         on: presentationQueue.dispatchQueue) { state in
+                           on: presentationQueue.dispatchQueue) { state in
                 
                 Effect { [weak self] in
                     let props = props(state, weakRefStore)
@@ -45,9 +45,10 @@ public extension Presentable {
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
-
+        
         presenter = Presenter { [weak self] in
-            store.uiEffect(equating ?? .neverEqual, on: presentationQueue.dispatchQueue) { state in
+            store.uiEffect(equating ?? .neverEqual,
+                           on: presentationQueue.dispatchQueue) { state in
                 
                 Effect { [weak self] in
                     let props = props(state, store)
