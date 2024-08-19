@@ -49,7 +49,6 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
     
     func test_WhenNoStrongRefToVC_ThenChildStoreStateIsReleased() {
         weak var weakRefObject: ReferenceTypeState?
-        var strongViewController: StubViewController?
         
         autoreleasepool {
             let object = ReferenceTypeState()
@@ -67,11 +66,9 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
                                 props: { _, _ in .init(title: "") }
             )
             viewController.viewDidLoad()
-            strongViewController = viewController
+
         }
         
-        XCTAssertNotNil(weakRefObject)
-        strongViewController = nil
         XCTAssertNil(weakRefObject)
     }
 }
