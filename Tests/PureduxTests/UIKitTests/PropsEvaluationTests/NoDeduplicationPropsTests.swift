@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class NoDeduplicationPropsUIKitTests: XCTestCase {
     let timeout: TimeInterval = 4
 
