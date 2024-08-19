@@ -154,10 +154,14 @@ extension Observer {
     }
     
     init(id: UUID = UUID(),
-         removeStateDuplicates equating: Equating<State>,
+         removeStateDuplicates equating: Equating<State>?,
          observe: @escaping StatesObserver) {
         
-        self.init(id: id, keepsCurrentState: true) { state, prevState, complete in
+        self.init(id: id, keepsCurrentState: equating != nil) { state, prevState, complete in
+            guard let equating else {
+                complete(.active)
+                return observe(state, prevState, complete)
+            }
             
             guard !equating.isEqual(state, to: prevState) else {
                 complete(.active)
