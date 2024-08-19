@@ -28,7 +28,7 @@ public extension Presentable {
 
         let weakRefStore = store.weakStore()
         presenter = Presenter { [weak self] in
-            store.effect(equating ?? .neverEqual,
+            store.uiEffect(equating ?? .neverEqual,
                          on: presentationQueue.dispatchQueue) { state in
                 
                 Effect { [weak self] in
