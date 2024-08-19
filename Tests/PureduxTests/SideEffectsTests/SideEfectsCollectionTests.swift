@@ -36,7 +36,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         
         store.dispatch(false)
         store.dispatch(true)
-        store.dispatch(false)
+        store.dispatch(false, after: 0.05)
         
         waitForExpectations(timeout: timeout) { _ in
             
@@ -93,10 +93,10 @@ final class SideEffectsCollectionTests: XCTestCase {
         }
         
         store.dispatch(true)
-        store.dispatch(false)
-        store.dispatch(true)
-        store.dispatch(false)
-        store.dispatch(true)
+        store.dispatch(false, after: 0.1)
+        store.dispatch(true, after: 0.15)
+        store.dispatch(false, after: 0.2)
+        store.dispatch(true, after: 0.25)
         
         waitForExpectations(timeout: timeout) { _ in
             
@@ -243,9 +243,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         }
         
         store.dispatch(true)
-        store.dispatch(false)
-        store.dispatch(false)
-        store.dispatch(false)
+        store.dispatch(false, after: 0.2)
         
         waitForExpectations(timeout: timeout) { _ in
             
@@ -274,9 +272,9 @@ final class SideEffectsCollectionTests: XCTestCase {
         }
         
         store.dispatch(true)
-        store.dispatch(false)
-        store.dispatch(false)
-        store.dispatch(false)
+        store.dispatch(false, after: 0.05)
+        store.dispatch(false, after: 0.1)
+        store.dispatch(false, after: 0.15)
         
         waitForExpectations(timeout: timeout) { _ in
             
