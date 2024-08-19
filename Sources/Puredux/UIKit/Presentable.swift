@@ -47,7 +47,7 @@ public extension Presentable {
                              removeStateDuplicates equating: Equating<State>? = nil) {
 
         presenter = Presenter { [weak self] in
-            store.effect(equating ?? .neverEqual, on: presentationQueue.dispatchQueue) { state in
+            store.uiEffect(equating ?? .neverEqual, on: presentationQueue.dispatchQueue) { state in
                 
                 Effect { [weak self] in
                     let props = props(state, store)
