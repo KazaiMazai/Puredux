@@ -62,11 +62,11 @@ extension StateStore {
         strongStore().effect(on: queue, create: create)
     }
     
-    func effect(_ removeStateDuplicates: Equating<State>,
+    func uiEffect(_ removeStateDuplicates: Equating<State>,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
         
-        strongStore().effect(removeStateDuplicates, on: queue, create: create)
+        strongStore().uiEffect(removeStateDuplicates, on: queue, create: create)
     }
 }
 
@@ -179,7 +179,7 @@ extension Store {
         )
     }
     
-    func effect(_ removeStateDuplicates: Equating<State>,
+    func uiEffect(_ removeStateDuplicates: Equating<State>,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
         
@@ -187,7 +187,7 @@ extension Store {
         
         subscribe(observer: Observer(
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
-                effectOperator.run(.running(), on: queue) { _ in
+                effectOperator.run(.running(delay: .uiDebounce), on: queue) { _ in
                     create(state)
                 }
                 complete(.active)
