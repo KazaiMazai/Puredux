@@ -6,6 +6,7 @@
 //
 
 import Dispatch
+import Foundation
 
 extension Store {
     func effect(on queue: DispatchQueue = .main,
@@ -62,11 +63,17 @@ extension StateStore {
         strongStore().effect(on: queue, create: create)
     }
     
-    func uiEffect(_ removeStateDuplicates: Equating<State>,
+    func effect(withDebounce timeInterval: TimeInterval,
+                removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
         
-        strongStore().uiEffect(removeStateDuplicates, on: queue, create: create)
+        strongStore().effect(
+            withDebounce: timeInterval,
+            removeStateDuplicates: removeStateDuplicates,
+            on: queue,
+            create: create
+        )
     }
 }
 
@@ -179,7 +186,8 @@ extension Store {
         )
     }
     
-    func uiEffect(_ removeStateDuplicates: Equating<State>,
+    func effect(withDebounce timeInterval: TimeInterval,
+                removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
         
@@ -187,7 +195,7 @@ extension Store {
         
         subscribe(observer: Observer(
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
-                effectOperator.run(.running(delay: .uiDebounce), on: queue) { _ in
+                effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state)
                 }
                 complete(.active)
