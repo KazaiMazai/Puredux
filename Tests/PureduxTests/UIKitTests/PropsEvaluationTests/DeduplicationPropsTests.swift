@@ -76,10 +76,10 @@ extension DeduplicationPropsUIKitTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation() {
+    func test_WhenManyMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -91,10 +91,10 @@ extension DeduplicationPropsUIKitTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation() {
+    func test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -110,10 +110,10 @@ extension DeduplicationPropsUIKitTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForSubscribtionAndEveryDeduplicatedMutation() {
+    func test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()

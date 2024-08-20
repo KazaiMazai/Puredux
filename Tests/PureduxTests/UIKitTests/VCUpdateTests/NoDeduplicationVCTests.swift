@@ -65,10 +65,10 @@ extension NoDeduplicationVCTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction() {
+    func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatesDebpuncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(vcUpdatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -80,10 +80,10 @@ extension NoDeduplicationVCTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatedForSubscribtionAndEveryAction() {
+    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatesDebpuncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(vcUpdatedExpectation: expectation)
         testVC.viewDidLoad()

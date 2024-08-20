@@ -63,10 +63,10 @@ extension PropsEvaluationWithChildStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyNonMutatingActionsAndNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
+    func test_WhenManyNonMutatingActionsAndNeverEqual_ThenPropsEvaluationsDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -78,10 +78,10 @@ extension PropsEvaluationWithChildStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
+    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationsDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()

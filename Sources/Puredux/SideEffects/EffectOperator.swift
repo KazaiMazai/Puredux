@@ -9,7 +9,7 @@ import Dispatch
 import Foundation
 
 final class EffectOperator {
-    private(set) var executing: [Effect.State: Weak<DispatchWorkItem>] = [:]
+    private(set) var executing: [Effect.State: DispatchWorkItem] = [:]
     private(set) var isSynced = true
     
     func run(_ inProgress: Bool,
@@ -39,7 +39,7 @@ final class EffectOperator {
         executing.keys
             .filter { !expectedToBeExecuting.contains($0) }
             .forEach {
-                executing[$0]?.object?.cancel()
+                executing[$0]?.cancel()
                 executing[$0] = nil
             }
         
@@ -49,7 +49,7 @@ final class EffectOperator {
             .filter { _, effect in effect.canBeExecuted }
             .forEach { state, effect in
                 let workItem = DispatchWorkItem(block: effect.operation)
-                executing[state] = Weak(workItem)
+                executing[state] = workItem
                 queue.asyncAfter(delay: state.delay, execute: workItem)
             }
         

@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension TimeInterval {
+    static var uiDebounce = 0.007
+}
+
 extension DispatchQueue {
     func asyncAfter(delay: TimeInterval?, execute workItem: DispatchWorkItem) {
         guard let delay, delay > .zero else {

@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class NoDeduplicationPropsUIKitTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -62,10 +61,10 @@ extension NoDeduplicationPropsUIKitTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
+    func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
@@ -77,10 +76,10 @@ extension NoDeduplicationPropsUIKitTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForSubscribtionAndEveryAction() {
+    func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationDebouncedToOne() {
         let actionsCount = 1000
         let expectation = expectation(description: "propsEvaluated")
-        expectation.expectedFulfillmentCount = actionsCount + 1
+        expectation.expectedFulfillmentCount = 1
 
         let testVC = setupVCForTests(propsEvaluatedExpectation: expectation)
         testVC.viewDidLoad()
