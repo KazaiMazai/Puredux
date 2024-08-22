@@ -9,23 +9,7 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 extension View {
-    func effect<ViewState, Action>(on store: Store<ViewState, Action>,
-                                   withDelay interval: TimeInterval,
-                                   removeStateDuplicates: Equating<ViewState>?,
-                                   on dispatchQueue: DispatchQueue,
-                                   create: @escaping (ViewState) -> Effect) -> some View {
-        
-        effect(store) { anyObject, store in
-            
-            store.effect(
-                anyObject,
-                withDelay: interval,
-                removeStateDuplicates: removeStateDuplicates,
-                on: dispatchQueue,
-                create: create
-            )
-        }
-    }
+    
     
     func forEachEffect<ViewState, Action, Effects>(
         on store: Store<ViewState, Action>,
@@ -99,7 +83,28 @@ extension View {
 
 @available(iOS 13.0, *)
 extension View {
-    private func effect<ViewState, Action>(
+    func effect<ViewState, Action>(on store: Store<ViewState, Action>,
+                                   withDelay interval: TimeInterval,
+                                   removeStateDuplicates: Equating<ViewState>?,
+                                   on dispatchQueue: DispatchQueue,
+                                   create: @escaping (ViewState) -> Effect) -> some View {
+        
+        effect(store) { anyObject, store in
+            
+            store.effect(
+                anyObject,
+                withDelay: interval,
+                removeStateDuplicates: removeStateDuplicates,
+                on: dispatchQueue,
+                create: create
+            )
+        }
+    }
+}
+
+@available(iOS 13.0, *)
+private extension View {
+    func effect<ViewState, Action>(
         _ store: Store<ViewState, Action>,
         createEffect: @escaping (AnyObject, Store<ViewState, Action>) -> Void) -> some View {
             
