@@ -145,6 +145,32 @@ extension Observer {
         }
     }
     
+    init(_ observer: AnyObject,
+         id: UUID = UUID(),
+         removeStateDuplicates equating: Equating<State>? = nil,
+         observe: @escaping StatesObserver) {
+        
+        self.id = id
+        self.keepsCurrentState = equating != nil
+        self.stateHandler = { [weak observer] state, prevState, complete in
+            guard observer != nil else {
+                complete(.dead)
+                return state
+            }
+            
+            guard let equating else {
+                return observe(state, prevState, complete)
+            }
+            
+            guard !equating.isEqual(state, to: prevState) else {
+                complete(.active)
+                return state
+            }
+            
+            return observe(state, prevState, complete)
+        }
+    }
+    
     init(id: UUID = UUID(),
          keepsCurrentState: Bool,
          observe: @escaping StatesObserver) {
