@@ -28,7 +28,7 @@ public extension Presentable {
 
         let weakRefStore = store.weakStore()
         presenter = Presenter { [weak self] in
-            store.effect(withDebounce: .uiDebounce,
+            store.effect(withDelay: .uiDebounce,
                          removeStateDuplicates: equating,
                          on: presentationQueue.dispatchQueue) { state in
                 
@@ -48,7 +48,7 @@ public extension Presentable {
                              removeStateDuplicates equating: Equating<State>? = nil) {
         
         presenter = Presenter { [weak self] in
-            store.effect(withDebounce: .uiDebounce,
+            store.effect(withDelay: .uiDebounce,
                          removeStateDuplicates: equating,
                          on: presentationQueue.dispatchQueue) { state in
                 
