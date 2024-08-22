@@ -8,6 +8,7 @@
 import Dispatch
 import Foundation
 
+// MARK: - Store Effects
 extension Store {
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) where State == Effect.State  {
@@ -36,6 +37,8 @@ extension Store {
     }
 }
 
+// MARK: - StateStore Effects
+
 extension StateStore {
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) where State == Effect.State  {
@@ -63,19 +66,21 @@ extension StateStore {
         strongStore().effect(on: queue, create: create)
     }
     
-    func effect(withDebounce timeInterval: TimeInterval,
+    func effect(withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
         
         strongStore().effect(
-            withDebounce: timeInterval,
+            withDelay: timeInterval,
             removeStateDuplicates: removeStateDuplicates,
             on: queue,
             create: create
         )
     }
 }
+
+// MARK: - StateStore Effects
 
 extension StateStore {
     func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
@@ -186,7 +191,7 @@ extension Store {
         )
     }
     
-    func effect(withDebounce timeInterval: TimeInterval,
+    func effect(withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
                 create: @escaping (State) -> Effect) {
@@ -194,6 +199,111 @@ extension Store {
         let effectOperator = EffectOperator()
         
         subscribe(observer: Observer(
+            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
+                effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
+                    create(state)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+    }
+}
+
+extension Store {
+    func forEachEffect<Effects>(_ observer: AnyObject,
+                                _ keyPath: KeyPath<State, Effects>,
+                                on queue: DispatchQueue = .main,
+                                create: @escaping (State, Effect.State) -> Effect)
+    where Effects: Collection & Hashable, Effects.Element == Effect.State {
+        
+        let effectOperator = EffectOperator()
+        
+        subscribe(observer: Observer(
+            observer,
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let allEffects = state[keyPath: keyPath]
+                effectOperator.run(allEffects, on: queue) { effectState in
+                    create(state, effectState)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+    }
+    
+    func effect(_ observer: AnyObject,
+                _ keyPath: KeyPath<State, Effect.State>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
+        
+        let effectOperator = EffectOperator()
+        
+        subscribe(observer: Observer(
+            observer,
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let effect = state[keyPath: keyPath]
+                effectOperator.run(effect, on: queue) { _ in
+                    create(state)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+    }
+    
+    func effect<T>(_ observer: AnyObject,
+                   _ keyPath: KeyPath<State, T>,
+                   on queue: DispatchQueue = .main,
+                   create: @escaping (State) -> Effect) where T: Equatable {
+        
+        let effectOperator = EffectOperator()
+        
+        subscribe(observer: Observer(
+            observer,
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                let effect: Effect.State = prevState == nil ? .idle() : .running()
+                effectOperator.run(effect, on: queue) { _ in
+                    create(state)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+    }
+    
+    func effect(_ observer: AnyObject,
+                _ keyPath: KeyPath<State, Bool>,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
+        
+        let effectOperator = EffectOperator()
+        
+        subscribe(observer: Observer(
+            observer,
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let isRunning = state[keyPath: keyPath]
+                effectOperator.run(isRunning, on: queue) { _ in
+                    create(state)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+    }
+    func effect(_ observer: AnyObject,
+                withDelay timeInterval: TimeInterval,
+                removeStateDuplicates: Equating<State>?,
+                on queue: DispatchQueue = .main,
+                create: @escaping (State) -> Effect) {
+        
+        let effectOperator = EffectOperator()
+        
+        subscribe(observer: Observer(
+            observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state)
