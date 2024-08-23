@@ -16,7 +16,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateIsRun_EffectExecuted() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -45,7 +45,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateIsRunMultipleTimes_EachEffectExecutedOnce() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -74,7 +74,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenRestartedMultiple_ThenEachEffectExecutedForEveryRestart() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -105,7 +105,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenEffectIsSkipped_ThenEachEffectCreationIsCalledAgain() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -133,7 +133,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateIsInitial_ThenNoEffectIsCreated() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -164,7 +164,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     func test_WhenStateIsSuccess_ThenNoEffectIsCreated() {
         
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -193,7 +193,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateIsFailed_ThenNoEffectIsCreated() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -223,7 +223,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateRetryOrFailAndHasAttempts_ThenEachEffectIsReExecuted() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -252,7 +252,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateRetryOrFailAndHasNoAttempts_ThenEachEffectIsExecutedOnce() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
@@ -283,7 +283,7 @@ final class SideEffectsCollectionTests: XCTestCase {
     
     func test_WhenStateIsNotRunning_ThenNoEffectIsExecuted() {
         let store = StateStore<[Effect.State], Bool>(
-            initialState: [Effect.State(), Effect.State()],
+            [Effect.State(), Effect.State()],
             reducer: { state, action in
                 state = state.map {
                     var effect = $0
