@@ -15,7 +15,7 @@ final class StorePerformanceTests: XCTestCase {
         measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             
             let store = StateStore<Array<Int>, Int>(
-                initialState: Array(repeating: 0, count: 2000),
+                Array(repeating: 0, count: 2000),
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
@@ -38,11 +38,11 @@ final class StorePerformanceTests: XCTestCase {
         measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             
             let rootStore = StateStore<Array<Int>, Int>(
-                initialState: Array(repeating: 0, count: 2000),
+                Array(repeating: 0, count: 2000),
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let store = rootStore.appending(Array(repeating: 0, count: 2000),
+            let store = rootStore.stateStore(Array(repeating: 0, count: 2000),
                                             reducer: { state, action in state = state.map { $0 + action } }
             )
             
@@ -70,15 +70,15 @@ final class StorePerformanceTests: XCTestCase {
         measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             
             let rootStore = StateStore<Array<Int>, Int>(
-                initialState: Array(repeating: 0, count: 2000),
+                Array(repeating: 0, count: 2000),
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childOne = rootStore.appending(Array(repeating: 0, count: 2000),
+            let childOne = rootStore.stateStore(Array(repeating: 0, count: 2000),
                                                reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childTwo = childOne.appending(Array(repeating: 0, count: 2000),
+            let childTwo = childOne.stateStore(Array(repeating: 0, count: 2000),
                                               reducer: { state, action in state = state.map { $0 + action } }
             )
             
@@ -107,19 +107,19 @@ final class StorePerformanceTests: XCTestCase {
         measure(metrics: [XCTClockMetric(), XCTCPUMetric()]) {
             
             let rootStore = StateStore<Array<Int>, Int>(
-                initialState: Array(repeating: 0, count: 2000),
+                Array(repeating: 0, count: 2000),
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childOne = rootStore.appending(Array(repeating: 0, count: 2000),
+            let childOne = rootStore.stateStore(Array(repeating: 0, count: 2000),
                                                reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childTwo = childOne.appending(Array(repeating: 0, count: 2000),
+            let childTwo = childOne.stateStore(Array(repeating: 0, count: 2000),
                                               reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childThree = childTwo.appending(Array(repeating: 0, count: 2000),
+            let childThree = childTwo.stateStore(Array(repeating: 0, count: 2000),
                                                 reducer: { state, action in state = state.map { $0 + action } }
             )
             

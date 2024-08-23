@@ -14,7 +14,7 @@ final class SideEfectsEquatableTests: XCTestCase {
     let timeout: TimeInterval = 3.0
     
     func test_WhenStateChanged_EffectExecuted() {
-        let store = StateStore<Int, Int>(initialState: 0, reducer: { state, action in state = action })
+        let store = StateStore<Int, Int>(0, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         
@@ -34,7 +34,7 @@ final class SideEfectsEquatableTests: XCTestCase {
     }
     
     func test_WhenStateChangedAndEffectSkipped_EffectCreationIsCalledAgain() {
-        let store = StateStore<Int, Int>(initialState: 0, reducer: { state, action in state = action })
+        let store = StateStore<Int, Int>(0, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
@@ -53,7 +53,7 @@ final class SideEfectsEquatableTests: XCTestCase {
     }
     
     func test_WhenStateNotChanged_EffectNotExecuted() {
-        let store = StateStore<Int, Int>(initialState: 0, reducer: { state, action in state = action })
+        let store = StateStore<Int, Int>(0, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
@@ -73,7 +73,7 @@ final class SideEfectsEquatableTests: XCTestCase {
     }
     
     func test_WhenStateNotChanged_EffectCreationIsNotCalled() {
-        let store = StateStore<Int, Int>(initialState: 0, reducer: { state, action in state = action })
+        let store = StateStore<Int, Int>(0, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true

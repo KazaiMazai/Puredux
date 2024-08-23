@@ -13,7 +13,7 @@ final class SideEfectsStateTests: XCTestCase {
     let timeout: TimeInterval = 3.0
     
     func test_WhenStateIsRun_EffectExecuted() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.cancel() })
         
         let asyncExpectation = expectation(description: "Effect executed")
@@ -34,7 +34,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsRunMultipleTimes_EffectExecutedOnce() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.cancel() })
         let asyncExpectation = expectation(description: "Effect executed")
 
@@ -54,7 +54,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenRestartedMultiple_EffectExecutedForEveryRestart() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.restart() : state.cancel() })
         
         let asyncExpectation = expectation(description: "Effect executed")
@@ -77,7 +77,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenEffectIsSkipped_ThenEffectCreationIsCalledAgain() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.restart() : state.cancel() })
         
         let asyncExpectation = expectation(description: "Effect creation executed")
@@ -97,7 +97,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsInitial_ThenEffectIsNotCreated() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.cancel() })
         
         let asyncExpectation = expectation(description: "Effect creation executed")
@@ -118,7 +118,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsIdle_ThenEffectIsNotCreated() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.reset() })
         
         let asyncExpectation = expectation(description: "Effect creation executed")
@@ -139,7 +139,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsSuccess_ThenEffectIsNotCreated() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.succeed() })
         
         let asyncExpectation = expectation(description: "Effect creation executed")
@@ -160,7 +160,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsFailed_ThenEffectIsNotCreated() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.fail(nil) })
         
         let asyncExpectation = expectation(description: "Effect creation executed")
@@ -183,7 +183,7 @@ final class SideEfectsStateTests: XCTestCase {
     
     func test_WhenStateRetryOrFailAndHasAttempts_ThenEffectIsReExecuted() {
         let store = StateStore<Effect.State, Bool>(
-            initialState: Effect.State(),
+            Effect.State(),
             reducer: { state, action in
                 action ?
                     state.run(maxAttempts: 2)
@@ -210,7 +210,7 @@ final class SideEfectsStateTests: XCTestCase {
     
     func test_WhenStateRetryOrFailAndHasNoAttempts_ThenEffectIsExecutedOnce() {
         let store = StateStore<Effect.State, Bool>(
-            initialState: Effect.State(),
+            Effect.State(),
             reducer: { state, action in
                 action ?
                     state.run(maxAttempts: 1)
@@ -237,7 +237,7 @@ final class SideEfectsStateTests: XCTestCase {
     }
     
     func test_WhenStateIsNotRunning_ThenEffectIsNotExecuted() {
-        let store = StateStore<Effect.State, Bool>(initialState: Effect.State(),
+        let store = StateStore<Effect.State, Bool>(Effect.State(),
                                                    reducer: { state, action in action ? state.run() : state.cancel() })
         
         let asyncExpectation = expectation(description: "Effect executed")
