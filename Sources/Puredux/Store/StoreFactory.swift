@@ -7,6 +7,7 @@
 
 import Foundation
 
+@available(*, deprecated, message: "Use StateStore directly")
 public final class StoreFactory<State, Action> {
     let rootStateStore: StateStore<State, Action>
 
@@ -26,13 +27,14 @@ public final class StoreFactory<State, Action> {
     /// - Scope Store - scoped store proxy to the root store
     /// - Child Store - child store with `(Root, Local) -> Composition` state mapping and it's own lifecycle
     ///
+    @available(*, deprecated, message: "Use StateStore(init:) directly")
     public init(initialState: State,
                 interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
                 qos: DispatchQoS = .userInteractive,
                 reducer: @escaping Reducer<State, Action>) {
 
         rootStateStore = StateStore(
-            initialState: initialState,
+            initialState,
             interceptor: interceptor,
             qos: qos,
             reducer: reducer)
@@ -48,7 +50,7 @@ public extension StoreFactory {
     /// Store is a proxy for the factory root store.
     /// All dispatched Actions and subscribtions are forwarded to the factory root store object.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
-    ///
+    @available(*, deprecated, message: "Use StateStore's store() method instead")
     func rootStore() -> Store<State, Action> {
         rootStateStore.weakStore()
     }
@@ -60,7 +62,7 @@ public extension StoreFactory {
     /// Store is a proxy for the root store object.
     /// All dispatched Actions and subscribtions are forwarded to the root store.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
-    ///
+    @available(*, deprecated, message: "Use store's scope(to:) method instead")
     func scopeStore<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         rootStateStore.weakStore().scope(to: localState)
     }
@@ -73,7 +75,7 @@ public extension StoreFactory {
     /// All dispatched Actions and subscribtions are forwarded to the root store.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     /// When the result local state is nill, subscribers are not triggered.
-    ///
+    @available(*, deprecated, message: "Use store's scope(to:) method instead")
     func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         rootStateStore.weakStore().scope(toOptional: localState)
     }
@@ -104,6 +106,7 @@ public extension StoreFactory {
     /// - local state update triggers child stores' subscribers.
     /// - Interceptor dispatches additional actions to ChildStore
     ///
+    @available(*, deprecated, message: "Use StateStore's stateStore(...) method instead")
     func childStore<ChildState, LocalState>(
         initialState: ChildState,
         stateMapping: @escaping (State, ChildState) -> LocalState,
@@ -112,8 +115,8 @@ public extension StoreFactory {
 
     StateStore<LocalState, Action> {
 
-        rootStateStore.createChildStore(
-            initialState: initialState,
+        rootStateStore.stateStore(
+            initialState,
             stateMapping: stateMapping,
             qos: qos,
             reducer: reducer
@@ -147,6 +150,7 @@ public extension StoreFactory {
     /// - local state update triggers child stores' subscribers.
     /// - Interceptor dispatches additional actions to ChildStore
     ///
+    @available(*, deprecated, message: "Use StateStore's stateStore(...) method instead")
     func childStore<ChildState>(
         initialState: ChildState,
         qos: DispatchQoS = .userInteractive,
