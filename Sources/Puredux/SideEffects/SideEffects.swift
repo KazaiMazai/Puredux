@@ -294,6 +294,7 @@ extension Store {
             }
         )
     }
+    
     func effect(_ observer: AnyObject,
                 withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
