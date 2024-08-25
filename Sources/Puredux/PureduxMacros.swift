@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import PureduxMacrosImplementation
+import PureduxMacros
 
 @attached(accessor)
 @attached(peer, names: arbitrary)
 public macro InjectedStoreEntry() =
   #externalMacro(
-    module: "PureduxMacros", type: "InjectedStoreMacro"
+    module: "PureduxMacrosPlugin", type: "InjectedStoreMacro"
   )
