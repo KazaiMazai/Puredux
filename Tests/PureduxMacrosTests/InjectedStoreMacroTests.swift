@@ -8,9 +8,10 @@
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
+import PureduxMacros
 
 final class InjectedStoreMacroTests: XCTestCase {
-    private let macros = ["InjectedStore": InjectedStoreMacro.self]
+    private let macros = ["InjectedStoreEntry": InjectedStoreMacro.self]
     
     func testEnvironmentValue() {
         assertMacroExpansion(
@@ -19,10 +20,10 @@ final class InjectedStoreMacroTests: XCTestCase {
           @InjectedStoreEntry var rootStore = StateStore<Int, Int>(10) {_,_ in }
       }
       """,
-      expandedSource: """
+      expandedSource: 
+        """
         extension InjectedStores {
-            @InjectedStoreEntry var rootStore = StateStore<Int, Int>(10) {_,_ in }
-            {
+            var rootStore = StateStore<Int, Int>(10) {_,_ in } {
                 get {
                     Self [RootstoreKey.self]
                 }
@@ -30,9 +31,9 @@ final class InjectedStoreMacroTests: XCTestCase {
                     Self [RootstoreKey.self] = newValue
                 }
             }
-        
+
             enum RootstoreKey: InjectionKey {
-                static var currentValue = StateStore<Int?, Int>(10) { _, _ in
+                static var currentValue = StateStore<Int, Int>(10) { _, _ in
                 }
             }
         }
