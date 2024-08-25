@@ -11,28 +11,28 @@ import XCTest
 import PureduxMacros
 
 final class InjectedStoreMacroTests: XCTestCase {
-    private let macros = ["InjectedStoreEntry": InjectedStoreMacro.self]
+    private let macros = ["InjectEntry": InjectedStoreMacro.self]
     
     func testEnvironmentValue() {
         assertMacroExpansion(
       """
       extension InjectedStores {
-          @InjectedStoreEntry var rootStore = StateStore<Int, Int>(10) {_,_ in }
+          @InjectEntry var root = StateStore<Int, Int>(10) {_,_ in }
       }
       """,
       expandedSource: 
         """
         extension InjectedStores {
-            var rootStore = StateStore<Int, Int>(10) {_,_ in } {
+            var root = StateStore<Int, Int>(10) {_,_ in } {
                 get {
-                    Self [RootstoreKey.self]
+                    Self [RootKey.self]
                 }
                 set {
-                    Self [RootstoreKey.self] = newValue
+                    Self [RootKey.self] = newValue
                 }
             }
 
-            enum RootstoreKey: InjectionKey {
+            enum RootKey: InjectionKey {
                 static var currentValue = StateStore<Int, Int>(10) { _, _ in
                 }
             }

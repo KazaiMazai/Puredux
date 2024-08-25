@@ -12,8 +12,8 @@ import PureduxMacros
 
 @available(iOS 13.0, *)
 struct ViewController: View {
-    @InjectedStore(\.rootStore) var rootStore
-    @State var store = InjectedStore(\.rootStore).with(true, reducer: {_,_ in })
+    @StoreOf(\.root) var root
+    @State var store = StoreOf(\.root).with(true, reducer: {_,_ in })
     
     var body: some View  {
         Text("").onAppear {
@@ -23,11 +23,11 @@ struct ViewController: View {
     
     init() {
         store = StateStore((1,true)) {_,_ in }
-        InjectedStores[\.rootStore] = .init(10) {_,_ in }
+        Injected[\.root] = .init(10) {_,_ in }
         
     }
 }
 
-extension InjectedStores {
-    @InjectedStoreEntry var rootStore = StateStore<Int?, Int>(10) {_,_ in }
+extension Injected {
+    @InjectEntry var root = StateStore<Int?, Int>(10) {_,_ in }
 }

@@ -10,7 +10,7 @@ import PureduxMacros
 
 @attached(accessor)
 @attached(peer, names: arbitrary)
-public macro InjectedStoreEntry() =
+public macro InjectEntry() =
   #externalMacro(
     module: "PureduxMacrosPlugin", type: "InjectedStoreMacro"
   )

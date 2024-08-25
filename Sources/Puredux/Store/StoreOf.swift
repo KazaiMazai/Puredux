@@ -7,11 +7,29 @@
 
 import Foundation
 
+
+@propertyWrapper
+public struct StoreOf<T> {
+    private let keyPath: WritableKeyPath<Injected, T>
+    
+    public var wrappedValue: T {
+        get { Injected[keyPath] }
+    }
+   
+    public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action> {
+        self.keyPath = keyPath
+    }
+    
+    public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action>? {
+        self.keyPath = keyPath
+    }
+}
+
 /** Provides access to injected dependencies. */
-public struct InjectedStores {
+public struct Injected {
     
     /** This is only used as an accessor to the computed properties within extensions of `InjectedValues`. */
-    private static var current = InjectedStores()
+    private static var current = Injected()
     
     /** A static subscript for updating the `currentValue` of `InjectionKey` instances. */
     static subscript<K>(key: K.Type) -> K.Value where K : InjectionKey {
@@ -20,30 +38,14 @@ public struct InjectedStores {
     }
     
     /** A static subscript accessor for updating and references dependencies directly. */
-    static subscript<T>(_ keyPath: WritableKeyPath<InjectedStores, T>) -> T {
+    static subscript<T>(_ keyPath: WritableKeyPath<Injected, T>) -> T {
         get { current[keyPath: keyPath] }
         set { current[keyPath: keyPath] = newValue }
     }
 }
 
-@propertyWrapper
-public struct InjectedStore<T> {
-    private let keyPath: WritableKeyPath<InjectedStores, T>
-    
-    public var wrappedValue: T {
-        get { InjectedStores[keyPath] }
-    }
-   
-    public init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action> {
-        self.keyPath = keyPath
-    }
-    
-    public init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action>? {
-        self.keyPath = keyPath
-    }
-}
  
-public extension InjectedStore {
+public extension StoreOf {
     func with<U, State, Action>(
         _ state: U,
         reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action> where T == StateStore<State, Action> {
