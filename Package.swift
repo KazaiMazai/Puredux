@@ -1,12 +1,13 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import CompilerPluginSupport
 
 let package = Package(
     name: "Puredux",
     platforms: [
-       .iOS(.v9),
+       .iOS(.v12),
        .macOS(.v10_15)
     ],
     products: [
@@ -15,14 +16,21 @@ let package = Package(
             name: "Puredux",
             targets: ["Puredux"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
+    ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
+        .macro(
+            name: "PureduxMacros",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ]
+        ),
+       .target(
             name: "Puredux",
             dependencies: [
-                
+                "PureduxMacros",
             ]),
         .testTarget(
             name: "PureduxTests",
