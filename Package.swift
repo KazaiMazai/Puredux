@@ -32,8 +32,17 @@ let package = Package(
             dependencies: [
                 "PureduxMacros",
             ]),
+        
         .testTarget(
             name: "PureduxTests",
             dependencies: ["Puredux"]),
+        
+        .testTarget(
+            name: "PureduxMacrosTests",
+            dependencies: [
+                "PureduxMacros",
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ])
     ]
 )
