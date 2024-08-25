@@ -7,24 +7,16 @@
 
 import Foundation
 
-public protocol InjectionKey {
-    /** The associated type representing the type of the dependency injection key's value. */
-    associatedtype Value
-
-    /** The default value for the dependency injection key. */
-    static var defaultValue: Self.Value { get set }
-}
-
 /** Provides access to injected dependencies. */
-struct InjectedStores {
+public struct InjectedStores {
     
     /** This is only used as an accessor to the computed properties within extensions of `InjectedValues`. */
     private static var current = InjectedStores()
     
     /** A static subscript for updating the `currentValue` of `InjectionKey` instances. */
     static subscript<K>(key: K.Type) -> K.Value where K : InjectionKey {
-        get { key.defaultValue }
-        set { key.defaultValue = newValue }
+        get { key.currentValue }
+        set { key.currentValue = newValue }
     }
     
     /** A static subscript accessor for updating and references dependencies directly. */
@@ -35,25 +27,24 @@ struct InjectedStores {
 }
 
 @propertyWrapper
-struct InjectedStore<T> {
+public struct InjectedStore<T> {
     private let keyPath: WritableKeyPath<InjectedStores, T>
     
-    var wrappedValue: T {
+    public var wrappedValue: T {
         get { InjectedStores[keyPath] }
-        set { InjectedStores[keyPath] = newValue }
     }
    
-    init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action> {
+    public init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action> {
         self.keyPath = keyPath
     }
     
-    init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action>? {
+    public init<State, Action>(_ keyPath: WritableKeyPath<InjectedStores, T>) where T == StateStore<State, Action>? {
         self.keyPath = keyPath
     }
 }
  
-extension InjectedStore {
-    public func with<U, State, Action>(
+public extension InjectedStore {
+    func with<U, State, Action>(
         _ state: U,
         reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action> where T == StateStore<State, Action> {
         
@@ -63,7 +54,7 @@ extension InjectedStore {
         )
     }
     
-    public func with<U, State, Action>(
+    func with<U, State, Action>(
         _ state: U,
         reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action>? where T == StateStore<State, Action>? {
         
@@ -72,4 +63,12 @@ extension InjectedStore {
             reducer: reducer
         )
     }
+}
+
+public protocol InjectionKey {
+    /** The associated type representing the type of the dependency injection key's value. */
+    associatedtype Value
+
+    /** The default value for the dependency injection key. */
+    static var currentValue: Self.Value { get set }
 }
