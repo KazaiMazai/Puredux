@@ -7,10 +7,11 @@
 
 import SwiftCompilerPlugin
 import SwiftSyntaxMacros
+import PureduxMacrosImplementation
 
 @main
 struct MacrosPlugin: CompilerPlugin {
-  let providingMacros: [Macro.Type] = [
-    InjectedStoreMacro.self
-  ]
+    let providingMacros: [Macro.Type] = [
+        InjectedStoreMacro.self
+    ]
 }
