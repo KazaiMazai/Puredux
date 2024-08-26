@@ -36,14 +36,27 @@ public struct StateStore<State, Action> {
 }
 
 public extension StateStore {
+    @available(*, deprecated, renamed: "init(_:qos:reducer:)", message: "Actions Interceptor will be removed in 2.0, use AsyncAction instead.")
     init(_ initialState: State,
-         interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
+         interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<State, Action>) {
         
         self.init(storeObject: RootStoreNode.initRootStore(
             initialState: initialState,
             interceptor: interceptor,
+            qos: qos,
+            reducer: reducer
+        ))
+    }
+    
+    init(_ initialState: State,
+         qos: DispatchQoS = .userInteractive,
+         reducer: @escaping Reducer<State, Action>) {
+        
+        self.init(storeObject: RootStoreNode.initRootStore(
+            initialState: initialState,
+            interceptor: { _, _ in },
             qos: qos,
             reducer: reducer
         ))
@@ -63,7 +76,6 @@ extension StateStore {
 }
 
 public extension StateStore {
-    
     func stateStore<LocalState, ResultState>(
         _ initialState: LocalState,
         stateMapping: @escaping (State, LocalState) -> ResultState,
@@ -77,6 +89,22 @@ public extension StateStore {
                     initialState: initialState,
                     stateMapping: stateMapping,
                     qos: qos,
+                    reducer: reducer
+                )
+            )
+        }
+    
+    func stateStore<LocalState, ResultState>(
+        _ initialState: LocalState,
+        stateMapping: @escaping (State, LocalState) -> ResultState,
+        reducer: @escaping Reducer<LocalState, Action>
+    
+    ) -> StateStore<ResultState, Action> {
+            
+            StateStore<ResultState, Action>(
+                storeObject: storeObject.createChildStore(
+                    initialState: initialState,
+                    stateMapping: stateMapping,
                     reducer: reducer
                 )
             )
