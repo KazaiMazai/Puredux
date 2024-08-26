@@ -9,6 +9,17 @@ import Foundation
 
 // swiftlint:disable large_tuple identifier_name
 extension Store {
+    /**
+     Flattens the state of the store from a nested tuple to a flat tuple.
+
+     This function transforms the store's state from a nested tuple type `((T1, T2), T3)` to a flat tuple type `(T1, T2, T3)`. 
+     The transformation makes it easier to work with the individual components
+     of the nested tuple state by bringing all elements to the same level in a flat tuple.
+
+     - Returns: A new `Store` with the flattened state of type `(T1, T2, T3)` and the same action type `Action`.
+     - Note: This method is only available when the store's state is a nested tuple of the form `((T1, T2), T3)`. 
+     The transformation extracts the inner tuple elements `T1` and `T2` and combines them with `T3` into a flat tuple `(T1, T2, T3)`.
+     */
     func flatMap<T1, T2, T3>() ->
         Store<(T1, T2, T3), Action>
         where
@@ -20,6 +31,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4>() ->
         Store<(T1, T2, T3, T4), Action>
         where
@@ -30,7 +44,10 @@ extension Store {
             return (t1, t2, t3, t4)
         }
     }
-
+    
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5>() ->
         Store<(T1, T2, T3, T4, T5), Action>
         where
@@ -42,6 +59,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6>() ->
         Store<(T1, T2, T3, T4, T5, T6), Action>
         where
@@ -53,6 +73,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7), Action>
         where
@@ -64,6 +87,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8), Action>
         where
@@ -75,6 +101,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9), Action>
         where
@@ -86,6 +115,9 @@ extension Store {
         }
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), Action>
         where
@@ -99,6 +131,17 @@ extension Store {
 }
 
 extension StateStore {
+    /**
+     Flattens the state of the store from a nested tuple to a flat tuple.
+
+     This function transforms the store's state from a nested tuple type `((T1, T2), T3)` to a flat tuple type `(T1, T2, T3)`.
+     The transformation makes it easier to work with the individual components
+     of the nested tuple state by bringing all elements to the same level in a flat tuple.
+
+     - Returns: A new `Store` with the flattened state of type `(T1, T2, T3)` and the same action type `Action`.
+     - Note: This method is only available when the store's state is a nested tuple of the form `((T1, T2), T3)`.
+     The transformation extracts the inner tuple elements `T1` and `T2` and combines them with `T3` into a flat tuple `(T1, T2, T3)`.
+     */
     func flatMap<T1, T2, T3>() ->
         Store<(T1, T2, T3), Action>
         where
@@ -107,6 +150,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4>() ->
         Store<(T1, T2, T3, T4), Action>
         where
@@ -115,6 +161,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5>() ->
         Store<(T1, T2, T3, T4, T5), Action>
         where
@@ -131,6 +180,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7), Action>
         where
@@ -139,6 +191,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8), Action>
         where
@@ -147,6 +202,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9), Action>
         where
@@ -155,6 +213,9 @@ extension StateStore {
         strongStore().flatMap()
     }
 
+    /**
+     Refer to the  `flatMap<T1, T2, T3>()` documentation
+     */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() ->
         Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), Action>
         where
