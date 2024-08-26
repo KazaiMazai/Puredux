@@ -4,11 +4,11 @@
 //
 //  Created by Sergey Kazakov on 25/08/2024.
 //
-@testable import Puredux
+
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
-import PureduxMacros
+@testable import PureduxMacros
 
 final class InjectedStoreMacroTests: XCTestCase {
     private let macros = ["InjectEntry": InjectedStoreMacro.self]
