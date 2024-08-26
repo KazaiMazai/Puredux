@@ -23,3 +23,25 @@ public struct StoreOf<T> {
         self.keyPath = keyPath
     }
 }
+
+public extension StoreOf {
+    func with<U, State, Action>(
+        _ state: U,
+        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action> where T == StateStore<State, Action> {
+        
+        wrappedValue.stateStore(
+            state,
+            reducer: reducer
+        )
+    }
+    
+    func with<U, State, Action>(
+        _ state: U,
+        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action>? where T == StateStore<State, Action>? {
+        
+        wrappedValue?.stateStore(
+            state,
+            reducer: reducer
+        )
+    }
+}

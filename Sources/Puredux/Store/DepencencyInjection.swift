@@ -26,27 +26,6 @@ public struct Injected {
     }
 }
 
-public extension StoreOf {
-    func with<U, State, Action>(
-        _ state: U,
-        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action> where T == StateStore<State, Action> {
-        
-        wrappedValue.stateStore(
-            state,
-            reducer: reducer
-        )
-    }
-    
-    func with<U, State, Action>(
-        _ state: U,
-        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action>? where T == StateStore<State, Action>? {
-        
-        wrappedValue?.stateStore(
-            state,
-            reducer: reducer
-        )
-    }
-}
 
 public protocol InjectionKey {
     /** The associated type representing the type of the dependency injection key's value. */
