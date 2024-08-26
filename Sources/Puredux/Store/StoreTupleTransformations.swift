@@ -8,7 +8,7 @@
 import Foundation
 
 // swiftlint:disable large_tuple identifier_name
-extension Store {
+public extension Store {
     /**
      Flattens the state of the store from a nested tuple to a flat tuple.
 
@@ -130,7 +130,7 @@ extension Store {
     }
 }
 
-extension StateStore {
+public extension StateStore {
     /**
      Flattens the state of the store from a nested tuple to a flat tuple.
 
