@@ -11,7 +11,7 @@ public protocol PresenterProtocol {
     func subscribeToStore()
 }
 
-public protocol Presentable: AnyObject {
+public protocol Presentable: UIStateObserver {
     associatedtype Props
 
     var presenter: PresenterProtocol? { get set }
@@ -20,41 +20,63 @@ public protocol Presentable: AnyObject {
 }
 
 public extension Presentable {
-
-    func with<State, Action>(store: StateStore<State, Action>,
+    
+    func with<State, Action>(_ store: StateStore<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
+                             presentationQueue: DispatchQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
 
-        with(store: store.strongStore(), 
+        with(store.strongStore(),
              props: props,
              presentationQueue: presentationQueue,
              removeStateDuplicates: equating)
     }
     
+    func with<State, Action>(_ store: Store<State, Action>,
+                             props: @escaping (State, Store<State, Action>) -> Self.Props,
+                             presentationQueue: DispatchQueue = .sharedPresentationQueue,
+                             removeStateDuplicates equating: Equating<State>? = nil) {
+        
+        presenter = Presenter { [weak self] in
+            guard let self else { return }
+            subscribe(
+                store: store,
+                props: props,
+                presentationQueue: presentationQueue,
+                removeStateDuplicates: equating) { [weak self] props in
+                    self?.setProps(props)
+            }
+        }
+    }
+}
+
+public extension Presentable {
+    
+    @available(*, deprecated, renamed: "with(_:props:presentationQueue:removeStateDuplicates:)", message: "Will be removed in 2.0")
+    func with<State, Action>(store: StateStore<State, Action>,
+                             props: @escaping (State, Store<State, Action>) -> Self.Props,
+                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
+                             removeStateDuplicates equating: Equating<State>? = nil) {
+        
+        with(store.strongStore(),
+             props: props,
+             presentationQueue: presentationQueue.dispatchQueue,
+             removeStateDuplicates: equating)
+    }
+    
+    @available(*, deprecated, renamed: "with(_:props:presentationQueue:removeStateDuplicates:)", message: "Will be removed in 2.0")
     func with<State, Action>(store: Store<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
         
-        presenter = Presenter { [weak self] in
-            guard let self else { return }
-            store.effect(
-                self,
-                withDelay: .uiDebounce,
-                removeStateDuplicates: equating,
-                on: presentationQueue.dispatchQueue) { [weak self] state in
-                    
-                    Effect { [weak self] in
-                        let props = props(state, store)
-                        PresentationQueue.main.dispatchQueue.async { [weak self] in
-                            self?.setProps(props)
-                        }
-                    }
-                }
-        }
+        with(store,
+             props: props,
+             presentationQueue: presentationQueue.dispatchQueue,
+             removeStateDuplicates: equating)
     }
 }
+
 
 struct Presenter: PresenterProtocol {
     let subscribe: () -> Void
