@@ -9,8 +9,6 @@ import SwiftUI
 
 
 extension View {
-    
-    
     func forEachEffect<ViewState, Action, Effects>(
         on store: Store<ViewState, Action>,
         _ keyPath: KeyPath<ViewState, Effects>,
@@ -103,10 +101,10 @@ extension View {
 }
 
 
-private extension View {
+extension View {
     func effect<ViewState, Action>(
         _ store: Store<ViewState, Action>,
-        createEffect: @escaping (AnyObject, Store<ViewState, Action>) -> Void) -> some View {
+        createEffect: @escaping (UIStateObserver, Store<ViewState, Action>) -> Void) -> some View {
             
             modifier(
                 EffectModifier(
