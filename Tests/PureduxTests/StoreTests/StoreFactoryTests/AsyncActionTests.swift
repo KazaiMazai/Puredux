@@ -2,16 +2,18 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 16.02.2023.
+//  Created by Sergey Kazakov on 26/08/2024.
 //
+
+import Foundation
 
 import XCTest
 @testable import Puredux
 
-final class ActionsOnChildStoreInterceptionTests: XCTestCase {
+final class ActionsOnChildStoreAsyncActionTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    func test_WhenActionDispatchAndIntercepted_ThenResultReducedOnMainStore() {
+    func test_WhenAsyncActionDispatchOnChildStore_ThenResultReducedOnMainStore() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -19,12 +21,6 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
@@ -45,13 +41,13 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenActionDispatchAndIntercepted_ThenResultReducedOnChildStore() {
+    func test_WhenAsyncActionDispatchOnChild_ThenResultReducedOnChildStore() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -59,12 +55,6 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -86,17 +76,17 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 }
 
-final class ActionsOnMainStoreInterceptionTests: XCTestCase {
+final class ActionsOnMainStoreAsyncActionTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    func test_WhenActionDispatchAndIntercepted_ThenResultReducedOnMainStore() {
+    func test_WhenAsyncActionDispatchOnRootStore_ThenResultReducedOnMainStore() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -104,12 +94,6 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
@@ -130,14 +114,14 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         let store = factory.rootStore()
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenActionDispatchAndIntercepted_ThenResultNotReducedOnChildStore() {
+    func test_WhenAsyncActionDispatchOnRootStore_ThenResultNotReducedOnChildStore() {
         let actionsCount = 100
         let unexpected = (0..<actionsCount).map {
             let exp = XCTestExpectation(description: "index \($0)")
@@ -147,12 +131,6 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -174,7 +152,7 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         let store = factory.rootStore()
         actions.forEach { store.dispatch($0) }
 
@@ -182,10 +160,10 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
     }
 }
 
-final class ChildStoreInterceptOnceTests: XCTestCase {
+final class ChildStoreAsyncActionOnceTests: XCTestCase {
     let timeout: TimeInterval = 10
 
-    func test_WhenDispatchedToChildStore_ThenEachActionInterceptedOnce() {
+    func test_WhenAsyncActionDispatchedToChildStore_ThenEachActionResultDispatchedOnce() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -203,6 +181,11 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
             },
             reducer: { state, action  in
                 state.reduce(action: action)
+                guard let resultAction = (action as? ResultAction) else {
+                    return
+                }
+
+                expectations[resultAction.index].fulfill()
             }
         )
 
@@ -216,13 +199,13 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
 
-    func test_WhenDispatchedToMainStore_ThenEachActionInterceptedOnce() {
+    func test_WhenAsyncActionDispatchedToMainStore_ThenEachActionResultDispatchedOnce() {
         let actionsCount = 100
         let expectations = (0..<actionsCount).map {
             XCTestExpectation(description: "index \($0)")
@@ -230,16 +213,13 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
 
         let factory = StoreFactory<TestState, Action>(
             initialState: TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
+            reducer: { state, action  in
+                state.reduce(action: action)
+                guard let resultAction = (action as? ResultAction) else {
                     return
                 }
 
-                expectations[asyncAction.index].fulfill()
-                dispatch(ResultAction(index: asyncAction.index))
-            },
-            reducer: { state, action  in
-                state.reduce(action: action)
+                expectations[resultAction.index].fulfill()
             }
         )
 
@@ -253,7 +233,7 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
             }
         )
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
         let store = factory.rootStore()
         actions.forEach { store.dispatch($0) }
 
