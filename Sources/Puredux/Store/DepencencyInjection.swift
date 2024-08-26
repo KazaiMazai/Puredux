@@ -20,7 +20,7 @@ public struct Injected {
     }
     
     /** A static subscript accessor for updating and references dependencies directly. */
-    static subscript<T>(_ keyPath: WritableKeyPath<Injected, T>) -> T {
+    public static subscript<T>(_ keyPath: WritableKeyPath<Injected, T>) -> T {
         get { current[keyPath: keyPath] }
         set { current[keyPath: keyPath] = newValue }
     }
