@@ -19,11 +19,10 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
     )
 
     func test_WhenStore_ThenWeakRefToChildStoreCreated() {
-        weak var weakChildStore: ChildStore?
         var store: Store<StateComposition, Action>?
 
-        autoreleasepool {
-            let strongChildStore = rootStore.createChildStore(
+        assertDeallocated {
+            let strongChildStore = self.rootStore.createChildStore(
                 initialState: ChildTestState(currentIndex: 0),
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
@@ -31,20 +30,16 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-
-            weakChildStore = strongChildStore
+ 
             store = strongChildStore.weakRefStore()
+            return strongChildStore as AnyObject
         }
-
-        XCTAssertNil(weakChildStore)
     }
 
     func test_WhenStoreObject_ThenStrongRefToChildStoreCreated() {
-        weak var weakChildStore: ChildStore?
         var referencedStore: StateStore<StateComposition, Action>?
-
-        autoreleasepool {
-            let strongChildStore = rootStore.createChildStore(
+        assertNotDeallocated {
+            let strongChildStore = self.rootStore.createChildStore(
                 initialState: ChildTestState(currentIndex: 0),
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
@@ -52,20 +47,16 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-
-            weakChildStore = strongChildStore
+ 
             referencedStore = strongChildStore.stateStore()
+            return strongChildStore as AnyObject
         }
-
-        XCTAssertNotNil(weakChildStore)
     }
 
     func test_WhenStoreObjectReleased_ThenChildStoreIsReleased() {
-        weak var weakChildStore: ChildStore?
-        var referencedStore: StateStore<StateComposition, Action>?
-
-        autoreleasepool {
-            let strongChildStore = rootStore.createChildStore(
+        assertDeallocated {
+            var referencedStore: StateStore<StateComposition, Action>?
+            let strongChildStore = self.rootStore.createChildStore(
                 initialState: ChildTestState(currentIndex: 0),
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
@@ -73,12 +64,9 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
-
-            weakChildStore = strongChildStore
+ 
             referencedStore = strongChildStore.stateStore()
+            return strongChildStore as AnyObject
         }
-
-        referencedStore = nil
-        XCTAssertNil(weakChildStore)
     }
 }

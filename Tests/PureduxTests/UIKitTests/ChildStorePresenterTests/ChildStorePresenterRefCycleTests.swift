@@ -23,18 +23,15 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
     
     func test_WhenStrongRefToVC_ThenStrongRefToChildStoreState() {
         var strongViewController: StubViewController?
-        weak var weakRefObject: ReferenceTypeState?
         
-        autoreleasepool {
+        assertNotDeallocated {
             let object = ReferenceTypeState()
             
-            let store = factory.childStore(
+            let store = self.factory.childStore(
                 initialState: object,
                 reducer: { state, action in state.reduce(action) }
             )
-            
-            weakRefObject = object
-            
+           
             let viewController = StubViewController()
             
             viewController.with(store: store,
@@ -42,23 +39,20 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
             )
             viewController.viewDidLoad()
             strongViewController = viewController
+            return object as AnyObject
         }
-        
-        XCTAssertNotNil(weakRefObject)
     }
     
     func test_WhenNoStrongRefToVC_ThenChildStoreStateIsReleased() {
-        weak var weakRefObject: ReferenceTypeState?
+        weak var weakViewController: StubViewController?
         
-        autoreleasepool {
+        assertDeallocated {
             let object = ReferenceTypeState()
             
-            let store = factory.childStore(
+            let store = self.factory.childStore(
                 initialState: object,
                 reducer: { state, action in state.reduce(action) }
             )
-            
-            weakRefObject = object
             
             let viewController = StubViewController()
             
@@ -66,9 +60,8 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
                                 props: { _, _ in .init(title: "") }
             )
             viewController.viewDidLoad()
-
+            weakViewController = viewController
+            return object as AnyObject
         }
-        
-        XCTAssertNil(weakRefObject)
     }
 }

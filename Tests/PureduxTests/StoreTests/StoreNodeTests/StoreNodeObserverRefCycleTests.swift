@@ -18,18 +18,15 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     )
 
     func test_WhenStrongRefToStoreAndObserverLive_ThenReferencCycleIsCreated() {
-        weak var weakRefObject: ReferenceTypeState?
-        
-        autoreleasepool {
+
+        assertNotDeallocated {
             let object = ReferenceTypeState()
-            let store = rootStore.createChildStore(
+            let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
                 qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action) }
             )
-            
-            weakRefObject = object
              
             let referencedStore = store.stateStore()
 
@@ -39,59 +36,41 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             }
 
             referencedStore.subscribe(observer: observer)
+            return object as AnyObject
         }
-
-        XCTAssertNotNil(weakRefObject)
     }
 
     func test_WhenStrongRefToStoreAndObserverDead_ThenStoreIsReleased() {
-        weak var weakRefObject: ReferenceTypeState?
-        
-        let asyncExpectation = expectation(description: "Observer state handler")
-
-        autoreleasepool {
+        assertDeallocated {
             let object = ReferenceTypeState()
-            let store = rootStore.createChildStore(
+            let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
                 qos: .userInitiated,
                 reducer: { state, action in state.reduce(action) }
             )
             
-            weakRefObject = object
-            
             let referencedStore = store.stateStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 referencedStore.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    asyncExpectation.fulfill()
-                }
             }
 
             referencedStore.subscribe(observer: observer)
-        }
-
-        waitForExpectations(timeout: timeout) { _ in
-            XCTAssertNil(weakRefObject)
+            return object as AnyObject
         }
     }
 
     func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
-        weak var weakRefObject: ReferenceTypeState?
-        
-        autoreleasepool {
+        assertDeallocated {
             let object = ReferenceTypeState()
-            let store = rootStore.createChildStore(
+            let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
                 qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action) }
             )
-            
-            weakRefObject = object
-            
             
             let weakRefStore = store.weakRefStore()
 
@@ -101,8 +80,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             }
 
             store.subscribe(observer: observer)
+            return object as AnyObject
         }
-
-        XCTAssertNil(weakRefObject)
     }
 }
