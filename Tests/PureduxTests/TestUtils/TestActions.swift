@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Puredux
 
 protocol Action {
 
@@ -19,8 +20,16 @@ struct ResultAction: Action {
     let index: Int
 }
 
-struct AsyncAction: Action {
+struct AsyncResultAction: Action {
     let index: Int
+}
+
+struct AsyncIndexAction: Action & AsyncAction {
+    let index: Int
+    
+    func execute(completeHandler: @escaping (ResultAction) -> Void) {
+        completeHandler(ResultAction(index: index))
+    }
 }
  
 struct NonMutatingStateAction: Action {

@@ -16,7 +16,7 @@ struct TestState: Equatable {
         switch action {
         case let action as UpdateIndex:
             currentIndex = action.index
-        case _ as AsyncAction:
+        case _ as AsyncResultAction:
             asyncActionReceivedCount += 1
         case _ as ResultAction:
             createdActionReceivedCount += 1
@@ -35,7 +35,7 @@ struct ChildTestState: Equatable {
         switch action {
         case let action as UpdateIndex:
             currentIndex = action.index
-        case _ as AsyncAction:
+        case _ as AsyncResultAction:
             asyncActionReceivedCount += 1
         case _ as ResultAction:
             createdActionReceivedCount += 1
