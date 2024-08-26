@@ -28,7 +28,7 @@ extension PresentationQueue {
     }
 }
 
-fileprivate extension DispatchQueue {
-    static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.uikit.presentation",
+public extension DispatchQueue {
+    static let sharedPresentationQueue = DispatchQueue(label: "com.puredux.presentation",
                                                        qos: .userInteractive)
 }
