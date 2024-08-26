@@ -35,6 +35,7 @@ public struct StateStore<State, Action> {
     }
 }
 
+
 public extension StateStore {
     /** Initializes a new StateStore with provided initial state, qos, and reducer
         - Parameter initialState: The initial state for the store
@@ -115,7 +116,6 @@ public extension StateStore {
             reducer: reducer
         ))
     }
-    
 }
 
 public extension StateStore {
