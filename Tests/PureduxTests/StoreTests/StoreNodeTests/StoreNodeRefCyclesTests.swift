@@ -11,58 +11,47 @@ import XCTest
 final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
     
     func test_WhenWeakRefStore_ThenWeakRefToRootCreated() {
-        weak var weakRootStore: RootStoreNode<TestState, Action>?
         var store: Store<TestState, Action>?
         
-        autoreleasepool {
+        assertDeallocated {
             let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
                 }
             
-            weakRootStore = rootStore
             store = rootStore.weakRefStore()
+            return rootStore as AnyObject
         }
-        
-        XCTAssertNil(weakRootStore)
     }
     
     func test_WhenStoreExists_ThenStrongRefToRootCreated() {
-        weak var weakRootStore: RootStoreNode<TestState, Action>?
         var store: StateStore<TestState, Action>?
         
-        autoreleasepool {
+        assertNotDeallocated {
             let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
                 }
             
-            weakRootStore = rootStore
             store = rootStore.stateStore()
+            return rootStore as AnyObject
         }
-        
-        XCTAssertNotNil(weakRootStore)
     }
     
     func test_WhenStoreRemoved_ThenRootStoreIsReleased() {
-        weak var weakRootStore: RootStoreNode<TestState, Action>?
-        var store: StateStore<TestState, Action>?
-        
-        autoreleasepool {
+        assertDeallocated {
+            var store: StateStore<TestState, Action>?
             let rootStore = RootStoreNode<TestState, Action>.initRootStore(
                 initialState: TestState(currentIndex: 1)) { state, action  in
                     
                     state.reduce(action: action)
                 }
             
-            weakRootStore = rootStore
             store = rootStore.stateStore()
+            store = nil
+            return rootStore as AnyObject
         }
-        
-        XCTAssertNotNil(weakRootStore)
-        store = nil
-        wait(for: weakRootStore == nil, timeout: 3.0, description: "The object should be deallocated since no strong reference points to it.")
     }
 }
