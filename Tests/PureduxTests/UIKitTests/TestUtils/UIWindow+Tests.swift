@@ -10,7 +10,7 @@ import SwiftUI
 
 extension UIWindow {
     
-    @available(iOS 13.0, *)
+    
     @discardableResult static func setupForSwiftUITests<V: View>(rootView: V) -> UIWindow {
         setupForTests(viewController: UIHostingController(rootView: rootView))
     }

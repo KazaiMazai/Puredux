@@ -11,7 +11,7 @@ import SwiftUI
 import UIKit
 
 
-@available(iOS 13.0, *)
+
 class RootStoreViewFromStateDispatchRenderTests: ViewWithStoreRenderTests {
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 
@@ -29,7 +29,7 @@ class RootStoreViewFromStateDispatchRenderTests: ViewWithStoreRenderTests {
 }
 
 
-@available(iOS 13.0, *)
+
 class RootStoreViewFromStateStoreRenderTests: ViewWithStoreRenderTests {
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 

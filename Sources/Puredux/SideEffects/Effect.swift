@@ -28,7 +28,7 @@ struct Effect {
         perform = operation
     }
    
-    @available(iOS 13.0, *)
+    
     init(operation: @escaping () async -> Void) {
         perform = {
             Task { await operation() }

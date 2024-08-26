@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 import SwiftUI
 
-@available(iOS 13.0, *)
+
 class ChildStoreSwiftUITests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -45,7 +45,7 @@ class ChildStoreSwiftUITests: XCTestCase {
     }()
 }
 
-@available(iOS 13.0, *)
+
 extension ChildStoreSwiftUITests {
     func test_WhenActionDispatchedToRootStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")

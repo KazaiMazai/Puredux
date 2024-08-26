@@ -11,7 +11,7 @@ import Combine
 /// PublishingStoreObject is a publishing wrap around Puredux's StoreObject to be used in SwiftUI view hierarchy.
 /// PublishingStoreObject owns a `StoreObject` inside allowing to control the `StoreObject`'s lifecycle.
 ///
-@available(iOS 13.0, *)
+
 public struct PublishingStoreObject<AppState, Action> {
     private let stateStore: StateStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -53,7 +53,7 @@ public struct PublishingStoreObject<AppState, Action> {
     }
 }
 
-@available(iOS 13.0, *)
+
 public extension PublishingStoreObject {
     /// Initializes a new proxy PublishingStore.
     ///
@@ -72,7 +72,7 @@ public extension PublishingStoreObject {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension PublishingStoreObject {
     func statePublisher() -> AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
@@ -83,7 +83,7 @@ private extension PublishingStoreObject {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension PublishingStoreObject {
     var asObserver: Observer<AppState> {
         Observer { [weak stateSubject] state, complete in

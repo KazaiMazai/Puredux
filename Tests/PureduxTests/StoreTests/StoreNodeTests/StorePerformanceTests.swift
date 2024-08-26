@@ -8,7 +8,7 @@
 import XCTest
 @testable import Puredux
 
-@available(iOS 13.0, *)
+
 final class StorePerformanceTests: XCTestCase {
     
     func test_StoreDispatchPerfomance() {

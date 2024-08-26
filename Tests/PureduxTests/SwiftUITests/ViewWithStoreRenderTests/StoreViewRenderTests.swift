@@ -11,7 +11,7 @@ import SwiftUI
 import UIKit
 import Combine
 
-@available(iOS 13.0, *)
+
 class StoreViewRenderTests: ViewWithStoreRenderTests {
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 

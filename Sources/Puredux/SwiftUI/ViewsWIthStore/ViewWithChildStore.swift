@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-@available(iOS 13.0, *)
+
 struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Content>: View
     where Content: View {
 

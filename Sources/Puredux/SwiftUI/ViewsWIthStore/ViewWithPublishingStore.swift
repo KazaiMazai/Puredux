@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-@available(iOS 13.0, *)
+
 struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
@@ -24,7 +24,7 @@ struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension View {
     @ViewBuilder
     func onReceive<P>(_ publisher: P?, perform action: @escaping (P.Output) -> Void) -> some View where P: Publisher, P.Failure == Never {
@@ -36,7 +36,7 @@ private extension View {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension ViewWithPublishingStore {
     @ViewBuilder
     func makeContent() -> some View {
