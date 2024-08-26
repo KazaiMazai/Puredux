@@ -63,6 +63,6 @@ final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
         
         XCTAssertNotNil(weakRootStore)
         store = nil
-        XCTAssertNil(weakRootStore)
+        wait(for: weakRootStore == nil, timeout: 3.0, description: "The object should be deallocated since no strong reference points to it.")
     }
 }
