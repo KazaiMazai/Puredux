@@ -19,13 +19,14 @@ public extension Store {
 }
 
 public struct Store<State, Action> {
-    private let dispatchHandler: Dispatch
+    let dispatchHandler: Dispatch
     private let subscribeHandler: Subscribe
 }
 
 public extension Store {
     func dispatch(_ action: Action) {
         dispatchHandler(action)
+        executeAsyncAction(action)
     }
 
     func subscribe(observer: Observer<State>) {
@@ -121,5 +122,22 @@ extension Store {
 
         dispatchHandler = dispatcher
         subscribeHandler = subscribe
+    }
+}
+
+extension Store {
+    func executeAsyncAction(_ action: Action) {
+        guard let action = action as? (any AsyncAction) else {
+            return
+        }
+        
+        action.dispatchQueue.async {
+            action.execute { result in
+                guard let resultAction = result as? Action else {
+                    return
+                }
+                dispatch(resultAction)
+            }
+        }
     }
 }

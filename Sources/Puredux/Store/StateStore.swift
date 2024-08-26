@@ -12,17 +12,26 @@ public typealias StoreObject = StateStore
 
 public struct StateStore<State, Action> {
     let storeObject: any StoreProtocol<State, Action>
+    let currentStore: Store<State, Action>
     
     public func store() -> Store<State, Action> {
-        weakStore()
+        currentStore
     }
     
     public func dispatch(_ action: Action) {
-        storeObject.dispatch(action)
+        currentStore.dispatch(action)
     }
     
     public func subscribe(observer: Observer<State>) {
-        storeObject.subscribe(observer: observer)
+        currentStore.subscribe(observer: observer)
+    }
+    
+    init(storeObject: any StoreProtocol<State, Action>) {
+        self.storeObject = storeObject
+        self.currentStore = Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) }
+        )
     }
 }
 
@@ -32,27 +41,24 @@ public extension StateStore {
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<State, Action>) {
         
-        storeObject = RootStoreNode.initRootStore(
+        self.init(storeObject: RootStoreNode.initRootStore(
             initialState: initialState,
             interceptor: interceptor,
             qos: qos,
             reducer: reducer
-        )
+        ))
     }
 }
 
 extension StateStore {
     func weakStore() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) })
+       currentStore
     }
     
     func strongStore() -> Store<State, Action> {
         Store<State, Action>(
-            dispatcher: dispatch,
-            subscribe: subscribe
-        )
+            dispatcher: { [storeObject] in storeObject.dispatch($0) },
+            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) })
     }
 }
 
