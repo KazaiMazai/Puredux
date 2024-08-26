@@ -10,12 +10,12 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class RootStoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
 
 }
 
-@available(iOS 13.0, *)
+
 class ScopeStoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,
                                                          rootStore: PublishingStore<TestAppState, Action>) -> UIWindow {
@@ -41,7 +41,7 @@ class ScopeStoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
     }
 }
 
-@available(iOS 13.0, *)
+
 class StoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,
                                                          rootStore: PublishingStore<TestAppState, Action>) -> UIWindow {
@@ -68,7 +68,7 @@ class StoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
 }
 
 
-@available(iOS 13.0, *)
+
 class ChildStoreNoDeduplicationPropsTests: NoDeduplicationPropsTests {
     
     @discardableResult override func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation,

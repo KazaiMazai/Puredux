@@ -10,7 +10,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class ScopeStoreViewRenderTests: ViewWithStoreRenderTests {
     @discardableResult override func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 

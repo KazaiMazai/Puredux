@@ -9,7 +9,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class PresentationQueueTest: XCTestCase {
     let timeout: TimeInterval = 4
 

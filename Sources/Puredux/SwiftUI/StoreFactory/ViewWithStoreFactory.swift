@@ -34,7 +34,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-@available(iOS 13.0, *)
+
 public struct ViewWithStoreFactory<AppState, Aciton, Content: View>: View {
     private let storeFactory: EnvStoreFactory<AppState, Aciton>
     private let content: () -> Content
@@ -44,7 +44,7 @@ public struct ViewWithStoreFactory<AppState, Aciton, Content: View>: View {
     }
 }
 
-@available(iOS 13.0, *)
+
 public extension ViewWithStoreFactory {
     /// Initializes a View with a `EnvStoreFactory` injected into`Content` view via `environmentObject(...)`
     ///

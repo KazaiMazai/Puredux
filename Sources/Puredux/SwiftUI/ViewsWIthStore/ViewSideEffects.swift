@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+
 extension View {
     
     
@@ -81,7 +81,7 @@ extension View {
         }
 }
 
-@available(iOS 13.0, *)
+
 extension View {
     func effect<ViewState, Action>(on store: Store<ViewState, Action>,
                                    withDelay interval: TimeInterval,
@@ -102,7 +102,7 @@ extension View {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension View {
     func effect<ViewState, Action>(
         _ store: Store<ViewState, Action>,

@@ -3,7 +3,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 final class ViewEnvStoreRenderTests: ViewWithRootStoreRenderTests {
 
     @discardableResult override func setupWindowForTests(
@@ -24,7 +24,7 @@ final class ViewEnvStoreRenderTests: ViewWithRootStoreRenderTests {
     }
 }
 
-@available(iOS 13.0, *)
+
 class ViewWithRootStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
@@ -62,7 +62,7 @@ class ViewWithRootStoreRenderTests: XCTestCase {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension ViewWithRootStoreRenderTests {
 
     func test_WhenNoActionDispatchedAfterSetup_ThenViewIsNotRendered() {

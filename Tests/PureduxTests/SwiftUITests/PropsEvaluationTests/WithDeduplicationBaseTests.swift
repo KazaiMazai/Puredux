@@ -10,7 +10,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class DeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -56,7 +56,7 @@ class DeduplicationPropsTests: XCTestCase {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension DeduplicationPropsTests {
     func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {
         let actionsCount = 1000

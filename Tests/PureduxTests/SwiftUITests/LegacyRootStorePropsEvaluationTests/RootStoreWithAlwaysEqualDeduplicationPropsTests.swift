@@ -10,7 +10,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -49,7 +49,7 @@ class ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests {
 
     func test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {

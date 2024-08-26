@@ -38,7 +38,7 @@ import SwiftUI
 /// let envFactory = EnvStoreFactory(factory)
 /// ```
 ///
-@available(iOS 13.0, *)
+
 public final class EnvStoreFactory<AppState, Action>: ObservableObject {
     private let storeFactory: StoreFactory<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -56,7 +56,7 @@ public final class EnvStoreFactory<AppState, Action>: ObservableObject {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension EnvStoreFactory {
 
     /// Initializes a PublishingStore as a proxy for the EnvStoreFactory's root store
@@ -180,7 +180,7 @@ extension EnvStoreFactory {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension EnvStoreFactory {
     func statePublisher() -> AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
@@ -191,7 +191,7 @@ private extension EnvStoreFactory {
     }
 }
 
-@available(iOS 13.0, *)
+
 private extension EnvStoreFactory {
     var asObserver: Observer<AppState> {
         Observer { [weak self] state, complete in

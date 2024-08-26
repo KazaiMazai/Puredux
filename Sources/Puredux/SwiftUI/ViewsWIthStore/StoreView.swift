@@ -9,7 +9,7 @@ import SwiftUI
 import Dispatch
 import Combine
 
-@available(iOS 13.0, *)
+
 public struct StoreView<ViewState, Action, Props, Content: View>: View {
     let store: Store<ViewState, Action>
     let props: (ViewState, @escaping Dispatch<Action>) -> Props
@@ -35,7 +35,7 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension StoreView {
     @ViewBuilder
     func makeContent() -> some View {
@@ -47,7 +47,7 @@ extension StoreView {
     }
 }
 
-@available(iOS 13.0, *)
+
 public extension StoreView {
      
     func removeStateDuplicates(_ equating: Equating<ViewState>) -> Self {
@@ -63,7 +63,7 @@ public extension StoreView {
     }
 }
 
-@available(iOS 13.0, *)
+
 public extension StoreView {
     init(_ store: Store<ViewState, Action>,
          props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
@@ -74,7 +74,7 @@ public extension StoreView {
     }
 }
 
-@available(iOS 13.0, *)
+
 public extension StoreView where Props == (ViewState, Dispatch<Action>)  {
      
     init(_ store: Store<ViewState, Action>,

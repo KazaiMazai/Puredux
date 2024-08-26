@@ -10,7 +10,7 @@ import XCTest
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+
 class ViewEnvRootStoreWithoutDeduplicationPropsTests: ViewWithRootStoreWithoutDeduplicationPropsTests {
     @discardableResult override func setupWindowForTests(
         propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
@@ -32,7 +32,7 @@ class ViewEnvRootStoreWithoutDeduplicationPropsTests: ViewWithRootStoreWithoutDe
     }
 }
 
-@available(iOS 13.0, *)
+
 class ViewWithRootStoreWithoutDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -71,7 +71,7 @@ class ViewWithRootStoreWithoutDeduplicationPropsTests: XCTestCase {
     }
 }
 
-@available(iOS 13.0, *)
+
 extension ViewWithRootStoreWithoutDeduplicationPropsTests {
 
     func test_WhenNoActionAfterSetup_ThenPropsNotEvaluated() {
