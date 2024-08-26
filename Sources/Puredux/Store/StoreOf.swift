@@ -25,22 +25,42 @@ public struct StoreOf<T> {
 }
 
 public extension StoreOf {
-    func with<U, State, Action>(
-        _ state: U,
-        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action> where T == StateStore<State, Action> {
+    /**
+     Initializes a new child StateStore with initial state
+     - Parameter initialState: The initial state for the store
+     - Parameter reducer: The function that is called on every dispatched Action and performs state mutations
+     - Returns: `StateStore<(Root, Local), Action>`
+   
+     ChildStore is a composition of root store and newly created local store.
+
+     When action is dispatched to RootStore:
+     - action is delivered to root store's reducer
+     - action is not delivered to child store's reducer
+     - root & child stores subscribers receive updates
+     - AsyncAction dispatches result actions to RootStore
+
+     When action is dispatched to ChildStore:
+     - action is delivered to root store's reducer
+     - action is delivered to child store's reducer
+     - root & child stores subscribers receive updates
+     - AsyncAction dispatches result actions to ChildStore
+     */
+    func with<Root, Local, Action>(
+        _ initialState: Local,
+        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action> where T == StateStore<Root, Action> {
         
-        wrappedValue.stateStore(
-            state,
+        wrappedValue.with(
+            initialState,
             reducer: reducer
         )
     }
     
-    func with<U, State, Action>(
-        _ state: U,
-        reducer: @escaping Reducer<U, Action>) -> StateStore<(State, U), Action>? where T == StateStore<State, Action>? {
+    func with<Root, Local, Action>(
+        _ initialState: Local,
+        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action>? where T == StateStore<Root, Action>? {
         
-        wrappedValue?.stateStore(
-            state,
+        wrappedValue?.with(
+            initialState,
             reducer: reducer
         )
     }
