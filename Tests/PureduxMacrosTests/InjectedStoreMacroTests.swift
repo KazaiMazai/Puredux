@@ -15,30 +15,30 @@ final class InjectedStoreMacroTests: XCTestCase {
     
     func testEnvironmentValue() {
         assertMacroExpansion(
-      """
-      extension InjectedStores {
-          @InjectEntry var root = StateStore<Int, Int>(10) {_,_ in }
-      }
-      """,
-      expandedSource: 
-        """
-        extension InjectedStores {
-            var root = StateStore<Int, Int>(10) {_,_ in } {
-                get {
-                    Self [RootKey.self]
+              """
+              extension InjectedStores {
+                  @InjectEntry var root = StateStore<Int, Int>(10) {_,_ in }
+              }
+              """,
+              expandedSource:
+                """
+                extension InjectedStores {
+                    var root = StateStore<Int, Int>(10) {_,_ in } {
+                        get {
+                            Self [RootKey.self]
+                        }
+                        set {
+                            Self [RootKey.self] = newValue
+                        }
+                    }
+                
+                    enum RootKey: InjectionKey {
+                        static var currentValue = StateStore<Int, Int>(10) { _, _ in
+                        }
+                    }
                 }
-                set {
-                    Self [RootKey.self] = newValue
-                }
-            }
-
-            enum RootKey: InjectionKey {
-                static var currentValue = StateStore<Int, Int>(10) { _, _ in
-                }
-            }
-        }
-        """,
-      macros: macros
+                """,
+              macros: macros
         )
     }
 }
