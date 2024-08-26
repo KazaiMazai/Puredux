@@ -26,20 +26,10 @@ public extension Presentable {
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
 
-        let weakRefStore = store.weakStore()
-        presenter = Presenter { [weak self] in
-            store.effect(withDelay: .uiDebounce,
-                         removeStateDuplicates: equating,
-                         on: presentationQueue.dispatchQueue) { state in
-                
-                Effect { [weak self] in
-                    let props = props(state, weakRefStore)
-                    PresentationQueue.main.dispatchQueue.async { [weak self] in
-                        self?.setProps(props)
-                    }
-                }
-            }
-        }
+        with(store: store.strongStore(), 
+             props: props,
+             presentationQueue: presentationQueue,
+             removeStateDuplicates: equating)
     }
     
     func with<State, Action>(store: Store<State, Action>,
@@ -48,17 +38,20 @@ public extension Presentable {
                              removeStateDuplicates equating: Equating<State>? = nil) {
         
         presenter = Presenter { [weak self] in
-            store.effect(withDelay: .uiDebounce,
-                         removeStateDuplicates: equating,
-                         on: presentationQueue.dispatchQueue) { state in
-                
-                Effect { [weak self] in
-                    let props = props(state, store)
-                    PresentationQueue.main.dispatchQueue.async { [weak self] in
-                        self?.setProps(props)
+            guard let self else { return }
+            store.effect(
+                self,
+                withDelay: .uiDebounce,
+                removeStateDuplicates: equating,
+                on: presentationQueue.dispatchQueue) { [weak self] state in
+                    
+                    Effect { [weak self] in
+                        let props = props(state, store)
+                        PresentationQueue.main.dispatchQueue.async { [weak self] in
+                            self?.setProps(props)
+                        }
                     }
                 }
-            }
         }
     }
 }
