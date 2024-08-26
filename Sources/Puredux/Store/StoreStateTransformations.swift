@@ -10,7 +10,7 @@ import Foundation
 extension Store {
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
         Store<T, Action>(
-            dispatcher: dispatch,
+            dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
                 subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
@@ -22,7 +22,7 @@ extension Store {
 
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
         Store<T, Action>(
-            dispatcher: dispatch,
+            dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
                 subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = transform(state) else {
@@ -38,7 +38,7 @@ extension Store {
 
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
         Store<T?, Action>(
-            dispatcher: dispatch,
+            dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
                 subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
