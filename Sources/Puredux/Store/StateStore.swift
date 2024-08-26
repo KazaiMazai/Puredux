@@ -112,25 +112,7 @@ public extension StateStore {
 }
 
 extension StateStore {
-    
-    func stateStore<LocalState, ResultState, LocalAction>(
-        _ initialState: LocalState,
-        stateMapping: @escaping (State, LocalState) -> ResultState,
-        actionsMapping: ActionsMapping<Action, LocalAction>,
-        reducer: @escaping Reducer<LocalState, LocalAction>
-        
-    ) -> StateStore<ResultState, LocalAction> {
-        
-        StateStore<ResultState, LocalAction>(
-            storeObject: storeObject.createChildStore(
-                initialState: initialState,
-                stateMapping: stateMapping,
-                actionsMapping: actionsMapping,
-                reducer: reducer
-            )
-        )
-    }
-    
+
     public func stateStore<T>(
         _ state: T,
         qos: DispatchQoS = .userInitiated,
@@ -142,21 +124,6 @@ extension StateStore {
             state,
             stateMapping: { ($0, $1) },
             qos: qos,
-            reducer: reducer
-        )
-    }
-    
-    func stateStore<T, A>(
-        _ state: T,
-        actionsMapping: ActionsMapping<Action, A>,
-        reducer: @escaping Reducer<T, A>
-        
-    ) -> StateStore<(State, T), A> {
-        
-        stateStore(
-            state,
-            stateMapping: { ($0, $1) },
-            actionsMapping: actionsMapping,
             reducer: reducer
         )
     }

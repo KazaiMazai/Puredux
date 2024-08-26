@@ -59,8 +59,7 @@ extension StoreProtocol {
 
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
-                stateMapping: stateMapping, 
-                actionsMapping: .passthrough(),
+                stateMapping: stateMapping,
                 parentStore: self,
                 reducer: reducer
             )
@@ -75,23 +74,7 @@ extension StoreProtocol {
 
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
-                stateMapping: stateMapping, 
-                actionsMapping: .passthrough(),
-                parentStore: self,
-                reducer: reducer
-            )
-        }
-    
-    func createChildStore<LocalState, ResultState, LocalAction>(
-        initialState: LocalState,
-        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
-        actionsMapping: ActionsMapping<Action, LocalAction>,
-        reducer: @escaping Reducer<LocalState, LocalAction>) -> any StoreProtocol<ResultState, LocalAction> {
-
-            StoreNode<Self, LocalState, ResultState, LocalAction>(
-                initialState: initialState,
                 stateMapping: stateMapping,
-                actionsMapping: actionsMapping,
                 parentStore: self,
                 reducer: reducer
             )

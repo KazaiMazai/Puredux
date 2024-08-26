@@ -11,23 +11,22 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol {
+final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol,
+                                                                    ParentStore.Action == Action {
 
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
-    private let actionsMapping: ActionsMapping<ParentStore.Action, Action>
+    
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
          stateMapping: @escaping (ParentStore.State, LocalState) -> State,
-         actionsMapping: ActionsMapping<ParentStore.Action, Action>,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
 
         self.stateMapping = stateMapping
-        self.actionsMapping = actionsMapping
         self.parentStore = parentStore
 
         localStore = CoreStore(
@@ -38,12 +37,11 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
         )
 
         if let parentInterceptor = parentStore.actionsInterceptor {
-            let interceptor = parentInterceptor.localInterceptor(
-                localStore.id,
-                actionsMapping: actionsMapping,
-                dispatcher: { [weak self] action in
-                    self?.dispatch(action)
-                })
+            let interceptor = ActionsInterceptor(
+                storeId: localStore.id,
+                handler: parentInterceptor.handler,
+                dispatcher: { [weak self] action in self?.dispatch(action) }
+            )
             
             localStore.setInterceptorSync(interceptor)
         }
@@ -86,7 +84,6 @@ extension StoreNode where LocalState == State {
         RootStoreNode<State, Action>(
             initialState: initialState,
             stateMapping: { _, state in return state }, 
-            actionsMapping: .passthrough(),
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 actionsInterceptor: ActionsInterceptor(
@@ -117,7 +114,7 @@ extension StoreNode: StoreProtocol {
         localStore.syncDispatch(scopedAction: scopedAction)
         parentStore.syncDispatch(scopedAction: ScopedAction(
             storeId: scopedAction.storeId,
-            action: actionsMapping.toGlobal(scopedAction.action)
+            action: scopedAction.action
         ))
     }
 
