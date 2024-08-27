@@ -113,5 +113,13 @@ extension View {
                 )
             )
         }
+    
+    func createObserver(_ observer: @escaping (UIStateObserver) -> Void) -> some View {
+            modifier(
+                UIStateObserverModifier(createEffect: observer )
+            )
+        }
+    
+    
 }
 

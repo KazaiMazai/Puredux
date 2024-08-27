@@ -21,3 +21,16 @@ struct EffectModifier<ViewState, Action>: ViewModifier {
             .onAppear { createEffect(stateObserver, store) }
     }
 }
+
+struct UIStateObserverModifier: ViewModifier {
+    let createEffect: (UIStateObserver) -> Void
+    
+    private class StateObserver: UIStateObserver { }
+    
+    @State private var stateObserver = StateObserver()
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear { createEffect(stateObserver) }
+    }
+}
