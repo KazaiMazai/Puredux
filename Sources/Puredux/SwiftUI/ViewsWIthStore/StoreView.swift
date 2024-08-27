@@ -111,7 +111,7 @@ struct SomeStoreView<Action, Content: View>: View {
     
     @State var store = StoreOf(\.root)
         .with(true) { _, _   in }
-        .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
+        .with(.running(maxAttempts: 10)) {_,_ in }
         .effect(\.1) { state in
             Effect { print(state) }
         }
