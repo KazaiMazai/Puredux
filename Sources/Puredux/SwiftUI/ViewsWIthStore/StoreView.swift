@@ -82,3 +82,55 @@ public extension StoreView where Props == (ViewState, Dispatch<Action>)  {
         self.content = content
     }
 }
+
+extension Injected {
+    @InjectEntry var root = StateStore<Int, Bool>(10) {_, _ in }
+    
+}
+ 
+final class SharedSomething: ObservableObject {
+    func foo() -> Int {
+        1
+    }
+}
+
+func foo() {
+    let store = StoreOf(\.root)
+       .with(true) { _, _ in }
+       .map { $0.1 }
+    
+    store.effect(\.self) { state in
+        Effect { print(state) }
+    }
+    
+    store.dispatch(true)
+}
+
+struct SomeStoreView<Action, Content: View>: View {
+    @EnvironmentObject var env: SharedSomething
+    
+    @State var store = StoreOf(\.root)
+        .with(true) { _, _   in }
+        .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
+        .effect(\.1) { state in
+            Effect { print(state) }
+        }
+        .flatMap()
+        .map { $0.1}
+        
+
+    @State private var currentProps: Bool?
+
+    var body: some View {
+        Text("\(currentProps ?? false)")
+            .subscribe(store,
+                       props: { state, dispatch in state }) {
+                
+                store.dispatch(true)
+                currentProps = $0
+            }
+            .onAppear { store.dispatch(true) }
+    }
+
+}
+ 
