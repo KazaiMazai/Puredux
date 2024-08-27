@@ -7,20 +7,21 @@
 
 import SwiftUI
 
-
 extension View {
+    typealias CreateForEachEffect<T> = (T, Effect.State) -> Effect
+    typealias CreateEffect<T> = (T) -> Effect
+    
     func forEachEffect<ViewState, Action, Effects>(
-        on store: Store<ViewState, Action>,
+        _ store: Store<ViewState, Action>,
         _ keyPath: KeyPath<ViewState, Effects>,
         on queue: DispatchQueue = .main,
-        create: @escaping (ViewState, Effect.State) -> Effect) -> some View
+        create: @escaping CreateForEachEffect<ViewState>) -> some View
     
     where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
-        effect(store) { anyObject, store in
-            
+        withObserver { observer in
             store.forEachEffect(
-                anyObject,
+                observer,
                 keyPath,
                 on: queue,
                 create: create
@@ -28,15 +29,14 @@ extension View {
         }
     }
     
-    func effect<ViewState, Action>(on store: Store<ViewState, Action>,
+    func effect<ViewState, Action>(_ store: Store<ViewState, Action>,
                                    _ keyPath: KeyPath<ViewState, Effect.State>,
                                    on queue: DispatchQueue = .main,
-                                   create: @escaping (ViewState) -> Effect) -> some View {
+                                   create: @escaping CreateEffect<ViewState>) -> some View {
         
-        effect(store) { anyObject, store in
-            
+        withObserver { observer in
             store.effect(
-                anyObject,
+                observer,
                 keyPath,
                 on: queue,
                 create: create
@@ -44,17 +44,16 @@ extension View {
         }
     }
     
-    func effect<ViewState, Action, T>(on store: Store<ViewState, Action>,
-                                      _ keyPath: KeyPath<ViewState, T>,
+    func effect<ViewState, Action, T>(_ store: Store<ViewState, Action>,
+                                      onChange keyPath: KeyPath<ViewState, T>,
                                       on queue: DispatchQueue = .main,
-                                      create: @escaping (ViewState) -> Effect) -> some View
+                                      create: @escaping CreateEffect<ViewState>) -> some View
     where T: Equatable {
         
-        effect(store) { anyObject, store in
-            
+        withObserver { observer in
             store.effect(
-                anyObject,
-                keyPath,
+                observer,
+                onChange: keyPath,
                 on: queue,
                 create: create
             )
@@ -62,16 +61,15 @@ extension View {
     }
     
     func effect<ViewState, Action>(
-        on store: Store<ViewState, Action>,
-        _ keyPath: KeyPath<ViewState, Bool>,
+        _ store: Store<ViewState, Action>,
+        toggle keyPath: KeyPath<ViewState, Bool>,
         on queue: DispatchQueue = .main,
-        create: @escaping (ViewState) -> Effect) -> some View {
+        create: @escaping CreateEffect<ViewState>) -> some View {
             
-            effect(store) { anyObject, store in
-                
+            withObserver { observer in
                 store.effect(
-                    anyObject,
-                    keyPath,
+                    observer,
+                    toggle: keyPath,
                     on: queue,
                     create: create
                 )
@@ -81,18 +79,17 @@ extension View {
 
 
 extension View {
-    func effect<ViewState, Action>(on store: Store<ViewState, Action>,
+    func effect<ViewState, Action>(_ store: Store<ViewState, Action>,
                                    withDelay interval: TimeInterval,
-                                   removeStateDuplicates: Equating<ViewState>?,
+                                   removeStateDuplicates equating: Equating<ViewState>?,
                                    on dispatchQueue: DispatchQueue,
-                                   create: @escaping (ViewState) -> Effect) -> some View {
+                                   create: @escaping CreateEffect<ViewState>) -> some View {
         
-        effect(store) { anyObject, store in
-            
+        withObserver { observer in
             store.effect(
-                anyObject,
+                observer,
                 withDelay: interval,
-                removeStateDuplicates: removeStateDuplicates,
+                removeStateDuplicates: equating,
                 on: dispatchQueue,
                 create: create
             )
@@ -102,24 +99,8 @@ extension View {
 
 
 extension View {
-    func effect<ViewState, Action>(
-        _ store: Store<ViewState, Action>,
-        createEffect: @escaping (UIStateObserver, Store<ViewState, Action>) -> Void) -> some View {
-            
-            modifier(
-                EffectModifier(
-                    store: store,
-                    createEffect: createEffect
-                )
-            )
-        }
-    
-    func createObserver(_ observer: @escaping (UIStateObserver) -> Void) -> some View {
-            modifier(
-                UIStateObserverModifier(createEffect: observer )
-            )
-        }
-    
-    
+    func withObserver(with observer: @escaping (UIStateObserver) -> Void) -> some View {
+        modifier( StateObserverModifier(with: observer))
+    }
 }
 

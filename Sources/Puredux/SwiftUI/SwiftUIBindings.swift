@@ -13,8 +13,8 @@ public extension View {
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          observe: @escaping (Props) -> Void) -> some View {
-        createObserver{ stateObserver in
-            stateObserver.subscribe(
+        withObserver { observer in
+            observer.subscribe(
                 store: store,
                 props: props,
                 presentationQueue: presentationQueue,
@@ -29,8 +29,8 @@ public extension View {
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          observe: @escaping (Props) -> Void) -> some View {
-        createObserver { stateObserver in
-            stateObserver.subscribe(
+        withObserver { observer in
+            observer.subscribe(
                 store,
                 props: props,
                 presentationQueue: presentationQueue,
@@ -43,8 +43,8 @@ public extension View {
     func subscribe<State, Action>(_ store: Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   observe: @escaping (State) -> Void) -> some View {
-        createObserver { stateObserver in
-            stateObserver.subscribe(
+        withObserver { observer in
+            observer.subscribe(
                 store,
                 removeStateDuplicates: equating,
                 observe: observe
@@ -56,8 +56,8 @@ public extension View {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) -> some View {
         
-        createObserver { stateObserver in
-            stateObserver.subscribe(
+        withObserver { observer in
+            observer.subscribe(
                 store,
                 removeStateDuplicates: equating,
                 observe: observe
@@ -69,8 +69,8 @@ public extension View {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   observe: @escaping (State, Store<State, Action>) -> Void) -> some View {
         
-        createObserver { stateObserver in
-            stateObserver.subscribe(
+        withObserver { observer in
+            observer.subscribe(
                 store: store,
                 removeStateDuplicates: equating,
                 observe: observe

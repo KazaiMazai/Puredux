@@ -21,9 +21,9 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
 
     public var body: some View {
         makeContent()
-            .effect(store) { uiStateObserver, store in
+            .withObserver { observer in
             
-                uiStateObserver.subscribe(
+                observer.subscribe(
                     store,
                     props: props,
                     presentationQueue: presentationQueue,
@@ -95,28 +95,42 @@ final class SharedSomething: ObservableObject {
 }
 
 func foo() {
-    let store = StoreOf(\.root)
-       .with(true) { _, _ in }
-       .map { $0.1 }
     
-    store.effect(\.self) { state in
-        Effect { print(state) }
-    }
+    var cancellables = Set<CancellableEffect>()
+    let store = StoreOf(\.root)
+        .with(true) { _, _ in }
+        .map { $0.1 }
+        .toggleEffect(&cancellables) { state in
+            Effect { print(state) }
+        }
     
     store.dispatch(true)
 }
 
 struct SomeStoreView<Action, Content: View>: View {
     @EnvironmentObject var env: SharedSomething
-    
-    @State var store = StoreOf(\.root)
+    @State var cancellables = Set<CancellableEffect>()
+   
+    @State var store
+    = StoreOf(\.root)
         .with(true) { _, _   in }
-        .with(.running(maxAttempts: 10)) {_,_ in }
-        .effect(\.1) { state in
-            Effect { print(state) }
-        }
+        .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
         .flatMap()
-        .map { $0.1}
+    
+    init() {
+//        self.cancellables = Set<CancellableEffect>()
+//        
+        store = StoreOf(\.root)
+            .with(true) { _, _   in }
+            .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
+            .flatMap()
+            .effect(&cancellables, \.2) { state in
+                Effect { print(state) }
+            }
+            .effect(&cancellables, \.2) { state in
+                Effect { print(state) }
+            }
+    }
         
 
     @State private var currentProps: Bool?
@@ -127,9 +141,18 @@ struct SomeStoreView<Action, Content: View>: View {
                        props: { state, dispatch in state }) {
                 
                 store.dispatch(true)
-                currentProps = $0
+                currentProps = $0.1
             }
-            .onAppear { store.dispatch(true) }
+//            .onAppear { store.dispatch(true) }
+//            .onAppear {
+//                store.effect(&cancellables, \.2) { state in
+//                    Effect { print(state) }
+//                }
+//            }
+            .effect(store, \.2) { state in
+               
+                Effect { store.dispatch(true) }
+            }
     }
 
 }
