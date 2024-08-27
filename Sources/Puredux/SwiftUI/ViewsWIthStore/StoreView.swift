@@ -10,7 +10,7 @@ import Dispatch
 import Combine
 
 
-public struct StoreView<ViewState, Action, Props, Content: View>: View {
+struct StoreView<ViewState, Action, Props, Content: View>: View {
     let store: Store<ViewState, Action>
     let props: (ViewState, @escaping Dispatch<Action>) -> Props
     let content: (_ props: Props) -> Content
@@ -20,7 +20,7 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
     
     @State private var currentProps: Props?
 
-    public var body: some View {
+    var body: some View {
         makeContent()
             .effect(on: store,
                     withDelay: .uiDebounce,
@@ -48,7 +48,7 @@ extension StoreView {
 }
 
 
-public extension StoreView {
+extension StoreView {
      
     func removeStateDuplicates(_ equating: Equating<ViewState>) -> Self {
         var selfCopy = self
@@ -64,7 +64,7 @@ public extension StoreView {
 }
 
 
-public extension StoreView {
+extension StoreView {
     init(_ store: Store<ViewState, Action>,
          props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
          content: @escaping (Props) -> Content) {
@@ -75,7 +75,7 @@ public extension StoreView {
 }
 
 
-public extension StoreView where Props == (ViewState, Dispatch<Action>)  {
+extension StoreView where Props == (ViewState, Dispatch<Action>)  {
      
     init(_ store: Store<ViewState, Action>,
          content: @escaping (Props) -> Content) {
