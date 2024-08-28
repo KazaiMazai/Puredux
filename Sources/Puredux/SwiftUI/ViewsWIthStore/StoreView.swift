@@ -108,23 +108,23 @@ func foo() {
 }
 
 typealias SomeViewStore = Store<(intValue: Int, boolValue: Bool), Bool>
-
-extension Store {
-    
-    static func someViewStore(_ cancellables: inout Set<CancellableEffect>) -> SomeViewStore {
-        
-        StoreOf(\.root)
-            .with(true) { _, _   in }
-            .map { (intValue: $0.0, boolValue: $0.1) }
-            .effect(&cancellables, toggle: \.boolValue) { state, _ in
-                Effect { print(state) }
-            }
-    }
-}
+//
+//extension Store {
+//    
+//    static func someViewStore(_ cancellables: inout Set<CancellableEffect>) -> SomeViewStore {
+//        
+//        StoreOf(\.root)
+//            .with(true) { _, _   in }
+//            .map { (intValue: $0.0, boolValue: $0.1) }
+//            .effect(&cancellables, toggle: \.boolValue) { state, _ in
+//                Effect { print(state) }
+//            }
+//    }
+//}
 
 @propertyWrapper
 struct ViewStore<T> {
-    private var cancellables: Set<CancellableEffect>
+    private var cancellable = CancellableEffect()
     private(set) var store: T
     
     var wrappedValue: T {
@@ -134,30 +134,26 @@ struct ViewStore<T> {
 }
 
 extension ViewStore {
-    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> T) where T == Store<S, A> {
-        var cancellables = Set<CancellableEffect>()
-        self.store = wrappedValue(&cancellables)
-        self.cancellables = cancellables
+    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> T) where T == Store<S, A> {
+        self.store = wrappedValue(cancellable)
     }
     
-    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> T) where T == StateStore<S, A> {
-        var cancellables = Set<CancellableEffect>()
-        self.store = wrappedValue(&cancellables)
-        self.cancellables = cancellables
+    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> T) where T == StateStore<S, A> {
+        self.store = wrappedValue(cancellable)
     }
 }
 
 typealias ViewStateStore<T> = State<ViewStore<T>>
 
 extension State  {
-    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> StateStore<S, A>)
+    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> StateStore<S, A>)
     where
     Value == ViewStore<StateStore<S, A>> {
         
         self.init(wrappedValue: ViewStore(wrappedValue: wrappedValue))
     }
     
-    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> Store<S, A>)
+    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> Store<S, A>)
     where
     Value == ViewStore<Store<S, A>> {
         
@@ -166,27 +162,36 @@ extension State  {
 }
 
 struct SomeViewBinding<Action, Content: View>: View {
-    @State @ViewStore var store = { cancellables in
+//    init(boolValue: Bool) {
+//         
+//        _store = State(
+//            initialValue: ViewStore { cancellable in
+//                
+//                StoreOf(\.root)
+//                    .store()
+//                    .with(boolValue) { _, _   in }
+//                    .map { (intValue: $0.0, boolValue: $0.1) }
+//                    .effect(cancellable,
+//                            toggle: \.boolValue) { state, dispatch in
+//                        
+//                        Effect {
+//                            dispatch(true)
+//                        }
+//                    }
+//            }
+//        )
+//    }
+    
+    
+    @State @ViewStore var store = { cancellable in
         
         StoreOf(\.root)
-            .resolve()
             .with(true) { _, _   in }
             .map { (intValue: $0.0, boolValue: $0.1) }
-            .effect(&cancellables,
+            .effect(cancellable,
                     toggle: \.boolValue) { state, dispatch in
                 
-                
                 Effect {
-                    print(state)
-                    dispatch(true)
-                }
-            }
-            .effect(&cancellables,
-                    toggle: \.boolValue) { state, dispatch in
-                
-                
-                Effect {
-                    print(state)
                     dispatch(true)
                 }
             }
