@@ -12,7 +12,7 @@ import XCTest
 
 final class SideEfectsBoolTests: XCTestCase {
     let timeout: TimeInterval = 3.0
-    let cancellable = CancellableEffect()
+    let cancellable = AnyCancellableEffect()
     
     func test_WhenStateIsToggledToTrue_EffectExecuted() {
         let store = StateStore<Bool, Bool>(false, reducer: { state, action in state = action })

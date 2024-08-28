@@ -94,18 +94,17 @@ final class SharedSomething: ObservableObject {
     }
 }
 
-func foo() {
-    
-    var cancellables = Set<CancellableEffect>()
-    let store = StoreOf(\.root)
-        .with(true) { _, _ in }
-        .map { $0.1 }
-        .toggleEffect(&cancellables) { state, dispatch in
-            Effect { print(state) }
-        }
-    
-    store.dispatch(true)
-}
+//func foo() {
+//     
+//    let store = StoreOf(\.root)
+//        .with(true) { _, _ in }
+//        .map { $0.1 }
+//        .toggleEffect(&cancellables) { state, dispatch in
+//            Effect { print(state) }
+//        }
+//    
+//    store.dispatch(true)
+//}
 
 typealias SomeViewStore = Store<(intValue: Int, boolValue: Bool), Bool>
 //
@@ -124,7 +123,7 @@ typealias SomeViewStore = Store<(intValue: Int, boolValue: Bool), Bool>
 
 @propertyWrapper
 struct ViewStore<T> {
-    private var cancellable = CancellableEffect()
+    private var cancellable = AnyCancellableEffect()
     private(set) var store: T
     
     var wrappedValue: T {
@@ -134,11 +133,11 @@ struct ViewStore<T> {
 }
 
 extension ViewStore {
-    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> T) where T == Store<S, A> {
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> T) where T == Store<S, A> {
         self.store = wrappedValue(cancellable)
     }
     
-    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> T) where T == StateStore<S, A> {
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> T) where T == StateStore<S, A> {
         self.store = wrappedValue(cancellable)
     }
 }
@@ -146,14 +145,14 @@ extension ViewStore {
 typealias ViewStateStore<T> = State<ViewStore<T>>
 
 extension State  {
-    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> StateStore<S, A>)
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> StateStore<S, A>)
     where
     Value == ViewStore<StateStore<S, A>> {
         
         self.init(wrappedValue: ViewStore(wrappedValue: wrappedValue))
     }
     
-    init<S, A>(wrappedValue: @escaping (CancellableEffect) -> Store<S, A>)
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Store<S, A>)
     where
     Value == ViewStore<Store<S, A>> {
         

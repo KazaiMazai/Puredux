@@ -62,41 +62,6 @@ extension EffectsSource {
     }
 }
 
-extension EffectsSource {
-    @discardableResult
-    func effect(_ cancellables: inout Set<CancellableEffect>,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self where State == Effect.State  {
-        
-        effect(&cancellables, \.self, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func forEachEffect(_ cancellables: inout Set<CancellableEffect>,
-                       on queue: DispatchQueue = .main,
-                       create: @escaping CreateForEachEffect) -> Self
-    
-    where State: Collection & Hashable, State.Element == Effect.State {
-        
-        forEachEffect(&cancellables, \.self, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func onChangeEffect(_ cancellables: inout Set<CancellableEffect>,
-                        on queue: DispatchQueue = .main,
-                        create: @escaping CreateEffect) -> Self where State: Equatable {
-        
-        effect(&cancellables, onChange: \.self, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func toggleEffect(_ cancellables: inout Set<CancellableEffect>,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self where State == Bool {
-        
-        effect(&cancellables, toggle: \.self, on: queue, create: create)
-    }
-}
 
 extension EffectsSource {
     @discardableResult
@@ -219,83 +184,13 @@ extension EffectsSource {
 }
 
 
-extension EffectsSource {
-    @discardableResult
-    func forEachEffect<Effects>(_ cancellables: inout Set<CancellableEffect>,
-                                _ keyPath: KeyPath<State, Effects>,
-                                on queue: DispatchQueue = .main,
-                                create: @escaping CreateForEachEffect) -> Self
-    where Effects: Collection & Hashable, Effects.Element == Effect.State {
-        
-        let cancellable = CancellableEffect()
-        cancellables.insert(cancellable)
-        return forEachEffect(cancellable, keyPath, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func effect(_ cancellables: inout Set<CancellableEffect>,
-                _ keyPath: KeyPath<State, Effect.State>,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self {
-        
-        let cancellable = CancellableEffect()
-        cancellables.insert(cancellable)
-        return effect(cancellable, keyPath, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func effect<T>(_ cancellables: inout Set<CancellableEffect>,
-                   onChange keyPath: KeyPath<State, T>,
-                   on queue: DispatchQueue = .main,
-                   create: @escaping CreateEffect) -> Self where T: Equatable {
-        
-        let cancellable = CancellableEffect()
-        cancellables.insert(cancellable)
-        return effect(cancellable, onChange: keyPath, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func effect(_ cancellables: inout Set<CancellableEffect>,
-                toggle keyPath: KeyPath<State, Bool>,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self {
-        
-        let cancellable = CancellableEffect()
-        cancellables.insert(cancellable)
-        return effect(cancellable, toggle: keyPath, on: queue, create: create)
-    }
-    
-    @discardableResult
-    func effect(_ cancellables: inout Set<CancellableEffect>,
-                withDelay timeInterval: TimeInterval,
-                removeStateDuplicates equating: Equating<State>?,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self {
-        
-        let cancellable = CancellableEffect()
-        cancellables.insert(cancellable)
-        return effect(
-            cancellable,
-            withDelay: timeInterval,
-            removeStateDuplicates: equating,
-            on: queue, 
-            create: create
-        )
-    }
-}
-
-class CancellableEffect: Hashable {
+public class AnyCancellableEffect {
     class EffectStateObserver { }
-    
-    let id = UUID()
+     
     var observer: AnyObject = EffectStateObserver()
     
-    static func == (lhs: CancellableEffect, rhs: CancellableEffect) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    init(observer: AnyObject) {
+        self.observer = observer
     }
     
     func cancel() {
