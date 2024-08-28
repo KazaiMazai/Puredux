@@ -25,7 +25,7 @@ public extension UIStateObserver {
             self,
             withDelay: .uiDebounce,
             removeStateDuplicates: equating,
-            on: presentationQueue) { state in
+            on: presentationQueue) { state, _ in
                 Effect {
                     let props = props(state, store)
                     guard presentationQueue == DispatchQueue.main else {

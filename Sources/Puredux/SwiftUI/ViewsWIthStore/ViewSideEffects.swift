@@ -39,7 +39,7 @@ extension View {
                 observer,
                 keyPath,
                 on: queue,
-                create: create
+                create: { state, _ in create(state) }
             )
         }
     }
@@ -55,7 +55,7 @@ extension View {
                 observer,
                 onChange: keyPath,
                 on: queue,
-                create: create
+                create: { state, _ in create(state) }
             )
         }
     }
@@ -71,7 +71,7 @@ extension View {
                     observer,
                     toggle: keyPath,
                     on: queue,
-                    create: create
+                    create: { state, _ in create(state) }
                 )
             }
         }
@@ -91,7 +91,7 @@ extension View {
                 withDelay: interval,
                 removeStateDuplicates: equating,
                 on: dispatchQueue,
-                create: create
+                create: { state, _ in create(state) }
             )
         }
     }
@@ -100,7 +100,7 @@ extension View {
 
 extension View {
     func withObserver(with observer: @escaping (UIStateObserver) -> Void) -> some View {
-        modifier( StateObserverModifier(with: observer))
+        modifier(StateObserverModifier(with: observer))
     }
 }
 

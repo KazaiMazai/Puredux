@@ -33,3 +33,16 @@ struct StateObserverModifier: ViewModifier {
             .onAppear { with(observer) }
     }
 }
+ 
+//
+//struct WithCancellables: ViewModifier {
+//    let perform: (inout Set<CancellableEffect>) -> Void
+//    
+//    @State private var cancelalbles = Set<CancellableEffect>()
+//    
+//    func body(content: Content) -> some View {
+//        content
+//            .onAppear { with(&cancelalbles) }
+//    }
+//}
+ 

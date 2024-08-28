@@ -25,7 +25,7 @@ extension StateStore: EffectsSource {
 
 extension EffectsSource {
     typealias CreateForEachEffect = (State, Effect.State) -> Effect
-    typealias CreateEffect = (State) -> Effect
+    typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
     
     @discardableResult
     func effect(_ observer: AnyObject,
@@ -138,7 +138,7 @@ extension EffectsSource {
                 
                 let effect = state[keyPath: keyPath]
                 effectOperator.run(effect, on: queue) { _ in
-                    create(state)
+                    create(state, effectsStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -161,7 +161,7 @@ extension EffectsSource {
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
-                    create(state)
+                    create(state, effectsStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -184,7 +184,7 @@ extension EffectsSource {
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
-                    create(state)
+                    create(state, effectsStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -207,7 +207,7 @@ extension EffectsSource {
             observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
-                    create(state)
+                    create(state, effectsStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState

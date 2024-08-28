@@ -11,6 +11,7 @@ import XCTest
 
 final class SideEfectsStateTests: XCTestCase {
     let timeout: TimeInterval = 3.0
+    let observer = CancellableEffect()
     
     func test_WhenStateIsRun_EffectExecuted() {
         let store = StateStore<Effect.State, Bool>(Effect.State(),
@@ -18,7 +19,7 @@ final class SideEfectsStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
 
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_  in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -38,7 +39,7 @@ final class SideEfectsStateTests: XCTestCase {
                                                    reducer: { state, action in action ? state.run() : state.cancel() })
         let asyncExpectation = expectation(description: "Effect executed")
 
-        store.effect(on: .main) { _ in
+        store.effect(observer,on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -59,7 +60,7 @@ final class SideEfectsStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.effect(on: .main) { _ in
+        store.effect(observer,on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -82,7 +83,7 @@ final class SideEfectsStateTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.effect(on: .main) { _ in
+        store.effect(observer,on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -103,7 +104,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -124,7 +125,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -145,7 +146,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -166,7 +167,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -193,7 +194,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 2
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -220,7 +221,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 1
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -243,7 +244,7 @@ final class SideEfectsStateTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.effect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }

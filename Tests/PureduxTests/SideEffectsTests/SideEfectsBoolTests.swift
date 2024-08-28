@@ -12,13 +12,14 @@ import XCTest
 
 final class SideEfectsBoolTests: XCTestCase {
     let timeout: TimeInterval = 3.0
+    let cancellable = CancellableEffect()
     
     func test_WhenStateIsToggledToTrue_EffectExecuted() {
         let store = StateStore<Bool, Bool>(false, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -38,7 +39,7 @@ final class SideEfectsBoolTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -58,7 +59,7 @@ final class SideEfectsBoolTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -80,7 +81,7 @@ final class SideEfectsBoolTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -100,7 +101,7 @@ final class SideEfectsBoolTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -120,7 +121,7 @@ final class SideEfectsBoolTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
         
-        store.effect(on: .main) { _ in
+        store.toggleEffect(cancellable, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }

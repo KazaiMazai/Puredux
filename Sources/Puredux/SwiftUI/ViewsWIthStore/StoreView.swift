@@ -100,60 +100,106 @@ func foo() {
     let store = StoreOf(\.root)
         .with(true) { _, _ in }
         .map { $0.1 }
-        .toggleEffect(&cancellables) { state in
+        .toggleEffect(&cancellables) { state, dispatch in
             Effect { print(state) }
         }
     
     store.dispatch(true)
 }
 
-struct SomeStoreView<Action, Content: View>: View {
-    @EnvironmentObject var env: SharedSomething
-    @State var cancellables = Set<CancellableEffect>()
-   
-    @State var store
-    = StoreOf(\.root)
-        .with(true) { _, _   in }
-        .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
-        .flatMap()
+typealias SomeViewStore = Store<(intValue: Int, boolValue: Bool), Bool>
+
+extension Store {
     
-    init() {
-//        self.cancellables = Set<CancellableEffect>()
-//        
-        store = StoreOf(\.root)
-            .with(true) { _, _   in }
-            .with(Effect.State.running(maxAttempts: 10)) {_,_ in }
-            .flatMap()
-            .effect(&cancellables, \.2) { state in
-                Effect { print(state) }
-            }
-            .effect(&cancellables, \.2) { state in
-                Effect { print(state) }
-            }
-    }
+    static func someViewStore(_ cancellables: inout Set<CancellableEffect>) -> SomeViewStore {
         
-
-    @State private var currentProps: Bool?
-
-    var body: some View {
-        Text("\(currentProps ?? false)")
-            .subscribe(store,
-                       props: { state, dispatch in state }) {
-                
-                store.dispatch(true)
-                currentProps = $0.1
-            }
-//            .onAppear { store.dispatch(true) }
-//            .onAppear {
-//                store.effect(&cancellables, \.2) { state in
-//                    Effect { print(state) }
-//                }
-//            }
-            .effect(store, \.2) { state in
-               
-                Effect { store.dispatch(true) }
+        StoreOf(\.root)
+            .with(true) { _, _   in }
+            .map { (intValue: $0.0, boolValue: $0.1) }
+            .effect(&cancellables, toggle: \.boolValue) { state, _ in
+                Effect { print(state) }
             }
     }
+}
 
+@propertyWrapper
+struct ViewStore<T> {
+    private var cancellables: Set<CancellableEffect>
+    private(set) var store: T
+    
+    var wrappedValue: T {
+        get { store }
+        set { store = newValue }
+    }
+}
+
+extension ViewStore {
+    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> T) where T == Store<S, A> {
+        var cancellables = Set<CancellableEffect>()
+        self.store = wrappedValue(&cancellables)
+        self.cancellables = cancellables
+    }
+    
+    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> T) where T == StateStore<S, A> {
+        var cancellables = Set<CancellableEffect>()
+        self.store = wrappedValue(&cancellables)
+        self.cancellables = cancellables
+    }
+}
+
+typealias ViewStateStore<T> = State<ViewStore<T>>
+
+extension State  {
+    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> StateStore<S, A>)
+    where
+    Value == ViewStore<StateStore<S, A>> {
+        
+        self.init(wrappedValue: ViewStore(wrappedValue: wrappedValue))
+    }
+    
+    init<S, A>(wrappedValue: @escaping (inout Set<CancellableEffect>) -> Store<S, A>)
+    where
+    Value == ViewStore<Store<S, A>> {
+        
+        self.init(wrappedValue: ViewStore(wrappedValue: wrappedValue))
+    }
+}
+
+struct SomeViewBinding<Action, Content: View>: View {
+    @State @ViewStore var store = { cancellables in
+        
+        StoreOf(\.root)
+            .resolve()
+            .with(true) { _, _   in }
+            .map { (intValue: $0.0, boolValue: $0.1) }
+            .effect(&cancellables,
+                    toggle: \.boolValue) { state, dispatch in
+                
+                
+                Effect {
+                    print(state)
+                    dispatch(true)
+                }
+            }
+            .effect(&cancellables,
+                    toggle: \.boolValue) { state, dispatch in
+                
+                
+                Effect {
+                    print(state)
+                    dispatch(true)
+                }
+            }
+    }
+    
+    @State private var viewState: Bool?
+ 
+    var body: some View {
+        Text("\(viewState ?? false)")
+            .subscribe(store) {
+                viewState = $0.1
+            }
+            .onAppear { store.dispatch(true) }
+    }
 }
  
