@@ -23,7 +23,7 @@ public struct StoreOf<T> {
         self.keyPath = keyPath
     }
     
-    public func resolve() -> T {
+    public func store() -> T {
         wrappedValue
     }
 }
