@@ -10,9 +10,15 @@ import SwiftUI
 
 extension UIViewController: UIStateObserver { }
 
-extension UIView: UIStateObserver { }
+extension UIView: UIStateObserver {
+    
+}
 
 public protocol UIStateObserver: AnyObject { }
+
+extension UIStateObserver {
+    var cancellable: AnyCancellableEffect { AnyCancellableEffect(self) }
+}
  
 public extension UIStateObserver {
     func subscribe<State, Action, Props>(store: Store<State, Action>,
@@ -22,7 +28,7 @@ public extension UIStateObserver {
                                          observe: @escaping (Props) -> Void) {
         
         store.effect(
-            self,
+            cancellable,
             withDelay: .uiDebounce,
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in

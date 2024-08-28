@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension View {
+ extension View {
     func subscribe<State, Action, Props>(store: Store<State, Action>,
                                          props: @escaping (State, Store<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
@@ -79,7 +79,7 @@ public extension View {
     }
 }
 
-public extension View {
+ extension View {
     func subscribe<State, Action, Props>(store: StateStore<State, Action>,
                                          props: @escaping (State, Store<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,

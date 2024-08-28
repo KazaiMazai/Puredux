@@ -28,51 +28,51 @@ extension EffectsSource {
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
     
     @discardableResult
-    func effect(_ observer: AnyObject,
+    func effect(_ cancellable: AnyCancellableEffect,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self where State == Effect.State  {
         
-        effect(observer, \.self, on: queue, create: create)
+        effect(cancellable, \.self, on: queue, create: create)
     }
     
     @discardableResult
-    func forEachEffect(_ observer: AnyObject,
+    func forEachEffect(_ cancellable: AnyCancellableEffect,
                        on queue: DispatchQueue = .main,
                        create: @escaping CreateForEachEffect) -> Self
     
     where State: Collection & Hashable, State.Element == Effect.State {
         
-        forEachEffect(observer, \.self, on: queue, create: create)
+        forEachEffect(cancellable, \.self, on: queue, create: create)
     }
     
     @discardableResult
-    func onChangeEffect(_ observer: AnyObject,
+    func onChangeEffect(_ cancellable: AnyCancellableEffect,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self where State: Equatable {
         
-        effect(observer, onChange: \.self, on: queue, create: create)
+        effect(cancellable, onChange: \.self, on: queue, create: create)
     }
     
     @discardableResult
-    func toggleEffect(_ observer: AnyObject,
+    func toggleEffect(_ cancellable: AnyCancellableEffect,
                       on queue: DispatchQueue = .main,
                       create: @escaping CreateEffect) -> Self where State == Bool {
         
-        effect(observer, toggle: \.self, on: queue, create: create)
+        effect(cancellable, toggle: \.self, on: queue, create: create)
     }
 }
 
 
 extension EffectsSource {
     @discardableResult
-    func forEachEffect<Effects>(_ observer: AnyObject,
+    func forEachEffect<Effects>(_ cancellable: AnyCancellableEffect,
                                 _ keyPath: KeyPath<State, Effects>,
                                 on queue: DispatchQueue = .main,
                                 create: @escaping CreateForEachEffect) -> Self
     where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
         let effectOperator = EffectOperator()
-        
+        let observer = cancellable.observer
         effectsStore.subscribe(observer: Observer(
             observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
@@ -90,13 +90,13 @@ extension EffectsSource {
     }
     
     @discardableResult
-    func effect(_ observer: AnyObject,
+    func effect(_ cancellable: AnyCancellableEffect,
                 _ keyPath: KeyPath<State, Effect.State>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        
+        let observer = cancellable.observer
         effectsStore.subscribe(observer: Observer(
             observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
@@ -114,13 +114,13 @@ extension EffectsSource {
     }
     
     @discardableResult
-    func effect<T>(_ observer: AnyObject,
+    func effect<T>(_ cancellable: AnyCancellableEffect,
                    onChange keyPath: KeyPath<State, T>,
                    on queue: DispatchQueue = .main,
                    create: @escaping CreateEffect) -> Self where T: Equatable {
         
         let effectOperator = EffectOperator()
-        
+        let observer = cancellable.observer
         effectsStore.subscribe(observer: Observer(
             observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
@@ -137,13 +137,13 @@ extension EffectsSource {
     }
     
     @discardableResult
-    func effect(_ observer: AnyObject,
+    func effect(_ cancellable: AnyCancellableEffect,
                 toggle keyPath: KeyPath<State, Bool>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        
+        let observer = cancellable.observer
         effectsStore.subscribe(observer: Observer(
             observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
@@ -160,14 +160,14 @@ extension EffectsSource {
     }
     
     @discardableResult
-    func effect(_ observer: AnyObject,
+    func effect(_ cancellable: AnyCancellableEffect,
                 withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        
+        let observer = cancellable.observer
         effectsStore.subscribe(observer: Observer(
             observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
@@ -183,14 +183,17 @@ extension EffectsSource {
     }
 }
 
-
-public class AnyCancellableEffect {
+class AnyCancellableEffect {
     class EffectStateObserver { }
      
     var observer: AnyObject = EffectStateObserver()
     
-    init(observer: AnyObject) {
+    init(_ observer: AnyObject) {
         self.observer = observer
+    }
+    
+    init() {
+        self.observer = EffectStateObserver()
     }
     
     func cancel() {

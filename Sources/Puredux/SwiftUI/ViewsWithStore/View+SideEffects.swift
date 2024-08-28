@@ -21,7 +21,7 @@ extension View {
         
         withObserver { observer in
             store.forEachEffect(
-                observer,
+                observer.cancellable,
                 keyPath,
                 on: queue,
                 create: create
@@ -36,7 +36,7 @@ extension View {
         
         withObserver { observer in
             store.effect(
-                observer,
+                observer.cancellable,
                 keyPath,
                 on: queue,
                 create: { state, _ in create(state) }
@@ -52,7 +52,7 @@ extension View {
         
         withObserver { observer in
             store.effect(
-                observer,
+                observer.cancellable,
                 onChange: keyPath,
                 on: queue,
                 create: { state, _ in create(state) }
@@ -68,7 +68,7 @@ extension View {
             
             withObserver { observer in
                 store.effect(
-                    observer,
+                    observer.cancellable,
                     toggle: keyPath,
                     on: queue,
                     create: { state, _ in create(state) }
@@ -87,7 +87,7 @@ extension View {
         
         withObserver { observer in
             store.effect(
-                observer,
+                observer.cancellable,
                 withDelay: interval,
                 removeStateDuplicates: equating,
                 on: dispatchQueue,
@@ -97,10 +97,4 @@ extension View {
     }
 }
 
-
-extension View {
-    func withObserver(with observer: @escaping (UIStateObserver) -> Void) -> some View {
-        modifier(StateObserverModifier(with: observer))
-    }
-}
 
