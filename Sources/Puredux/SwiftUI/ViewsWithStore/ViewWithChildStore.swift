@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Content>: View
     where Content: View {
 

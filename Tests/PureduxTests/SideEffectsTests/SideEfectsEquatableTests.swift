@@ -12,13 +12,14 @@ import XCTest
 
 final class SideEfectsEquatableTests: XCTestCase {
     let timeout: TimeInterval = 3.0
+    let observer = AnyCancellableEffect()
     
     func test_WhenStateChanged_EffectExecuted() {
         let store = StateStore<Int, Int>(0, reducer: { state, action in state = action })
         
         let asyncExpectation = expectation(description: "Effect executed")
         
-        store.effect(on: .main) { _ in
+        store.onChangeEffect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -38,7 +39,7 @@ final class SideEfectsEquatableTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.effect(on: .main) { _ in
+        store.onChangeEffect(observer, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -57,7 +58,7 @@ final class SideEfectsEquatableTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.effect(on: .main) { _ in
+        store.onChangeEffect(observer, on: .main) { _,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -77,7 +78,7 @@ final class SideEfectsEquatableTests: XCTestCase {
         
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.effect(on: .main) { _ in
+        store.onChangeEffect(observer, on: .main) { _,_ in
             asyncExpectation.fulfill()
             return .skip
         }

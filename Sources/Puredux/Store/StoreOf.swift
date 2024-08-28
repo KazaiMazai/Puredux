@@ -22,6 +22,10 @@ public struct StoreOf<T> {
     public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action>? {
         self.keyPath = keyPath
     }
+    
+    public func store() -> T {
+        wrappedValue
+    }
 }
 
 public extension StoreOf {
