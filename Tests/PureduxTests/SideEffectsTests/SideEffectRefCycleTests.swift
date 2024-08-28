@@ -13,7 +13,7 @@ final class SideEffectRefCycleTests: XCTestCase {
     
     func test_WhenEffectWithCancellables_ThenReferencCycleNotCreated() {
         assertDeallocated {
-            var cancellable = AnyCancellableEffect
+            var cancellable = AnyCancellableEffect()
             
             let object = ReferenceTypeState()
             let store = StateStore<ReferenceTypeState, Int>(object) {_,_ in }
@@ -70,6 +70,54 @@ final class SideEffectRefCycleTests: XCTestCase {
                     }
             }
   
+            return object as AnyObject
+        }
+    }
+    
+    func test_WhenCancellableIsReferenced_ThenReferencIsKept() {
+        var referenceCancellable: AnyCancellableEffect?
+        
+        assertNotDeallocated {
+            let object = ReferenceTypeState()
+            
+            let viewStore = ViewStore { cancellable in
+                referenceCancellable = cancellable
+                return StateStore<ReferenceTypeState, Int>(object) {_,_ in }
+                    .with(true) { _, _ in }
+                    .map { (state: $0.0, boolValue: $0.1)}
+                    .effect(cancellable, toggle: \.boolValue) { state, dispatch in
+                    
+                        Effect {
+                            dispatch(10)
+                        }
+                    }
+            }
+  
+            return object as AnyObject
+        }
+    }
+    
+    func test_WhenCancellableIsReferencedButCancelld_ThenReferencIsNotKept() {
+        var referencedCancellable: AnyCancellableEffect?
+        
+        assertDeallocated {
+            let object = ReferenceTypeState()
+            
+            let viewStore = ViewStore { cancellable in
+                referencedCancellable = cancellable
+                
+                return StateStore<ReferenceTypeState, Int>(object) {_,_ in }
+                    .with(true) { _, _ in }
+                    .map { (state: $0.0, boolValue: $0.1)}
+                    .effect(cancellable, toggle: \.boolValue) { state, dispatch in
+                    
+                        Effect {
+                            dispatch(10)
+                        }
+                    }
+            }
+            
+            referencedCancellable?.cancel()
             return object as AnyObject
         }
     }
