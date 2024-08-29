@@ -55,7 +55,7 @@ public typealias StoreObject = StateStore
  */
 public struct StateStore<State, Action> {
     private let storeObject: any StoreObjectProtocol<State, Action>
-    private let currentStore: Store<State, Action>
+    private let erasedStore: Store<State, Action>
 
     /**
      Returns the `Store` instance associated with this `StateStore`.
@@ -63,7 +63,7 @@ public struct StateStore<State, Action> {
      - Returns: The `Store` instance.
     */
     public func store() -> Store<State, Action> {
-        currentStore
+        weakStore()
     }
     
     /**
@@ -72,7 +72,7 @@ public struct StateStore<State, Action> {
      - Parameter action: The action to be dispatched.
     */
     public func dispatch(_ action: Action) {
-        currentStore.dispatch(action)
+        erasedStore.dispatch(action)
     }
     
     /**
@@ -81,14 +81,14 @@ public struct StateStore<State, Action> {
      - Parameter observer: an Observer instance
      */
     public func subscribe(observer: Observer<State>) {
-        currentStore.subscribe(observer: observer)
+        erasedStore.subscribe(observer: observer)
     }
     
     init(storeObject: any StoreObjectProtocol<State, Action>) {
         self.storeObject = storeObject
-        self.currentStore = Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) }
+        self.erasedStore = Store<State, Action>(
+            dispatcher: { [storeObject] in storeObject.dispatch($0) },
+            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) }
         )
     }
 }
@@ -165,7 +165,7 @@ public extension StateStore {
             +------------+-------------------------+
             |                                      |
             |                                      |
-            |                      --                |
+            |                                      |
             |                                      |
       +---------------+                     +---------------+    +--------------+
       | Child Store 1 |                     | Child Store 2 | -- | Side Effects |
@@ -293,7 +293,10 @@ extension StateStore {
 
 extension StateStore {
     func weakStore() -> Store<State, Action> {
-       currentStore
+        Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) }
+        )
     }
     
     func strongStore() -> Store<State, Action> {
