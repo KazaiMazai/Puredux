@@ -96,5 +96,3 @@ extension View {
         }
     }
 }
-
-
