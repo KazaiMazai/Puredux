@@ -69,6 +69,12 @@ public extension Store {
         Store(dispatcher: dispatch, subscribe: subscribe)
     }
 }
+                         
+extension Store: StoreProtocol {
+    public func getStore() -> Store<State, Action> {
+        self
+    }
+}
 
 public extension Store {
 

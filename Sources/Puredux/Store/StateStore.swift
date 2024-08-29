@@ -54,9 +54,9 @@ public typealias StoreObject = StateStore
     - Action: The type of actions that can be dispatched to the store.
  */
 public struct StateStore<State, Action> {
-    private let storeObject: any StoreProtocol<State, Action>
+    private let storeObject: any StoreObjectProtocol<State, Action>
     private let currentStore: Store<State, Action>
-    
+
     /**
      Returns the `Store` instance associated with this `StateStore`.
 
@@ -84,7 +84,7 @@ public struct StateStore<State, Action> {
         currentStore.subscribe(observer: observer)
     }
     
-    init(storeObject: any StoreProtocol<State, Action>) {
+    init(storeObject: any StoreObjectProtocol<State, Action>) {
         self.storeObject = storeObject
         self.currentStore = Store<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
@@ -196,6 +196,12 @@ public extension StateStore {
                 reducer: reducer
             )
         )
+    }
+}
+
+extension StateStore: StoreProtocol {
+    public func getStore() -> Store<State, Action> {
+        strongStore()
     }
 }
 
