@@ -14,8 +14,8 @@ import SwiftUI
     The `ViewStore` property wrapper is designed to work with both `Store` and `StateStore` types, allowing these
     stores to be easily managed within SwiftUI views.
      
-    By using `ViewStore`, you can integrate state management into your SwiftUI views, ensuring that state changes and side effects
-    are properly handled and observed.
+    By using `@State` together with `@ViewStore`, you can integrate state management into your SwiftUI views, ensuring that state changes and side effects
+    and their lifecycle are properly handled and observed.
  
     In the example, ViewStore is used to wrap a StateStore instance:
  
@@ -62,7 +62,6 @@ import SwiftUI
     The store is initialized with an initial state and a reducer that defines how the state changes in response to actions.
     The `onChangeEffect(...)` method is used to manage side effects based on state changes, using the provided `AnyCancellableEffect`.
      
-
     The `ViewStore` property wrapper can be used with both `Store` and `StateStore` types, allowing them to be
     easily managed within a view or other contexts that support property wrappers.
 
