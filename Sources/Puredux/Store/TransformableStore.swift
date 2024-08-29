@@ -7,68 +7,9 @@
 
 import Foundation
 
-/**
- A protocol that defines a type capable of providing a `Store` object.
- 
- Types conforming to `TransformableStore` must specify the `State` and `Action`
- associated types and provide a `transformable` computed property that returns a `Store` object.
- */
-public protocol TransformableStore {
-    /** The type representing the state managed by the store. */
-    associatedtype State
-    
-    /** The type representing the actions that can be performed on the store.  */
-    associatedtype Action
-    
-    /**
-     A computed property that returns a `Store` object that matches the specified `State` and `Action` types.
-     This allows transformation or access to the underlying store instance.
-     */
-    var transformable: Store<State, Action> { get }
-}
-
-/**
- Extends the `Store` class to conform to the `TransformableStore` protocol.
- 
- This extension allows any `Store` instance to be used where a `TransformableStore` is required.
- */
-extension Store: TransformableStore {
-    /**  The `State` typealias is defined as itself, since `Store` already has a `State` type. */
-    public typealias State = State
-    
-    /** The `Action` typealias is defined as itself, since `Store` already has an `Action` type.  */
-    public typealias Action = Action
-   
-    /**
-     Provides a transformable `Store` by returning the current instance (`self`).
-        This computed property makes the `Store` itself transformable.
-    */
-    public var transformable: Store<State, Action> { self }
-}
-
-/**
- Extends the `StateStore` class to conform to the `TransformableStore` protocol.
- 
- This extension allows any `StateStore` instance to be used where a `TransformableStore` is required.
- */
-extension StateStore: TransformableStore {
-    /** The `State` typealias is defined as itself, since `StateStore` already has a `State` type.  */
-    public typealias State = State
-    
-    /** The `Action` typealias is defined as itself, since `StateStore` already has an `Action` type. */
-    public typealias Action = Action
-    
-    /**
-     Provides a transformable `Store` by calling the `strongStore` method, which returns a `Store` instance.
-     
-     This computed property allows transformation or access to the underlying `Store` within `StateStore`.
-     */
-    public var transformable: Store<State, Action> { strongStore() }
-}
-
 //MARK: - Basic Transformations
 
-public extension TransformableStore {
+public extension StoreProtocol {
     /**
      Maps the state of the store to a new state of type `T`.
 
@@ -81,9 +22,9 @@ public extension TransformableStore {
     */
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
         Store<T, Action>(
-            dispatcher: transformable.dispatchHandler,
+            dispatcher: getStore().dispatchHandler,
             subscribe: { localStateObserver in
-                transformable.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
@@ -103,9 +44,9 @@ public extension TransformableStore {
     */
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
         Store<T, Action>(
-            dispatcher: transformable.dispatchHandler,
+            dispatcher: getStore().dispatchHandler,
             subscribe: { localStateObserver in
-                transformable.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = transform(state) else {
                         complete(.active)
                         return
@@ -130,9 +71,9 @@ public extension TransformableStore {
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
         Store<T?, Action>(
-            dispatcher: transformable.dispatchHandler,
+            dispatcher: getStore().dispatchHandler,
             subscribe: { localStateObserver in
-                transformable.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
@@ -143,7 +84,7 @@ public extension TransformableStore {
 
 //MARK: - KeyPath Transformations
 
-public extension TransformableStore {
+public extension StoreProtocol {
     /**
      Maps the state of the store to a new state of type `T` using a key path.
 
@@ -194,7 +135,7 @@ public extension TransformableStore {
 //MARK: - Tuples Transformations
 
 // swiftlint:disable large_tuple identifier_name
-public extension TransformableStore {
+public extension StoreProtocol {
     /**
      Flattens the state of the store from a nested tuple to a flat tuple.
 
