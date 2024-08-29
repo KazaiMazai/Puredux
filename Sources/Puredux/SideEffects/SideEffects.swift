@@ -57,9 +57,9 @@ extension StoreProtocol {
     where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
         let effectOperator = EffectOperator()
-        let observer = cancellable.observer
+        
         getStore().subscribe(observer: Observer(
-            observer,
+            cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let allEffects = state[keyPath: keyPath]
@@ -81,9 +81,9 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        let observer = cancellable.observer
+        
         getStore().subscribe(observer: Observer(
-            observer,
+            cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let effect = state[keyPath: keyPath]
@@ -105,9 +105,9 @@ extension StoreProtocol {
                    create: @escaping CreateEffect) -> Self where T: Equatable {
         
         let effectOperator = EffectOperator()
-        let observer = cancellable.observer
+        
         getStore().subscribe(observer: Observer(
-            observer,
+            cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
@@ -128,9 +128,9 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        let observer = cancellable.observer
+        
         getStore().subscribe(observer: Observer(
-            observer,
+            cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
@@ -152,9 +152,9 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        let observer = cancellable.observer
+        
         getStore().subscribe(observer: Observer(
-            observer,
+            cancellable.observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, getStore().dispatch)
