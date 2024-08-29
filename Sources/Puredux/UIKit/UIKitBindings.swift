@@ -21,20 +21,20 @@ extension UIStateObserver {
 }
  
 public extension UIStateObserver {
-    func subscribe<State, Action, Props>(store: Store<State, Action>,
+    func subscribe<State, Action, Props>(store: any StoreProtocol<State, Action>,
                                          props: @escaping (State, Store<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
         
-        store.effect(
+        store.getStore().effect(
             cancellable,
             withDelay: timeInterval,
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in
                 Effect {
-                    let props = props(state, store)
+                    let props = props(state, store.getStore())
                     guard presentationQueue == DispatchQueue.main else {
                         DispatchQueue.main.async { observe(props) }
                         return
@@ -44,7 +44,7 @@ public extension UIStateObserver {
             }
     }
     
-    func subscribe<State, Action, Props>(_ store: Store<State, Action>,
+    func subscribe<State, Action, Props>(_ store: any StoreProtocol<State, Action>,
                                          props: @escaping (State, @escaping Dispatch<Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
@@ -61,7 +61,7 @@ public extension UIStateObserver {
         )
     }
     
-    func subscribe<State, Action>(_ store: Store<State, Action>,
+    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State) -> Void) {
@@ -76,7 +76,7 @@ public extension UIStateObserver {
         )
     }
     
-    func subscribe<State, Action>(_ store: Store<State, Action>,
+    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval  = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) {
@@ -89,7 +89,7 @@ public extension UIStateObserver {
         )
     }
     
-    func subscribe<State, Action>(store: Store<State, Action>,
+    func subscribe<State, Action>(store: any StoreProtocol<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Store<State, Action>) -> Void) {
