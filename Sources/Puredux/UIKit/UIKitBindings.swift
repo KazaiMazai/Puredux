@@ -25,11 +25,12 @@ public extension UIStateObserver {
                                          props: @escaping (State, Store<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
+                                         debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
         
         store.effect(
             cancellable,
-            withDelay: .uiDebounce,
+            withDelay: timeInterval,
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in
                 Effect {
@@ -47,6 +48,7 @@ public extension UIStateObserver {
                                          props: @escaping (State, @escaping Dispatch<Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
+                                         debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
         
         subscribe(
@@ -54,12 +56,14 @@ public extension UIStateObserver {
             props: { state, store in props(state, store.dispatch) },
             presentationQueue: presentationQueue,
             removeStateDuplicates: equating,
+            debounceFor: timeInterval,
             observe: observe
         )
     }
     
     func subscribe<State, Action>(_ store: Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
+                                  debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State) -> Void) {
         
         subscribe(
@@ -67,96 +71,101 @@ public extension UIStateObserver {
             props: { state, _ in state },
             presentationQueue: .main,
             removeStateDuplicates: equating,
+            debounceFor: timeInterval,
             observe: observe
         )
     }
     
     func subscribe<State, Action>(_ store: Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
+                                  debounceFor timeInterval: TimeInterval  = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) {
         
         subscribe(
             store: store,
             removeStateDuplicates: equating,
+            debounceFor: timeInterval,
             observe: { state, store in observe(state, store.dispatch) }
         )
     }
     
     func subscribe<State, Action>(store: Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
+                                  debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Store<State, Action>) -> Void) {
         
         subscribe(
             store: store,
             props: { state, store in (state, store) },
             presentationQueue: .main,
-            removeStateDuplicates: equating,
+            removeStateDuplicates: equating, 
+            debounceFor: timeInterval,
             observe: observe
         )
     }
 }
-
-public extension UIStateObserver {
-    func subscribe<State, Action, Props>(store: StateStore<State, Action>,
-                                         props: @escaping (State, Store<State, Action>) -> Props,
-                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                                         removeStateDuplicates equating: Equating<State>? = nil,
-                                         observe: @escaping (Props) -> Void) {
-        
-        subscribe(
-            store: store.strongStore(),
-            props: props,
-            presentationQueue: presentationQueue,
-            removeStateDuplicates: equating,
-            observe: observe
-        )
-    }
-    
-    func subscribe<State, Action, Props>(_ store: StateStore<State, Action>,
-                                         props: @escaping (State, @escaping Dispatch<Action>) -> Props,
-                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                                         removeStateDuplicates equating: Equating<State>? = nil,
-                                         observe: @escaping (Props) -> Void) {
-        
-        subscribe(
-            store.strongStore(),
-            props: props,
-            presentationQueue: presentationQueue,
-            removeStateDuplicates: equating,
-            observe: observe
-        )
-    }
-    
-    func subscribe<State, Action>(_ store: StateStore<State, Action>,
-                                  removeStateDuplicates equating: Equating<State>? = nil,
-                                  observe: @escaping (State) -> Void) {
-        
-        subscribe(
-            store.strongStore(),
-            removeStateDuplicates: equating,
-            observe: observe
-        )
-    }
-    
-    func subscribe<State, Action>(_ store: StateStore<State, Action>,
-                                  removeStateDuplicates equating: Equating<State>? = nil,
-                                  observe: @escaping (State, Dispatch<Action>) -> Void) {
-        
-        subscribe(
-            store.strongStore(),
-            removeStateDuplicates: equating,
-            observe: observe
-        )
-    }
-    
-    func subscribe<State, Action>(store: StateStore<State, Action>,
-                                  removeStateDuplicates equating: Equating<State>? = nil,
-                                  observe: @escaping (State, Store<State, Action>) -> Void) {
-        
-        subscribe(
-            store: store.strongStore(),
-            removeStateDuplicates: equating,
-            observe: observe
-        )
-    }
-}
+//
+//public extension UIStateObserver {
+//    func subscribe<State, Action, Props>(store: StateStore<State, Action>,
+//                                         props: @escaping (State, Store<State, Action>) -> Props,
+//                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
+//                                         removeStateDuplicates equating: Equating<State>? = nil,
+//                                         observe: @escaping (Props) -> Void) {
+//        
+//        subscribe(
+//            store: store.strongStore(),
+//            props: props,
+//            presentationQueue: presentationQueue,
+//            removeStateDuplicates: equating,
+//            observe: observe
+//        )
+//    }
+//    
+//    func subscribe<State, Action, Props>(_ store: StateStore<State, Action>,
+//                                         props: @escaping (State, @escaping Dispatch<Action>) -> Props,
+//                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
+//                                         removeStateDuplicates equating: Equating<State>? = nil,
+//                                         observe: @escaping (Props) -> Void) {
+//        
+//        subscribe(
+//            store.strongStore(),
+//            props: props,
+//            presentationQueue: presentationQueue,
+//            removeStateDuplicates: equating,
+//            observe: observe
+//        )
+//    }
+//    
+//    func subscribe<State, Action>(_ store: StateStore<State, Action>,
+//                                  removeStateDuplicates equating: Equating<State>? = nil,
+//                                  observe: @escaping (State) -> Void) {
+//        
+//        subscribe(
+//            store.strongStore(),
+//            removeStateDuplicates: equating,
+//            observe: observe
+//        )
+//    }
+//    
+//    func subscribe<State, Action>(_ store: StateStore<State, Action>,
+//                                  removeStateDuplicates equating: Equating<State>? = nil,
+//                                  observe: @escaping (State, Dispatch<Action>) -> Void) {
+//        
+//        subscribe(
+//            store.strongStore(),
+//            removeStateDuplicates: equating,
+//            observe: observe
+//        )
+//    }
+//    
+//    func subscribe<State, Action>(store: StateStore<State, Action>,
+//                                  removeStateDuplicates equating: Equating<State>? = nil,
+//                                  observe: @escaping (State, Store<State, Action>) -> Void) {
+//        
+//        subscribe(
+//            store: store.strongStore(),
+//            removeStateDuplicates: equating,
+//            observe: observe
+//        )
+//    }
+//}
