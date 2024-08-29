@@ -71,6 +71,9 @@ public extension Store {
 }
                          
 extension Store: StoreProtocol {
+    public typealias State = State
+    public typealias Action = Action
+    
     public func getStore() -> Store<State, Action> {
         self
     }
