@@ -75,7 +75,7 @@ public extension Presentable {
     // Usage:
 
     let myViewController = MyViewController()
-    let store = StateStore<AppState, Action>
+    let store = StateStore<AppState, Action>(...)
 
     myViewController.setPresenter(
          store: store,
