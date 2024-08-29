@@ -258,3 +258,22 @@ public extension StoreProtocol {
 }
 
 // swiftlint:enable large_tuple identifier_name
+
+
+//MARK: - Actions Transformations
+
+extension Store {
+    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
+        Store<State, A>(
+            dispatcher: { action in dispatch(transform(action)) },
+            subscribe: subscribe
+        )
+    }
+}
+
+extension StateStore {
+    
+    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
+        strongStore().map(transform)
+    }
+}
