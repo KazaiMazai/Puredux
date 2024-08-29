@@ -36,4 +36,3 @@ public protocol StoreProtocol<State, Action> {
     func getStore() -> Store<State, Action>
 }
 
-

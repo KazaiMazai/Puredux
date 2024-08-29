@@ -5,8 +5,62 @@
 //  Created by Sergey Kazakov on 24/08/2024.
 //
 
-import Foundation
+import SwiftUI
 
+
+/**
+A property wrapper that implements a Dependency Injection (DI) pattern by providing access to an injected instance of `StateStore`.
+
+The `StoreOf` property wrapper is used to access and manage an instance of `StateStore` (or an optional `StateStore`) that is injected into the `Injected` type. This pattern facilitates dependency management by allowing components to retrieve dependencies directly through property wrappers.
+- Note: This property wrapper can be initialized with key paths to injected `StateStore` or optional `StateStore` types.
+- Parameter T: The type of the `StateStore` or optional `StateStore` being accessed.
+ 
+Example usage:
+ 
+ ```swift
+ 
+ // Use InjectEntry to inject the instance
+ 
+ extension Injected {
+    @InjectEntry var rootState = StateStore<AppRootState, Action>(AppRootState()) { state, action in
+        // Here is a reducer used to mutate the state
+    }
+ }
+ 
+
+ // Use @StoreOf property wrapper to obtain injected instance:
+ 
+ struct MyView: View {
+     @State @StoreOf(\.rootState)
+     var store: StateStore<AppRootState, Action>
+     
+     var body: some View {
+        // ...
+     }
+ }
+ 
+ // Here is a more complicated Store configration example
+
+ struct AnotherView: View {
+    @State @ViewStore var store = { cancellable in
+        StoreOf(\.rootState)  // resolves injected root state store
+             .with(LocalState()) { localState, action in  // merged with local state store
+                 // Here is a reducer used to mutate the local state
+             }
+             .onChangeEffect(cancellable) { state, dispatch in // cancellable side effects
+                 Effect {
+                     // ...
+                 }
+             }
+     }
+     
+     var body: some View {
+         // ...
+     }
+ }
+ 
+ ```
+*/
 @propertyWrapper
 public struct StoreOf<T> {
     private let keyPath: WritableKeyPath<Injected, T>
