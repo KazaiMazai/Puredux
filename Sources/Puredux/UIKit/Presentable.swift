@@ -45,14 +45,14 @@ public extension Presentable {
     /**
      Binds a presentable `UIView` or `UIViewController` to a store, allowing it to observe state changes and update its properties accordingly. This method is particularly suitable for the Model-View-Presenter (MVP) architecture design pattern.
      
-     In the MVP architecture, the **View** (e.g., `UIView` or `UIViewController`) is responsible for displaying data and forwarding user interactions to the **Presenter**. The **Presenter** acts as an intermediary between the **View** and the **Model** (represented here by the `Store`). It subscribes to changes and updates the **View** accordingly.
+     In the MVP architecture design pattern, the **View** (e.g., `UIView` or `UIViewController`) is responsible for displaying data and forwarding user interactions to the **Presenter**. The **Presenter** acts as an intermediary between the **View** and the **Model** (represented here by the `Store`). It subscribes to changes and updates the **View** accordingly.
      
      This method facilitates this interaction by binding the **View** to the **Store** through a **Presenter**, ensuring that the view is automatically updated when the state changes.
 
      - Parameters:
         - store: The store that holds the state and actions the presentable is interested in.
         - props: A closure that maps the state and store to the properties needed by the presentable.
-        - presentationQueue: The dispatch queue on which the props will be evaluated. Defaults to `DispatchQueue.sharedPresentationQueue`.
+        - presentationQueue: The dispatch queue on which the props will be evaluated. Defaults to `DispatchQueue.sharedPresentationQueue`. Must be **Serial DispatchQueue**
         - equating: An optional `Equating` that determines whether the state has changed to avoid redundant updates. Defaults to `nil`.
         - debounceFor: A time interval for debouncing rapid state changes. Defaults to `.uiDebounce`.
 
@@ -77,13 +77,13 @@ public extension Presentable {
     let myViewController = MyViewController()
     let store = StateStore<AppState, Action>
 
-    myViewController.with(
+    myViewController.setPresenter(
          store: store,
          props: { state, store in
              // Derive view state from the app state and store
              ViewState(someValue: state.someValue, store: store)
          },
-         presentationQueue: .main,
+         presentationQueue: .sharedPresentationQueue,
          removeStateDuplicates: .keyPath(\.lastUpdated),
          debounceFor: 0.016
      )
@@ -92,11 +92,11 @@ public extension Presentable {
 
      ```
     */
-    func with<State, Action>(_ store: any StoreProtocol<State, Action>,
-                             props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil,
-                             debounceFor timeInterval: TimeInterval = .uiDebounce) {
+    func setPresenter<State, Action>(store: any StoreProtocol<State, Action>,
+                                     props: @escaping (State, Store<State, Action>) -> Self.Props,
+                                     presentationQueue: DispatchQueue = .sharedPresentationQueue,
+                                     removeStateDuplicates equating: Equating<State>? = nil,
+                                     debounceFor timeInterval: TimeInterval = .uiDebounce) {
         
         let store = store.getStore()
         presenter = Presenter { [weak self] in
@@ -118,14 +118,14 @@ public extension Presentable {
      - Parameters:
         - store: The store that holds the state and actions the presentable is interested in.
         - props: A closure that maps the state and dispatch closure to the properties needed by the presentable.
-        - presentationQueue: The dispatch queue on which the props will be evaluated on. Defaults to `DispatchQueue.sharedPresentationQueue`.
+        - presentationQueue: The dispatch queue on which the props will be evaluated on. Defaults to `DispatchQueue.sharedPresentationQueue`. Must be **Serial DispatchQueue**
         - equating: An optional `Equating` that determines whether the state has changed to avoid redundant updates. Defaults to `nil`.
     */
-    func with<State, Action>(_ store: any StoreProtocol<State, Action>,
-                             props: @escaping (State, Dispatch<Action>) -> Self.Props,
-                             presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil,
-                             debounceFor timeInterval: TimeInterval = .uiDebounce) {
+    func setPresenter<State, Action>(_ store: any StoreProtocol<State, Action>,
+                                     props: @escaping (State, Dispatch<Action>) -> Self.Props,
+                                     presentationQueue: DispatchQueue = .sharedPresentationQueue,
+                                     removeStateDuplicates equating: Equating<State>? = nil,
+                                     debounceFor timeInterval: TimeInterval = .uiDebounce) {
         
         let store = store.getStore()
         presenter = Presenter { [weak self] in
@@ -144,28 +144,32 @@ public extension Presentable {
 
 public extension Presentable {
     
-    @available(*, deprecated, renamed: "with(_:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
+    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
     func with<State, Action>(store: StateStore<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
         
-        with(store,
+        setPresenter(
+             store: store,
              props: props,
              presentationQueue: presentationQueue.dispatchQueue,
-             removeStateDuplicates: equating)
+             removeStateDuplicates: equating
+        )
     }
     
-    @available(*, deprecated, renamed: "with(_:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
+    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
     func with<State, Action>(store: Store<State, Action>,
                              props: @escaping (State, Store<State, Action>) -> Self.Props,
                              presentationQueue: PresentationQueue = .sharedPresentationQueue,
                              removeStateDuplicates equating: Equating<State>? = nil) {
         
-        with(store,
-             props: props,
-             presentationQueue: presentationQueue.dispatchQueue,
-             removeStateDuplicates: equating)
+        setPresenter(
+            store: store,
+            props: props,
+            presentationQueue: presentationQueue.dispatchQueue,
+            removeStateDuplicates: equating
+        )
     }
 }
 
