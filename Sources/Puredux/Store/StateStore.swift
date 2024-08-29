@@ -132,57 +132,59 @@ public extension StateStore {
 
 public extension StateStore {
     /**
-         Initializes a new child `StateStore` with a specified initial state and a reducer function.
-         
-         - Parameter initialState: The initial state for the new child store.
-         - Parameter reducer: A function that handles dispatched actions and updates the state of the child store.
-         - Returns: A `StateStore` instance that integrates with the root store and manages the new local state.
-         
-         The child store's state is a composition of the root store's state and the new local state. 
-         This method helps build the app's store hierarchy:
-         
-         - Actions are propagated upstream from the child store to the root store.
-         - State updates are propagated downstream from the root store to the child stores.
-         
-         Example usage:
+     Initializes a new child `StateStore` with a specified initial state and a reducer function.
      
-         ```swift
-         let rootStore = StateStore<RootState, RootAction>(...)
-         let childStore = rootStore.with(
-             initialState: ChildState(...),
-             reducer: childReducer
-         )
-         ```
-         
-         Hierarchy diagram:
+     - Parameter initialState: The initial state for the new child store.
+     - Parameter reducer: A function that handles dispatched actions and updates the state of the child store.
+     - Returns: A `StateStore` instance that integrates with the root store and manages the new local state.
      
-         ```text
-                       +------------+    +--------------+
-                       | Root Store | -- | Side Effects |
-                       +------------+    +--------------+
-                            |
-               +------------+------------------------+
-               |                                     |
-               |            +--------------+         |           +--------------+
-               |    +-------| Side Effects |         |    +------| Side Effects |
-               |    |       +--------------+         |    |      +--------------+
-               |    |                                |    |
-          +---------------+   +----+            +---------------+
-          | Child Store 1 | - | UI |            | Child Store 2 |
-          +---------------+   +----+            +---------------+
-                                                     |
-                                                     |
-                                                     |
-                                         +-----------+-----------+
-                                         |                       |
-                                   +---------------+         +---------------+
-                                   | Child Store 3 |         | Child Store 4 |
-                                   +---------------+         +---------------+
-                                      |       |                 |
-                                   +----+  +--------------+  +----+
-                                   | UI |  | Side Effects |  | UI |
-                                   +----+  +--------------+  +----+
-         ```
+     The child store's state is a composition of the root store's state and the new local state.
+     This method helps build the app's store hierarchy:
+     
+     - Actions are propagated upstream from the child store to the root store.
+     - State updates are propagated downstream from the root store to the child stores and eventually to store observers: UI and Side Effects.
+     
+     Example usage:
+ 
+     ```swift
+     let rootStore = StateStore<RootState, RootAction>(...)
+     let childStore = rootStore.with(
+         initialState: ChildState(...),
+         reducer: childReducer
+     )
+     ```
+     
+     Stores can be used to build up the tree hierarchy:
+ 
+     ```text
+                   +------------+    +--------------+
+                   | Root Store | -- | Side Effects |
+                   +------------+    +--------------+
+                         |
+                         |
+            +------------+-------------------------+
+            |                                      |             +----+
+            |                                      |     +-------| UI |
+            |                                      |     |       +----+
+            |                                      |     |
+      +---------------+                     +---------------+    +--------------+
+      | Child Store 1 |                     | Child Store 2 | -- | Side Effects |
+      +---------------+                     +---------------+    +--------------+
+         |       |                                 |
+      +----+  +--------------+                     |
+      | UI |  | Side Effects |        +------------+------------+
+      +----+  +--------------+        |                         |
+                                      |                         |
+                                      |                         |
+                                      |                         |
+                               +---------------+         +---------------+
+                               | Child Store 3 |         | Child Store 4 |
+                               +---------------+         +---------------+
+                                  |         |               |
+                               +----+  +--------------+  +----+
+                               | UI |  | Side Effects |  | UI |
+                               +----+  +--------------+  +----+
+    ```
     */
     func with<T>(_ initialState: T,
                  reducer: @escaping Reducer<T, Action>) -> StateStore<(State, T), Action> {
