@@ -11,7 +11,7 @@ import XCTest
 @available(iOS 16.0.0, *)
 final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
-    typealias ChildStore = any StoreProtocol<StateComposition, Action>
+    typealias ChildStore = any StoreObjectProtocol<StateComposition, Action>
 
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
         initialState: TestState(currentIndex: 1),

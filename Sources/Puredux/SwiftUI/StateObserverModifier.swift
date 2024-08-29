@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 extension View {
     func withObserver(_ observer: @escaping (UIStateObserver) -> Void) -> some View {
         modifier( StateObserverModifier(with: observer))

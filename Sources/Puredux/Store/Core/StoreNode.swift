@@ -11,7 +11,7 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreProtocol,
+final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreObjectProtocol,
                                                                     ParentStore.Action == Action {
 
     private let localStore: CoreStore<LocalState, Action>
@@ -101,7 +101,7 @@ extension StoreNode where LocalState == State {
 
 // MARK: - StoreProtocol Conformance
 
-extension StoreNode: StoreProtocol {
+extension StoreNode: StoreObjectProtocol {
     var queue: DispatchQueue {
         parentStore.queue
     }
