@@ -46,7 +46,7 @@ extension CoreStore {
 
 // MARK: - StoreProtocol Conformance
 
-extension CoreStore: StoreProtocol {
+extension CoreStore: StoreObjectProtocol {
     // MARK: - DispatchQueue
 
     var queue: DispatchQueue {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StoreProtocol<State, Action>: AnyObject & SyncStoreProtocol {
+protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     associatedtype Action
     associatedtype State
 
@@ -37,7 +37,7 @@ protocol SyncStoreProtocol<State, Action> {
     func syncDispatch(scopedAction: ScopedAction<Action>)
 }
 
-extension StoreProtocol {
+extension StoreObjectProtocol {
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
               subscribe: { [weak self] in self?.subscribe(observer: $0) }
@@ -49,13 +49,13 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension StoreObjectProtocol {
     @available(*, deprecated, renamed: "createChildStore(stateStore:stateMapping:reducer:)", message: "qos parameter will have no effect. Root store's QoS is used.")
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
         qos: DispatchQoS,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action> {
 
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
@@ -66,11 +66,11 @@ extension StoreProtocol {
         }
 }
 
-extension StoreProtocol {
+extension StoreObjectProtocol {
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreProtocol<ResultState, Action> {
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action> {
 
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
