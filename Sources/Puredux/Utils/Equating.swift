@@ -55,6 +55,14 @@ public extension Equating where T: Equatable {
     }
 }
 
+public extension Equating where T: Identifiable {
+    static var asIdentifiable: Equating {
+        Equating {
+            $0.id == $1.id
+        }
+    }
+}
+
 extension Equating {
     func isEqual(_ lhs: T?, to rhs: T?) -> Bool {
         switch (lhs, rhs) {

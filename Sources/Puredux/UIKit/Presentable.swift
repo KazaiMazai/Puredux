@@ -77,7 +77,6 @@ public extension Presentable {
     }
 }
 
-
 struct Presenter: PresenterProtocol {
     let subscribe: () -> Void
 
