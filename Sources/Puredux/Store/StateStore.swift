@@ -36,13 +36,13 @@ public typealias StoreObject = StateStore
     |                                                                 |
     |                                                                 |
     |           +----------------+                +---+----+          |
-    V           |                |   Async Work   |        |          |
+    V Observer  |                |   Async Work   |        |          |
     +---------->|  Side Effects  |--------------->| Action |--------->|
     |           |                |     Result     |        |          |
     |           +----------------+                +----+---+          |
     |                                                                 |
     |           +----------------+                   +---+----+       |
-    V           |                |       User        |        |       |
+    V Observer  |                |       User        |        |       |
     +---------->|       UI       |------------------>| Action |------>+
                 |                |   Interactions    |        |
                 +----------------+                   +----+---+
