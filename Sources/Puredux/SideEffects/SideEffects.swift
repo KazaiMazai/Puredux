@@ -166,6 +166,30 @@ extension StoreProtocol {
         
         return self
     }
+    
+    @discardableResult
+    func effect(toggle keyPath: KeyPath<State, Bool>,
+                on queue: DispatchQueue = .main,
+                create: @escaping CreateEffect) -> Self {
+        
+        let effectOperator = EffectOperator()
+        let store = getStore()
+        let weakStore = store.weakStore()
+       
+        store.subscribe(observer: Observer(
+            store.getStoreObject() ?? AnyCancellableEffect(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                let isRunning = state[keyPath: keyPath]
+                effectOperator.run(isRunning, on: queue) { _ in
+                    create(state, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
 }
 
 class AnyCancellableEffect {

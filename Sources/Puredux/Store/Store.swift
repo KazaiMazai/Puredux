@@ -18,9 +18,18 @@ public extension Store {
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
+protocol AnyStoreObjectProtocol: AnyObject {
+    
+}
+
+extension AnyStoreObject: AnyStoreObjectProtocol {
+    
+}
+
 public struct Store<State, Action> {
     let dispatchHandler: Dispatch
-    private let subscribeHandler: Subscribe
+    let subscribeHandler: Subscribe
+    let getStoreObject: () -> AnyStoreObjectProtocol?
 }
 
 public extension Store {
@@ -48,7 +57,7 @@ public extension Store {
     @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
     init(dispatch: @escaping Dispatch,
          subscribe: @escaping Subscribe) {
-        self.init(dispatcher: dispatch, subscribe: subscribe)
+        self.init(dispatcher: dispatch, subscribe: subscribe, storeObject: { nil })
     }
 
     /// Initializes a mock Store
@@ -63,10 +72,15 @@ public extension Store {
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
     ///
-    static func mockStore(dispatch: @escaping Dispatch,
-                          subscribe: @escaping Subscribe) -> Store<State, Action> {
+    static func mockStore(
+        dispatch: @escaping Dispatch,
+        subscribe: @escaping Subscribe) -> Store<State, Action> {
 
-        Store(dispatcher: dispatch, subscribe: subscribe)
+            Store(
+                dispatcher: dispatch,
+                subscribe: subscribe,
+                storeObject: { nil }
+            )
     }
 }
                          
@@ -127,10 +141,21 @@ public extension Store {
 
 extension Store {
     init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe) {
+         subscribe: @escaping Subscribe,
+         storeObject:  @escaping () -> AnyStoreObjectProtocol?) {
 
-        dispatchHandler = dispatcher
-        subscribeHandler = subscribe
+        dispatchHandler = { dispatcher($0) }
+        subscribeHandler = { subscribe($0) }
+        getStoreObject = storeObject
+    }
+    
+    func weakStore() -> Store<State, Action> {
+        let storeObject = getStoreObject()
+        return Store<State, Action>(
+            dispatcher: dispatchHandler,
+            subscribe: subscribeHandler,
+            storeObject: { [weak storeObject] in storeObject }
+        )
     }
 }
 

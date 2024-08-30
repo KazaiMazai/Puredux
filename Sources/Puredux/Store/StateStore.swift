@@ -54,7 +54,7 @@ public typealias StoreObject = StateStore
     - Action: The type of actions that can be dispatched to the store.
  */
 public struct StateStore<State, Action> {
-    private let storeObject: any StoreObjectProtocol<State, Action>
+    private let storeObject: AnyStoreObject<State, Action>
     private let erasedStore: Store<State, Action>
 
     /**
@@ -85,10 +85,12 @@ public struct StateStore<State, Action> {
     }
     
     init(storeObject: any StoreObjectProtocol<State, Action>) {
-        self.storeObject = storeObject
+        let storeObjectBox = AnyStoreObject(storeObject)
+        self.storeObject = storeObjectBox
         self.erasedStore = Store<State, Action>(
-            dispatcher: { [storeObject] in storeObject.dispatch($0) },
-            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) }
+            dispatcher: { [weak storeObjectBox] in storeObjectBox?.dispatch($0) },
+            subscribe: { [weak storeObjectBox] in storeObjectBox?.subscribe(observer: $0) },
+            storeObject: { [storeObjectBox] in storeObjectBox }
         )
     }
 }
@@ -204,7 +206,7 @@ extension StateStore: StoreProtocol {
     public typealias Action = Action
    
     public func getStore() -> Store<State, Action> {
-        strongStore()
+        erasedStore
     }
 }
 
@@ -293,15 +295,10 @@ extension StateStore {
 
 extension StateStore {
     func weakStore() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) }
-        )
+        erasedStore.weakStore()
     }
     
     func strongStore() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [storeObject] in storeObject.dispatch($0) },
-            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) })
+        erasedStore
     }
 }

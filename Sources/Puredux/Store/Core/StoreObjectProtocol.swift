@@ -40,7 +40,8 @@ protocol SyncStoreProtocol<State, Action> {
 extension StoreObjectProtocol {
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) }
+              subscribe: { [weak self] in self?.subscribe(observer: $0) },
+              storeObject: { [weak self] in self.map { AnyStoreObject($0) } }
         )
     }
 
