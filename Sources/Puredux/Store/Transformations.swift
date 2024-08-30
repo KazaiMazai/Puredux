@@ -21,14 +21,17 @@ public extension StoreProtocol {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: getStore().dispatchHandler,
+        let store = getStore()
+        let weakStore = store.weakStore()
+        return Store<T, Action>(
+            dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
-            }
+            },
+            storeObject: store.getStoreObject
         )
     }
     
@@ -43,10 +46,12 @@ public extension StoreProtocol {
      - Note: This method filters out states where the transformation closure returns `nil`, resulting in a store with a reduced set of states.
     */
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: getStore().dispatchHandler,
+        let store = getStore()
+        let weakStore = store.weakStore()
+        return Store<T, Action>(
+            dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     guard let localState = transform(state) else {
                         complete(.active)
                         return
@@ -54,7 +59,8 @@ public extension StoreProtocol {
 
                     localStateObserver.send(localState, complete: complete)
                 })
-            }
+            },
+            storeObject: store.getStoreObject
         )
     }
 
@@ -70,14 +76,17 @@ public extension StoreProtocol {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        Store<T?, Action>(
-            dispatcher: getStore().dispatchHandler,
+        let store = getStore()
+        let weakStore = store.weakStore()
+        return Store<T?, Action>(
+            dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
-            }
+            },
+            storeObject: store.getStoreObject
         )
     }
 }
@@ -266,7 +275,8 @@ extension Store {
     func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
         Store<State, A>(
             dispatcher: { action in dispatch(transform(action)) },
-            subscribe: subscribe
+            subscribe: subscribe,
+            storeObject: getStore().getStoreObject
         )
     }
 }
