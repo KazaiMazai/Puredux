@@ -8,6 +8,7 @@
 import Foundation
 import XCTest
 @testable import Puredux
+import Puredux
 
 final class SideEffectRefCycleTests: XCTestCase {
     
@@ -118,6 +119,24 @@ final class SideEffectRefCycleTests: XCTestCase {
             }
             
             referencedCancellable?.cancel()
+            return object as AnyObject
+        }
+    }
+    
+    func test_WhenStoreIsNotReferenced_TheStateIsDeallocated() {
+        assertDeallocated {
+            let object = ReferenceTypeState()
+            
+            let store = StateStore<ReferenceTypeState, Int>(object) {_,_ in }
+                .with(true) { state, _ in state.toggle() }
+                .map { (state: $0.0, boolValue: $0.1)}
+                .effect(toggle: \.boolValue) { state, dispatch in
+                
+                    Effect {
+                        dispatch(10)
+                    }
+                }
+ 
             return object as AnyObject
         }
     }
