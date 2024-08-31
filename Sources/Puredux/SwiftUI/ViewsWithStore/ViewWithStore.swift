@@ -81,7 +81,8 @@ import SwiftUI
  5. Replace `ViewWithStore` with a `StoreView`
 
  */
-@available(*, deprecated, message: "Consider migration to StoreView instead. Will be removed in 2.0")
+
+@available(*, deprecated, message: "Will be removed in 2.0. Checkout migration guide.")
 public struct ViewWithStore<ViewState, Action, Props, Content: View>: View {
     let props: (_ state: ViewState, _ store: PublishingStore<ViewState, Action>) -> Props
     let content: (_ props: Props) -> Content

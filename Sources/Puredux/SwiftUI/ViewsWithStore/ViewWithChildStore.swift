@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 
+@available(*, deprecated, message: "Will be removed in 2.0")
 struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Content>: View
     where Content: View {
 

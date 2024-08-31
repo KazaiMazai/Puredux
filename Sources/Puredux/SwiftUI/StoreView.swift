@@ -24,7 +24,8 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
     private let store: Store<ViewState, Action>
     private let props: (_ state: ViewState, _ store: Store<ViewState, Action>) -> Props
     private let content: (_ props: Props) -> Content
-    private(set) var presentationSettings: PresentationSettings<ViewState> = .default
+    private(set) var removeStateDuplicates: Equating<ViewState>?
+    private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
     
     @State private var currentProps: Props?
     
@@ -33,8 +34,8 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
             .subscribe(
                 store: store,
                 props: props,
-                presentationQueue: presentationSettings.queue.dispatchQueue,
-                removeStateDuplicates: .init(predicate: presentationSettings.removeDuplicates)) {
+                presentationQueue: presentationQueue,
+                removeStateDuplicates: removeStateDuplicates) {
                     currentProps = $0
                 }
     }
@@ -59,7 +60,7 @@ public extension StoreView {
     */
     func removeStateDuplicates(_ equating: Equating<ViewState>) -> Self {
         var selfCopy = self
-        selfCopy.presentationSettings.removeDuplicates = equating.predicate
+        selfCopy.removeStateDuplicates = equating
         return selfCopy
     }
  
@@ -68,21 +69,12 @@ public extension StoreView {
      
      - Parameter queue: A `DispatchQueue` on which state updates should be presented.
      - Returns: A new instance of `StoreView` with the updated presentation queue.
+     - Note: `DispatchQueue` cannot be concurrent. Only serial queue is supported
     */
     func usePresentationQueue(_ queue: DispatchQueue) -> Self {
         var selfCopy = self
-        selfCopy.presentationSettings.queue = .serialQueue(queue)
+        selfCopy.presentationQueue = queue
         return selfCopy
-    }
-    
-    /**
-     Returns a copy of the `StoreView` configured to use a specific `PresentationQueue` for state presentation updates.
-     
-     - Parameter queue: A `PresentationQueue` that wraps a `DispatchQueue` for state updates.
-     - Returns: A new instance of `StoreView` with the updated presentation queue.
-    */
-    func usePresentationQueue(_ queue: PresentationQueue) -> Self {
-        usePresentationQueue(queue.dispatchQueue)
     }
 }
 
