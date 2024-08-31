@@ -157,13 +157,6 @@ extension Store {
             return
         }
         
-        action.dispatchQueue.async {
-            action.execute { result in
-                guard let resultAction = result as? Action else {
-                    return
-                }
-                dispatch(resultAction)
-            }
-        }
+        action.execute(self.dispatchHandler)
     }
 }

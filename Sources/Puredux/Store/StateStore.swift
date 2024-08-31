@@ -54,8 +54,7 @@ public typealias StoreObject = StateStore
     - Action: The type of actions that can be dispatched to the store.
  */
 public struct StateStore<State, Action> {
-    private let storeObject: AnyStoreObject<State, Action>
-    private let storeInstance: Store<State, Action>
+    let storeObject: AnyStoreObject<State, Action>
     
 
     /**
@@ -73,7 +72,8 @@ public struct StateStore<State, Action> {
      - Parameter action: The action to be dispatched.
     */
     public func dispatch(_ action: Action) {
-        storeInstance.dispatch(action)
+        storeObject.dispatch(action)
+        executeAsyncAction(action)
     }
     
     /**
@@ -82,17 +82,11 @@ public struct StateStore<State, Action> {
      - Parameter observer: an Observer instance
      */
     public func subscribe(observer: Observer<State>) {
-        storeInstance.subscribe(observer: observer)
+        storeObject.subscribe(observer: observer)
     }
     
     init(storeObject: any StoreObjectProtocol<State, Action>) {
-        let boxedStoreObject = AnyStoreObject(storeObject)
-        self.storeObject = boxedStoreObject
-        self.storeInstance = Store<State, Action>(
-            dispatcher: { [weak boxedStoreObject] in boxedStoreObject?.dispatch($0) },
-            subscribe: { [weak boxedStoreObject] in boxedStoreObject?.subscribe(observer: $0) },
-            storeObject: { [boxedStoreObject] in boxedStoreObject }
-        )
+        self.storeObject = AnyStoreObject(storeObject)
     }
 }
 
@@ -207,7 +201,11 @@ extension StateStore: StoreProtocol {
     public typealias Action = Action
    
     public var instance: Store<State, Action> {
-        storeInstance
+        Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
+            storeObject: { [storeObject] in storeObject }
+        )
     }
 }
 
@@ -290,5 +288,17 @@ extension StateStore {
     ) -> StateStore<(State, T), Action> {
         
         with(state, reducer: reducer)
+    }
+}
+
+extension StateStore {
+    func executeAsyncAction(_ action: Action) {
+        guard let action = action as? (any AsyncAction) else {
+            return
+        }
+        
+        action.execute { [weak storeObject] in
+            storeObject?.dispatch($0)
+        }
     }
 }

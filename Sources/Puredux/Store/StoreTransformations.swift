@@ -271,7 +271,7 @@ public extension StoreProtocol {
 //MARK: - Actions Transformations
 
 extension Store {
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
+    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
         let store = instance
         let weakStore = weakStore()
         return Store<State, A>(
@@ -283,7 +283,7 @@ extension Store {
 }
 
 extension StateStore {
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        instance.map(transform)
+    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
+        instance.map(action: transform)
     }
 }
