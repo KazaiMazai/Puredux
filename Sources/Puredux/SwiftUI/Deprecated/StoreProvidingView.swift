@@ -39,7 +39,7 @@ public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
     ///     )
     ///
     ///     ```
-    @available(*, deprecated, message: "Will be removed in the next major release. Use EnvStoreFactory and ViewWithStoreFactory instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use EnvStoreFactory and ViewWithStoreFactory instead")
     public init(rootStore: RootEnvStore<AppState, Aciton>,
                 content: @escaping () -> Content) {
         self.rootStore = rootStore

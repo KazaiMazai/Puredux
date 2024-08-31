@@ -28,7 +28,7 @@ public final class RootStore<State, Action> {
     /// RootStore is a factory for light-weight stores that are created as proxies for the internal store.
     ///
     ///
-    @available(*, deprecated, message: "Will be removed in the next major release. Consider migrating to StoreFactory")
+    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to StoreFactory")
     public init(queue: StoreQueue = .global(qos: .userInteractive),
                 initialState: State,
                 reducer: @escaping Reducer<State, Action>) {

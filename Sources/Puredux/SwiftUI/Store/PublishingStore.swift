@@ -46,7 +46,7 @@ public extension PublishingStore {
     /// All dispatched Actions are forwarded to the root store.
     /// PublishingStore is thread safe. Actions can be safely dispatched from any thread.
     ///
-    @available(*, deprecated, message: "Will be removed in the next major release. Use scope(...) method instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use scope(...) method instead")
     func proxy<LocalState>(
         toLocalState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action> {
 

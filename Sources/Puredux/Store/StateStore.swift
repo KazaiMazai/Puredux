@@ -7,7 +7,7 @@
 
 import Foundation
 
-@available(*, deprecated, renamed: "StateStore", message: "Will be removed in the next major release. StateStore is a former StoreObject replacement")
+@available(*, deprecated, renamed: "StateStore", message: "Will be removed in 2.0. StateStore is a former StoreObject replacement")
 public typealias StoreObject = StateStore
 /**
  A generic state store for managing state and handling actions within a store.
