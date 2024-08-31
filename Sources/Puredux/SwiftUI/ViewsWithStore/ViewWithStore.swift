@@ -81,6 +81,7 @@ import SwiftUI
  5. Replace `ViewWithStore` with a `StoreView`
 
  */
+@available(*, deprecated, message: "Consider migration to StoreView instead. Will be removed in 2.0")
 public struct ViewWithStore<ViewState, Action, Props, Content: View>: View {
     let props: (_ state: ViewState, _ store: PublishingStore<ViewState, Action>) -> Props
     let content: (_ props: Props) -> Content
@@ -298,7 +299,6 @@ public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewSt
     }
 }
 
-
 public extension ViewWithStore where Props == (ViewState, PublishingStore<ViewState, Action>) {
     /**
      Initializes ViewWithStore which connects its `ContentView` to the store.
@@ -400,6 +400,7 @@ public extension ViewWithStore {
      ```
      - Note:  Cheсkout the `ViewWithStore` migration guide.
      */
+    @available(*, deprecated, message: "Cheсkout the `ViewWithStore` migration guide. Will be removed in 2.0")
     func store(_ store: PublishingStore<ViewState, Action>) -> some View {
         ViewWithPublishingStore(
             store: store,
@@ -468,6 +469,7 @@ public extension ViewWithStore {
      
      - Note: Cheсkout the `ViewWithStore` migration guide.
      */
+    @available(*, deprecated, message: "Cheсkout the `ViewWithStore` migration guide. Will be removed in 2.0")
     func scopeStore<AppState>(to localState: @escaping (AppState) -> ViewState) -> some View {
         ViewWithScopeStore(
             localState: localState,
@@ -559,8 +561,9 @@ public extension ViewWithStore {
          }
      }
      ```
-     - Note: Cheсkout the `ViewWithStore` migration guide.
+     
     */
+    @available(*, deprecated, message: "Cheсkout the `ViewWithStore` migration guide. Will be removed in 2.0")
     func childStore<AppState, ChildState>(initialState: ChildState,
                                           stateMapping: @escaping (AppState, ChildState) -> ViewState,
                                           qos: DispatchQoS = .userInteractive,
@@ -655,6 +658,7 @@ public extension ViewWithStore {
      
      - Note: Cheсkout the `ViewWithStore` migration guide.
      */
+    @available(*, deprecated, message: "Cheсkout the `ViewWithStore` migration guide. Will be removed in 2.0")
     func childStore<AppState, ChildState>(initialState: ChildState,
                                           qos: DispatchQoS = .userInteractive,
                                           reducer: @escaping Reducer<ChildState, Action>) -> some View

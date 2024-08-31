@@ -10,14 +10,15 @@ import SwiftUI
 /**
  A SwiftUI view that binds to a `Store` object to observe its state and dispatch actions.
 
+ - Note: `StoreView` is intended to make the migration from `ViewWithStore` to Puredux 2.0 process easier.
+    Otherwise consider using `view.subscribe(...)` API directly
+ 
  - Parameters:
    - ViewState: The type representing the state of the view.
    - Action: The type representing the actions that can be dispatched to modify the state.
    - Props: The type representing the properties derived from the state to be passed to the content view.
    - Content: A view builder that generates the content for the view based on the provided `Props`.
  
- - Note: `StoreView` is intended to make the migration from `ViewWithStore` to Puredux 2.0 process easier.
-    Otherwise consider using `view.subscribe(...)` API directly
 */
 public struct StoreView<ViewState, Action, Props, Content: View>: View {
     private let store: Store<ViewState, Action>
