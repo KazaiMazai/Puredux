@@ -18,13 +18,7 @@ public extension Store {
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
-protocol AnyStoreObjectProtocol: AnyObject {
-    
-}
-
-extension AnyStoreObject: AnyStoreObjectProtocol {
-    
-}
+typealias AnyStoreObjectProtocol = AnyObject
 
 public struct Store<State, Action> {
     let dispatchHandler: Dispatch
@@ -88,9 +82,7 @@ extension Store: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
     
-    public func getStore() -> Store<State, Action> {
-        self
-    }
+    public var instance: Store<State, Action> { self }
 }
 
 public extension Store {
@@ -142,7 +134,7 @@ public extension Store {
 extension Store {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe,
-         storeObject:  @escaping () -> AnyStoreObjectProtocol?) {
+         storeObject: @escaping () -> AnyStoreObjectProtocol?) {
 
         dispatchHandler = { dispatcher($0) }
         subscribeHandler = { subscribe($0) }

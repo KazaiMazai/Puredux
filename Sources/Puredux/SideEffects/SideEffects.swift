@@ -11,7 +11,175 @@ import Foundation
 extension StoreProtocol {
     typealias CreateForEachEffect = (State, Effect.State) -> Effect
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
+}
+
+extension StoreProtocol {
     
+    @discardableResult
+    func effect(on queue: DispatchQueue = .main,
+                create: @escaping CreateEffect) -> Self 
+    where
+    State == Effect.State  {
+        
+        effect(\.self, on: queue, create: create)
+    }
+    
+    @discardableResult
+    func forEachEffect(on queue: DispatchQueue = .main,
+                       create: @escaping CreateForEachEffect) -> Self
+    
+    where 
+    State: Collection & Hashable,
+    State.Element == Effect.State {
+        
+        forEachEffect(\.self, on: queue, create: create)
+    }
+    
+    @discardableResult
+    func onChangeEffect(on queue: DispatchQueue = .main,
+                        create: @escaping CreateEffect) -> Self 
+    where
+    State: Equatable {
+        
+        effect(onChange: \.self, on: queue, create: create)
+    }
+    
+    @discardableResult
+    func toggleEffect(on queue: DispatchQueue = .main,
+                      create: @escaping CreateEffect) -> Self 
+    where 
+    State == Bool {
+        
+        effect(toggle: \.self, on: queue, create: create)
+    }
+}
+
+
+extension StoreProtocol {
+    @discardableResult
+    func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
+                                on queue: DispatchQueue = .main,
+                                create: @escaping CreateForEachEffect) -> Self
+    where 
+    Effects: Collection & Hashable,
+    Effects.Element == Effect.State {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+        
+        instance.subscribe(observer: Observer(
+            weakStore.getStoreObject(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let allEffects = state[keyPath: keyPath]
+                effectOperator.run(allEffects, on: queue) { effectState in
+                    create(state, effectState)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+    
+    @discardableResult
+    func effect(_ keyPath: KeyPath<State, Effect.State>,
+                on queue: DispatchQueue = .main,
+                create: @escaping CreateEffect) -> Self {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+        
+        instance.subscribe(observer: Observer(
+            weakStore.getStoreObject(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let effect = state[keyPath: keyPath]
+                effectOperator.run(effect, on: queue) { _ in
+                    create(state, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+    
+    @discardableResult
+    func effect<T>(onChange keyPath: KeyPath<State, T>,
+                   on queue: DispatchQueue = .main,
+                   create: @escaping CreateEffect) -> Self 
+    where T: Equatable {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+        
+        instance.subscribe(observer: Observer(
+            weakStore.getStoreObject(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                let effect: Effect.State = prevState == nil ? .idle() : .running()
+                effectOperator.run(effect, on: queue) { _ in
+                    create(state, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+    
+    @discardableResult
+    func effect(toggle keyPath: KeyPath<State, Bool>,
+                on queue: DispatchQueue = .main,
+                create: @escaping CreateEffect) -> Self {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+        
+        instance.subscribe(observer: Observer(
+            weakStore.getStoreObject(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                let isRunning = state[keyPath: keyPath]
+                effectOperator.run(isRunning, on: queue) { _ in
+                    create(state, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+    
+    @discardableResult
+    func effect(withDelay timeInterval: TimeInterval,
+                removeStateDuplicates: Equating<State>?,
+                on queue: DispatchQueue = .main,
+                create: @escaping CreateEffect) -> Self {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+       
+        instance.subscribe(observer: Observer(
+            weakStore.getStoreObject(),
+            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
+                effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
+                    create(state, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+}
+
+extension StoreProtocol {
+     
     @discardableResult
     func effect(_ cancellable: AnyCancellableEffect,
                 on queue: DispatchQueue = .main,
@@ -57,8 +225,9 @@ extension StoreProtocol {
     where Effects: Collection & Hashable, Effects.Element == Effect.State {
         
         let effectOperator = EffectOperator()
+        let weakStore = weakStore()
         
-        getStore().subscribe(observer: Observer(
+        instance.subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
@@ -81,14 +250,15 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
+        let weakStore = weakStore()
         
-        getStore().subscribe(observer: Observer(
+        instance.subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
                 let effect = state[keyPath: keyPath]
                 effectOperator.run(effect, on: queue) { _ in
-                    create(state, getStore().dispatch)
+                    create(state, weakStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -105,13 +275,14 @@ extension StoreProtocol {
                    create: @escaping CreateEffect) -> Self where T: Equatable {
         
         let effectOperator = EffectOperator()
+        let weakStore = weakStore()
         
-        getStore().subscribe(observer: Observer(
+        instance.subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
-                    create(state, getStore().dispatch)
+                    create(state, weakStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -128,13 +299,14 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
+        let weakStore = weakStore()
         
-        getStore().subscribe(observer: Observer(
+        instance.subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
-                    create(state, getStore().dispatch)
+                    create(state, weakStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -152,35 +324,12 @@ extension StoreProtocol {
                 create: @escaping CreateEffect) -> Self {
         
         let effectOperator = EffectOperator()
-        
-        getStore().subscribe(observer: Observer(
+        let weakStore = weakStore()
+       
+        instance.subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
-                    create(state, getStore().dispatch)
-                }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
-            }
-        )
-        
-        return self
-    }
-    
-    @discardableResult
-    func effect(toggle keyPath: KeyPath<State, Bool>,
-                on queue: DispatchQueue = .main,
-                create: @escaping CreateEffect) -> Self {
-        
-        let effectOperator = EffectOperator()
-        let store = getStore()
-        let weakStore = store.weakStore()
-       
-        store.subscribe(observer: Observer(
-            store.getStoreObject() ?? AnyCancellableEffect(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
-                let isRunning = state[keyPath: keyPath]
-                effectOperator.run(isRunning, on: queue) { _ in
                     create(state, weakStore.dispatch)
                 }
                 complete(.active)
@@ -192,21 +341,4 @@ extension StoreProtocol {
     }
 }
 
-class AnyCancellableEffect {
-    class EffectStateObserver { }
-     
-    var observer: AnyObject = EffectStateObserver()
-    
-    init(_ observer: AnyObject) {
-        self.observer = observer
-    }
-    
-    init() {
-        self.observer = EffectStateObserver()
-    }
-    
-    func cancel() {
-        observer = EffectStateObserver()
-    }
-}
   

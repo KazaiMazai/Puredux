@@ -55,7 +55,8 @@ public typealias StoreObject = StateStore
  */
 public struct StateStore<State, Action> {
     private let storeObject: AnyStoreObject<State, Action>
-    private let erasedStore: Store<State, Action>
+    private let storeInstance: Store<State, Action>
+    
 
     /**
      Returns the `Store` instance associated with this `StateStore`.
@@ -72,7 +73,7 @@ public struct StateStore<State, Action> {
      - Parameter action: The action to be dispatched.
     */
     public func dispatch(_ action: Action) {
-        erasedStore.dispatch(action)
+        storeInstance.dispatch(action)
     }
     
     /**
@@ -81,16 +82,16 @@ public struct StateStore<State, Action> {
      - Parameter observer: an Observer instance
      */
     public func subscribe(observer: Observer<State>) {
-        erasedStore.subscribe(observer: observer)
+        storeInstance.subscribe(observer: observer)
     }
     
     init(storeObject: any StoreObjectProtocol<State, Action>) {
-        let storeObjectBox = AnyStoreObject(storeObject)
-        self.storeObject = storeObjectBox
-        self.erasedStore = Store<State, Action>(
-            dispatcher: { [weak storeObjectBox] in storeObjectBox?.dispatch($0) },
-            subscribe: { [weak storeObjectBox] in storeObjectBox?.subscribe(observer: $0) },
-            storeObject: { [storeObjectBox] in storeObjectBox }
+        let boxedStoreObject = AnyStoreObject(storeObject)
+        self.storeObject = boxedStoreObject
+        self.storeInstance = Store<State, Action>(
+            dispatcher: { [weak boxedStoreObject] in boxedStoreObject?.dispatch($0) },
+            subscribe: { [weak boxedStoreObject] in boxedStoreObject?.subscribe(observer: $0) },
+            storeObject: { [boxedStoreObject] in boxedStoreObject }
         )
     }
 }
@@ -205,8 +206,8 @@ extension StateStore: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
    
-    public func getStore() -> Store<State, Action> {
-        erasedStore
+    public var instance: Store<State, Action> {
+        storeInstance
     }
 }
 
@@ -289,16 +290,5 @@ extension StateStore {
     ) -> StateStore<(State, T), Action> {
         
         with(state, reducer: reducer)
-    }
-}
-
-
-extension StateStore {
-    func weakStore() -> Store<State, Action> {
-        erasedStore.weakStore()
-    }
-    
-    func strongStore() -> Store<State, Action> {
-        erasedStore
     }
 }

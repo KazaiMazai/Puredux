@@ -73,13 +73,13 @@ public extension UIStateObserver {
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
         
-        store.getStore().effect(
+        store.instance.effect(
             cancellable,
             withDelay: timeInterval,
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in
                 Effect {
-                    let props = props(state, store.getStore())
+                    let props = props(state, store.instance)
                     guard presentationQueue == DispatchQueue.main else {
                         DispatchQueue.main.async { observe(props) }
                         return

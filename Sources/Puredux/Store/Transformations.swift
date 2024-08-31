@@ -21,8 +21,7 @@ public extension StoreProtocol {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-        let store = getStore()
-        let weakStore = store.weakStore()
+        let weakStore = weakStore()
         return Store<T, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
@@ -31,7 +30,7 @@ public extension StoreProtocol {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: store.getStoreObject
+            storeObject: instance.getStoreObject
         )
     }
     
@@ -46,8 +45,8 @@ public extension StoreProtocol {
      - Note: This method filters out states where the transformation closure returns `nil`, resulting in a store with a reduced set of states.
     */
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-        let store = getStore()
-        let weakStore = store.weakStore()
+        let store = instance
+        let weakStore = instance.weakStore()
         return Store<T, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
@@ -76,8 +75,8 @@ public extension StoreProtocol {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        let store = getStore()
-        let weakStore = store.weakStore()
+        let store = instance
+        let weakStore = instance.weakStore()
         return Store<T?, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
@@ -273,17 +272,18 @@ public extension StoreProtocol {
 
 extension Store {
     func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        Store<State, A>(
-            dispatcher: { action in dispatch(transform(action)) },
-            subscribe: subscribe,
-            storeObject: getStore().getStoreObject
+        let store = instance
+        let weakStore = weakStore()
+        return Store<State, A>(
+            dispatcher: { action in weakStore.dispatch(transform(action)) },
+            subscribe: weakStore.subscribeHandler,
+            storeObject: store.getStoreObject
         )
     }
 }
 
 extension StateStore {
-    
     func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        strongStore().map(transform)
+        instance.map(transform)
     }
 }

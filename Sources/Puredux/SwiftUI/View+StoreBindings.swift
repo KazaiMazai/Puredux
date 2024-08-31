@@ -57,7 +57,7 @@ extension View {
                                          observe: @escaping (Props) -> Void) -> some View {
         withObserver { observer in
             observer.subscribe(
-                store: store.getStore(),
+                store: store.instance,
                 props: props,
                 presentationQueue: presentationQueue,
                 removeStateDuplicates: equating,
@@ -91,7 +91,7 @@ extension View {
                                           observe: @escaping (Props) -> Void) -> some View {
          withObserver { observer in
              observer.subscribe(
-                store.getStore(),
+                store.instance,
                 props: props,
                 presentationQueue: presentationQueue,
                 removeStateDuplicates: equating,
@@ -142,7 +142,7 @@ extension View {
                                   observe: @escaping (State) -> Void) -> some View {
         withObserver { observer in
             observer.subscribe(
-                store.getStore(),
+                store.instance,
                 removeStateDuplicates: equating,
                 debounceFor: timeInterval,
                 observe: observe
@@ -193,7 +193,7 @@ extension View {
         
         withObserver { observer in
             observer.subscribe(
-                store.getStore(),
+                store.instance,
                 removeStateDuplicates: equating,
                 debounceFor: timeInterval,
                 observe: observe
@@ -244,7 +244,7 @@ extension View {
         
         withObserver { observer in
             observer.subscribe(
-                store: store.getStore(),
+                store: store.instance,
                 removeStateDuplicates: equating,
                 debounceFor: timeInterval,
                 observe: observe

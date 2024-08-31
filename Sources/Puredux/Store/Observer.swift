@@ -132,7 +132,7 @@ extension Observer {
 
 extension Observer {
     
-    init(_ observer: AnyObject,
+    init(_ observer: AnyObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping StateHandler) {
@@ -143,7 +143,7 @@ extension Observer {
         }
     }
     
-    init(_ observer: AnyObject,
+    init(_ observer: AnyObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping ObserverHandler) {
