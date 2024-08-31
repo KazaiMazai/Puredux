@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-
+@available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
 public struct PublishingStore<AppState, Action> {
     public let statePublisher: AnyPublisher<AppState, Never>
     private let dispatchClosure: (_ action: Action) -> Void

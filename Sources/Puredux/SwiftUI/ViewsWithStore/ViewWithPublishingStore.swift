@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-
+@available(*, deprecated, message: "Will be removed in 2.0")
 struct ViewWithPublishingStore<AppState, Action, Props, Content: View>: View {
     @State private var currentProps: Props?
     @State private var propsPublisher: AnyPublisher<Props, Never>?
