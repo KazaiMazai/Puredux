@@ -60,6 +60,12 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol  {
     }
 }
 
+extension AnyStoreObject {
+    func map<T>(_ transform: @escaping (State) -> T) -> AnyStoreObject<T, Action> {
+        AnyStoreObject<T, Action>(boxed.map(transform: transform))
+    }
+}
+
 private extension AnyStoreObject {
     final class Box<StoreObject: StoreObjectProtocol>: BaseBox
     where

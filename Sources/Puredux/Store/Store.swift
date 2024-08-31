@@ -23,7 +23,7 @@ typealias AnyStoreObjectProtocol = AnyObject
 public struct Store<State, Action> {
     let dispatchHandler: Dispatch
     let subscribeHandler: Subscribe
-    let getStoreObject: () -> AnyStoreObjectProtocol?
+    let getStoreObject: () -> AnyStoreObject<State, Action>?
 }
 
 public extension Store {
@@ -134,7 +134,7 @@ public extension Store {
 extension Store {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe,
-         storeObject: @escaping () -> AnyStoreObjectProtocol?) {
+         storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
 
         dispatchHandler = { dispatcher($0) }
         subscribeHandler = { subscribe($0) }
