@@ -39,26 +39,6 @@ Example usage:
      }
  }
  
- // Here is a more complicated Store configration example
-
- struct AnotherView: View {
-    @State @ViewStore var store = { cancellable in
-        StoreOf(\.rootState)  // resolves injected root state store
-             .with(LocalState()) { localState, action in  // merged with local state store
-                 // Here is a reducer used to mutate the local state
-             }
-             .onChangeEffect(cancellable) { state, dispatch in // cancellable side effects
-                 Effect {
-                     // ...
-                 }
-             }
-     }
-     
-     var body: some View {
-         // ...
-     }
- }
- 
  ```
 */
 @propertyWrapper
