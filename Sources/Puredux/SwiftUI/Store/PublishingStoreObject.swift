@@ -28,7 +28,7 @@ public struct PublishingStoreObject<AppState, Action> {
     /// For all other cases, EnvStoreFactory's methods should be used to create viable PublishingStoreObject.
     ///
     ///
-    @available(*, deprecated, renamed: "init(stateStore:)", message: "Will be removed in the next major release.")
+    @available(*, deprecated, renamed: "init(stateStore:)", message: "Will be removed in 2.0.")
     public init(storeObject: StoreObject<AppState, Action>) {
         self.stateStore = storeObject
         self.stateSubject = PassthroughSubject<AppState, Never>()

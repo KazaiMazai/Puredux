@@ -7,10 +7,10 @@
 
 import Dispatch
 
-@available(*, deprecated, message: "Will be removed in the next major release. Changes were made to allowing to use DispatchQueue directly")
+@available(*, deprecated, message: "Will be removed in 2.0. Use DispatchQueue directly")
 typealias ObservationQueue = PresentationQueue
 
-@available(*, deprecated, message: "Will be removed in the next major release. Changes were made to allowing to use DispatchQueue directly")
+@available(*, deprecated, message: "Will be removed in 2.0. Use DispatchQueue directly")
 public enum PresentationQueue {
    case sharedPresentationQueue
    case main
