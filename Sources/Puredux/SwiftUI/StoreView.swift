@@ -87,7 +87,7 @@ public extension StoreView {
        - props: A closure that takes the current state and store, and returns the properties for the content view.
        - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
-    init(_ store: any StoreProtocol<ViewState, Action>,
+    init(store: any StoreProtocol<ViewState, Action>,
          props: @escaping (ViewState, Store<ViewState, Action>) -> Props,
          content: @escaping (Props) -> Content) {
         self.store = store.getStore()
@@ -121,7 +121,7 @@ public extension StoreView where Props == (ViewState, Store<ViewState, Action>) 
         - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`.
         - content: A closure that takes a tuple containing the current state and the store, and returns the SwiftUI view to display.
     */
-    init(_ store: any StoreProtocol<ViewState, Action>,
+    init(store: any StoreProtocol<ViewState, Action>,
          content: @escaping (Props) -> Content) {
         self.store = store.getStore()
         self.props = { state, store in (state, store) }
