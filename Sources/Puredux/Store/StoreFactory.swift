@@ -67,19 +67,6 @@ public extension StoreFactory {
         rootStateStore.weakStore().scope(to: localState)
     }
 
-    /// Initializes a new Store with state mapping to local substate.
-    ///
-    /// - Returns: Store with local substate
-    ///
-    /// Store is a proxy for the root store object.
-    /// All dispatched Actions and subscribtions are forwarded to the root store.
-    /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
-    /// When the result local state is nill, subscribers are not triggered.
-    @available(*, deprecated, message: "Use store's scope(to:) method instead")
-    func scopeStore<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        rootStateStore.weakStore().scope(toOptional: localState)
-    }
-
     /// Initializes a new child StateStore with initial state
     ///
     /// - Returns: Child StateStore

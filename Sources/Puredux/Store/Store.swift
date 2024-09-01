@@ -103,19 +103,7 @@ public extension Store {
 
 public extension Store {
 
-    /// Initializes a new scope Store with state mapping to local substate.
-    ///
-    /// - Returns: Store with local substate
-    ///
-    /// Store is a proxy for the root store.
-    /// All dispatched Actions and subscribtions are forwarded to the root store.
-    /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
-    /// When the result local state is nill, subscribers are not triggered.
-    ///
-    ///
-    func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        compactMap(localState)
-    }
+    
 
     /// Initializes a new scope Store with state mapping to local substate.
     ///

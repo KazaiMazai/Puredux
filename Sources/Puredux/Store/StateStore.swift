@@ -197,6 +197,8 @@ public extension StateStore {
 }
 
 extension StateStore: StoreProtocol {
+    
+    
     public typealias State = State
     public typealias Action = Action
    
