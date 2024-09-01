@@ -56,7 +56,6 @@ public typealias StoreObject = StateStore
 public struct StateStore<State, Action> {
     let storeObject: AnyStoreObject<State, Action>
     
-
     /**
      Returns the `Store` instance associated with this `StateStore`.
 
@@ -124,6 +123,19 @@ public extension StateStore {
             qos: qos,
             reducer: reducer
         ))
+    }
+}
+
+extension StateStore: StoreProtocol {
+    public typealias State = State
+    public typealias Action = Action
+   
+    public var instance: Store<State, Action> {
+        Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
+            storeObject: { [storeObject] in storeObject }
+        )
     }
 }
 
@@ -196,20 +208,6 @@ public extension StateStore {
     }
 }
 
-extension StateStore: StoreProtocol {
-    
-    
-    public typealias State = State
-    public typealias Action = Action
-   
-    public var instance: Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
-            storeObject: { [storeObject] in storeObject }
-        )
-    }
-}
 
 public extension StateStore {
     @available(*, deprecated, renamed: "init(_:qos:reducer:)", message: "Actions Interceptor will be removed in 2.0, use AsyncAction instead.")

@@ -18,8 +18,6 @@ public extension Store {
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
-typealias AnyStoreObjectProtocol = AnyObject
-
 public struct Store<State, Action> {
     let dispatchHandler: Dispatch
     let subscribeHandler: Subscribe

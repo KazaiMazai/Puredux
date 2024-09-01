@@ -34,6 +34,10 @@ public protocol StoreProtocol<State, Action> {
      A func that returns a `Store` object that matches the specified `State` and `Action` types.
      */
     var instance: Store<State, Action> { get }
+    
+    func dispatch(_ action: Action)
+
+    func subscribe(observer: Observer<State>) 
 }
 
 extension StoreProtocol {

@@ -67,7 +67,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             weakStore.getStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
@@ -91,7 +91,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             weakStore.getStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
@@ -115,8 +115,8 @@ extension StoreProtocol {
         
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
-        
-        instance.subscribe(observer: Observer(
+       
+        subscribe(observer: Observer(
             weakStore.getStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
@@ -139,7 +139,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             weakStore.getStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
@@ -163,7 +163,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
        
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             weakStore.getStoreObject(),
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
@@ -227,7 +227,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
@@ -252,7 +252,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 
@@ -277,7 +277,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
@@ -301,7 +301,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
         
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
@@ -326,7 +326,7 @@ extension StoreProtocol {
         let effectOperator = EffectOperator()
         let weakStore = weakStore()
        
-        instance.subscribe(observer: Observer(
+        subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
