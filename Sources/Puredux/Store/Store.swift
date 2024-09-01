@@ -107,6 +107,7 @@ public extension Store {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     ///
+    @available(*, deprecated, message: "Will be removed in 2.0")
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         compactMap(localState)
     }
