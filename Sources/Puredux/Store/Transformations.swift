@@ -42,6 +42,7 @@ public extension StoreProtocol {
      - Returns: A new `Store` with the non-optional transformed state of type `T` and the same action type `Action`.
      - Note: This method filters out states where the transformation closure returns `nil`, resulting in a store with a reduced set of states.
     */
+    @available(*, deprecated, message: "Will be removed in 2.0")
     func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
         Store<T, Action>(
             dispatcher: getStore().dispatchHandler,
@@ -111,6 +112,7 @@ public extension StoreProtocol {
      - Returns: A new `Store` with the non-optional transformed state of type `T` and the same action type `Action`.
      - Note: This method filters out states where the key path resolves to `nil`, resulting in a store with a reduced set of non-optional states.
     */
+    @available(*, deprecated, message: "Will be removed in 2.0")
     func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
         compactMap { $0[keyPath: keyPath] }
     }
