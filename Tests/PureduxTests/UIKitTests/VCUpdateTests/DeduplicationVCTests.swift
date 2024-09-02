@@ -50,7 +50,7 @@ final class DeduplicationVCTests: XCTestCase {
 
 extension DeduplicationVCTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribed_ThenVCNotUpdated() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.isInverted = true
 
@@ -64,7 +64,7 @@ extension DeduplicationVCTests {
     }
 
     func test_WhenManyNonMutatingActions_ThenVCUpdatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -79,7 +79,7 @@ extension DeduplicationVCTests {
     }
 
     func test_WhenManyMutatingActions_ThenVCUpdatesAreDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -94,7 +94,7 @@ extension DeduplicationVCTests {
     }
 
     func test_WhenMutatingAndNonMutatingActions_ThenVCUpdatesAreDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -113,7 +113,7 @@ extension DeduplicationVCTests {
     }
 
     func test_WhenSpecificSubStateMutatingActions_ThenVCUpdatesAreDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

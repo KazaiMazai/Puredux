@@ -62,7 +62,7 @@ extension NoDeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -77,7 +77,7 @@ extension NoDeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

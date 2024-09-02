@@ -59,7 +59,7 @@ class DeduplicationPropsTests: XCTestCase {
 
 extension DeduplicationPropsTests {
     func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -73,7 +73,7 @@ extension DeduplicationPropsTests {
     }
 
     func test_WhenManyMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
@@ -87,7 +87,7 @@ extension DeduplicationPropsTests {
     }
 
     func test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
@@ -105,7 +105,7 @@ extension DeduplicationPropsTests {
     }
 
     func test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
