@@ -24,3 +24,11 @@ extension StateStore {
         }
     }
 }
+
+extension PublishingStore {
+    func dispatch(_ action: Action, after delay: TimeInterval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            dispatch(action)
+        }
+    }
+}
