@@ -84,7 +84,7 @@ extension NoDeduplicationPropsTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 

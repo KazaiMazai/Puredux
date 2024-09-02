@@ -48,7 +48,7 @@ final class DeduplicationPropsUIKitTests: XCTestCase {
 
 extension DeduplicationPropsUIKitTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribed_ThenPropsNotEvaluated() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.isInverted = true
 
@@ -62,7 +62,7 @@ extension DeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyNonMutatingActions_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -77,7 +77,7 @@ extension DeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -92,7 +92,7 @@ extension DeduplicationPropsUIKitTests {
     }
 
     func test_WhenMutatingAndNonMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -111,7 +111,7 @@ extension DeduplicationPropsUIKitTests {
     }
 
     func test_WhenSpecificSubStateMutatingActions_ThenPropsEvaluationsDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

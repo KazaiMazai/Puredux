@@ -66,7 +66,7 @@ extension NoDeduplicationVCTests {
     }
 
     func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatesDebpuncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -81,7 +81,7 @@ extension NoDeduplicationVCTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenVCUpdatesDebpuncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

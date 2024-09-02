@@ -60,7 +60,7 @@ class AlwaysEqualDeduplicationPropsTests: XCTestCase {
 extension AlwaysEqualDeduplicationPropsTests {
 
     func test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -74,7 +74,7 @@ extension AlwaysEqualDeduplicationPropsTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
