@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     /**
     Attaches a state observer to the view, allowing it to respond to changes in the `Store`'s state and update itself accordingly.
 
