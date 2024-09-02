@@ -13,7 +13,7 @@ import Dispatch
 
 final class StoreViewNoDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
-    let actionDelay: TimeInterval = 0.2
+    let actionDelay: TimeInterval = 0.3
     @StoreOf(\.rootStore) var store
       
     @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
@@ -56,7 +56,7 @@ extension StoreViewNoDeduplicationPropsTests {
             store.dispatch(0, after: (Double(idx) * actionDelay))
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 2 * (Double(actionsCount) * actionDelay))
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenEvaluatedForEveryAction() {
@@ -70,6 +70,6 @@ extension StoreViewNoDeduplicationPropsTests {
             store.dispatch(idx, after: (Double(idx) * actionDelay))
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 4 * (Double(actionsCount) * actionDelay))
     }
 }

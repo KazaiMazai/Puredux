@@ -46,7 +46,7 @@ extension StoreViewDeduplicationPropsTests {
             store.dispatch(0, after: Double(idx) * actionDelay)
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 3 * actionDelay * Double(actionsCount))
     }
 
     func test_WhenManyMutatingActions_ThenPropsEvaluatedForEveryDeduplicatedMutation() {
