@@ -56,7 +56,7 @@ extension StoreViewNoDeduplicationPropsTests {
             store.dispatch(0, after: (Double(idx) * actionDelay))
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 2 * (Double(actionsCount) * actionDelay))
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenEvaluatedForEveryAction() {
@@ -70,6 +70,6 @@ extension StoreViewNoDeduplicationPropsTests {
             store.dispatch(idx, after: (Double(idx) * actionDelay))
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 2 * (Double(actionsCount) * actionDelay))
     }
 }
