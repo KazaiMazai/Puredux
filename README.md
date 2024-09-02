@@ -79,8 +79,9 @@ struct ViewState {
 struct ContentView: View  {
     // We can create take an injected root store,
     // Create a local store and seamlessly merge them together:
-    @State var store: StoreOf(\.root)
-        .with(ViewState()) { state, action in state.reduce(action) }
+    @State var store: StoreOf(\.root).with(ViewState()) { state, action in 
+        state.reduce(action) 
+    }
     
     @State var viewState: (AppState, ViewState)?
     
@@ -113,8 +114,9 @@ struct MyScreenState {
 }
 
 class MyViewController: ViewController  {
-    @State var store: StoreOf(\.root)
-        .with(MyScreenState()) { state, action in state.reduce(action) }
+    var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
+        state.reduce(action) 
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
