@@ -1,10 +1,11 @@
-<p align="center">
-  <img src="Logo.svg?raw=true" alt="Sublime's custom image"/>
-</p>
-
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
+  <img src="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
+</picture>
 
 Puredux is a lightweight UDF architecture framework in Swift.
-
+  
 <p align="left">
     <a href="https://github.com/KazaiMazai/Puredux/actions">
         <img src="https://github.com/KazaiMazai/Puredux/workflows/Tests/badge.svg" alt="Continuous Integration">
@@ -21,9 +22,7 @@ Puredux is a minimal, yet powerful framework to build iOS applications in a clea
 - Offloads work to the background
 - Thread safety
 - Side effects via actions interceptor
-
-Check out the [PureduxStore Docs](Docs/PureduxStore.md) for more details.
-
+ 
 ### SwiftUI & UIKit Bindings
 
 SwiftUI & UIKit bindings to connect UI to Puredux Store
@@ -52,8 +51,7 @@ https://github.com/KazaiMazai/Puredux
  
 ## Migration Guiges
 
-- [Migration from v1.0.x to v1.1.x](Docs/Migration-v1.0.x-v1.1.x.md)
-- [Migration to Puredux monorepo](Docs/Migration-monorepo.md)
+- [Migration Guides](Docs/Migration-Guides.md)
 
 
 # Licensing
