@@ -4,37 +4,24 @@
   <img src="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
 </picture>
 
-Puredux is a lightweight UDF architecture framework in Swift.
-  
+
 <p align="left">
     <a href="https://github.com/KazaiMazai/Puredux/actions">
         <img src="https://github.com/KazaiMazai/Puredux/workflows/Tests/badge.svg" alt="Continuous Integration">
     </a>
 </p>
 
-## Features
+Puredux is an architecture framework for SwiftUI and UIKit designed to
+streamline state management with a focus on unidirectional data flow and separation of concerns.
 
-Puredux is a minimal, yet powerful framework to build iOS applications in a clean and consistent way.
+- **Unidirectional MVI Architecture**: Supports a unidirectional data flow to ensure predictable state management and consistency.
+- **SwiftUI and UIKit Compatibility**: Works seamlessly with both SwiftUI and UIKit, offering bindings for easy integration.
+- **Single Store/Multiple Stores Design**: Supports both single and multiple store setups for flexible state management of apps of any size and complexity.
+- **Separation of Concerns**: Emphasizes separating business logic and side effects from UI components.
+- **Performance Optimization**: Offers granular performance tuning with state deduplication, debouncing, and offloading heavy UI-related work to the background.
 
-### State Store
-- Minimal API
-- Single/Multiple Stores Design
-- Offloads work to the background
-- Thread safety
-- Side effects via actions interceptor
- 
-### SwiftUI & UIKit Bindings
 
-SwiftUI & UIKit bindings to connect UI to Puredux Store
 
-- Side-effects free SwiftUI Views
-- Data-driven UIViewControllers
-- Offloads heavy UI-related work to the background
-- Takeover the control over state updates deduplication and UI refresh lifecycle
-
-Check out the docs for more details:
-- [PureduxSwiftUI Docs](Docs/PureduxSwiftUI.md)
-- [PureduxUIKit Docs](Docs/PureduxUIKit.md)
 
 
 ## Installation
