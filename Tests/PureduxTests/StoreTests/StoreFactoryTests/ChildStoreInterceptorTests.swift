@@ -18,7 +18,7 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
+            TestState(currentIndex: 0),
             interceptor: { asyncAction, dispatch  in
                 guard let asyncAction = (asyncAction as? AsyncResultAction) else {
                     return
@@ -30,7 +30,7 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-
+                
                 expectations[resultAction.index].fulfill()
             }
         )

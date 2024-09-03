@@ -44,6 +44,8 @@ struct UpdateIndexCallBack: Action & AsyncAction {
     let index: Int
     let executionCallback: () -> Void
     
+    var dispatchQueue: DispatchQueue = .main
+    
     func execute(completeHandler: @escaping (ResultAction) -> Void) {
         executionCallback()
     }
