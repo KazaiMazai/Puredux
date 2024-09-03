@@ -8,12 +8,12 @@
 import Dispatch
 import Foundation
 
-extension StoreProtocol {
+extension Store {
     typealias CreateForEachEffect = (State, Effect.State) -> Effect
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
-extension StoreProtocol {
+extension Store {
 
     @discardableResult
     func effect(on queue: DispatchQueue = .main,
@@ -54,7 +54,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
     @discardableResult
     func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
                                 on queue: DispatchQueue = .main,
@@ -177,7 +177,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
 
     @discardableResult
     func effect(_ cancellable: AnyCancellableEffect,
@@ -214,7 +214,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
     @discardableResult
     func forEachEffect<Effects>(_ cancellable: AnyCancellableEffect,
                                 _ keyPath: KeyPath<State, Effects>,

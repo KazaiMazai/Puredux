@@ -8,19 +8,21 @@
 import Foundation
 
 /**
- A protocol that defines the basic requirements for a store in a state management system.
+ A protocol that defines the core requirements for a store in a state management system.
 
- `Store` is a generic protocol that defines the fundamental operations required for a store that manages application state and actions.
+ `Store` is a generic protocol that outlines the essential operations for a store that manages application state and handles actions.
 
  - Associated Types:
     - `State`: The type representing the state managed by the store. This type encapsulates all the information about the current state of the application.
     - `Action`: The type representing the actions that can be dispatched to the store to trigger state changes. Actions define the possible changes that can occur in the state.
 
  - Requirements:
-    - `getStore()`: A function that returns a `Store` instance. This function provides access to the store that manages state and handles actions.
+    - `eraseToAnyStore()`: A function that returns an `AnyStore` instance. This method provides a type-erased store, which hides the concrete implementation details while exposing the store's functionality.
+    - `dispatch(_:)`: A method for dispatching an action to the store. This triggers a state change based on the logic defined for the particular action.
+    - `subscribe(observer:)`: A method for subscribing an observer to state changes. This allows external entities to react to state updates.
 
  - Usage:
-    The `Store` is used as an abstraction layer for different store implementations. Types conforming to this protocol must specify the `State` and `Action` associated types and provide a concrete implementation of the `getStore()` method.
+    The `Store` protocol serves as an abstraction layer for different store implementations in a state management system. Types conforming to this protocol must specify the `State` and `Action` associated types and provide concrete implementations of the `eraseToAnyStore()`, `dispatch(_:)`, and `subscribe(observer:)` methods.
 */
 public protocol Store<State, Action> {
     /** The type representing the state managed by the store. */
@@ -44,3 +46,4 @@ extension Store {
         eraseToAnyStore().weakStore()
     }
 }
+

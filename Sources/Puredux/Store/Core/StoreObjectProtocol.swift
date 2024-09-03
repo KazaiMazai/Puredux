@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
+protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStore {
     associatedtype Action
     associatedtype State
 
@@ -22,7 +22,7 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     func subscribe(observer: Observer<State>)
 }
 
-protocol SyncStoreProtocol<State, Action> {
+protocol SyncStore<State, Action> {
     associatedtype Action
     associatedtype State
 
