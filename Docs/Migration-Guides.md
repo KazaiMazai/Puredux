@@ -1,4 +1,108 @@
 
+## Getting Prepared for Puredux 2.0
+
+1. Update for the latest 1.x version
+2. Follow deprecation notices to get prepared for smooth migration
+
+Here is an overview of what to be changed:
+
+### StoreFactory Changes
+
+1. Replace `StoreFactory` with `StateStore`.
+
+```swift
+// Before:
+
+let storeFactory = StoreFactory(
+    MyInitialState(),
+    qos: .userInteractive,
+    reducer: myReducer
+)
+
+// After:
+
+let store = StateStore(
+    MyInitialState(),
+    qos: .userInteractive,
+    reducer: myReducer
+)
+```
+
+2. Store Transformation Changes:
+
+Before:
+
+- `childStore(...)`
+- `scopeStore(...)
+
+After:
+
+- `with(...)`
+- `map(...)` or `flatMap(...)`
+
+Follow deprecation notices documentation for more details.
+
+### SwiftUI Bindings Changes
+
+ Puredux 2.0 bind Stores with Views differently.
+`StoreView` is a replacement for `ViewWithStore` provided to make the migration process easier.
+ 
+ 1. Migrate from `EnvStoreFactory` to `StateStore`
+ 2. Inject root store with `@InjectEntry`:
+
+ ```swift
+ 
+ extension Injected {
+     @InjectEntry var appState = StateStore<AppState, Action>(AppState()) { state, action in
+         state.reduce(action)
+     }
+ }
+ 
+ ```
+
+ 3. Wrap your `FancyView` in a container view with  a`@State` store of a proper configuration
+ 4. Depending on how `ViewWithStore` was condigured:
+    - `EnvStoreFactory` and an implicit single app store should use explicit `@StoreOf(\.appState)` store.
+    - `ViewWithStore(...).childStore(...)`  should use `@StoreOf(\.appState).with(ChildState()) { ... }`
+    - `ViewWithStore(...).scopeStore(...)` should use `@StoreOf(\.appState).map { ... }`
+    - `ViewWithStore(...).store(...)`  should use explicit `Store(...)` or `StateStore(...)`
+ 5. Replace `ViewWithStore` with a `StoreView`
+
+Follow deprecation notices documentation for more details.
+
+### UIKit Bindings changes
+
+The Presentable API is still available, so only minor changes are needed.
+
+1. Replace deprecated methods:
+
+```swift
+// Before:
+
+    myViewController.with(
+         store: store,
+         props: { state, store in
+             // ...
+         },
+         presentationQueue: .sharedPresentationQueue,
+         removeStateDuplicates: .keyPath(\.lastUpdated)
+     )
+     
+// After:
+
+    myViewController.setPresenter(
+         store: store,
+         props: { state, store in
+             // ...
+         },
+         presentationQueue: .sharedPresentationQueue,
+         removeStateDuplicates: .keyPath(\.lastUpdated)
+     )
+    
+```
+
+Follow deprecation notices documentation for more details.
+
 ## Puredux legacy to a single repository migration guide
 
 Puredux was refactored from a set of packages to a single monorepository.
