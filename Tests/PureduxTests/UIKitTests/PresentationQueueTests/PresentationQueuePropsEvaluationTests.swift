@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class PresentationQueuePropsEvaluationTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -24,7 +23,7 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
                 state.reduce(action)
             })
     }()
- 
+
     func setupVCForTests(queue: DispatchQueue, makeProps: @escaping () -> Void) -> StubViewController {
         let testVC = StubViewController()
 

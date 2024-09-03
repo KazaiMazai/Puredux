@@ -21,7 +21,7 @@ final class CoreStore<State, Action> {
     private var state: State
 
     let dispatchQueue: DispatchQueue
-   
+
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
@@ -38,7 +38,7 @@ final class CoreStore<State, Action> {
 extension CoreStore {
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) }, 
+              subscribe: { [weak self] in self?.subscribe(observer: $0) },
               storeObject: { [weak self] in self.map { AnyStoreObject($0) } })
     }
 }
@@ -51,7 +51,6 @@ extension CoreStore: StoreObjectProtocol {
     var queue: DispatchQueue {
         dispatchQueue
     }
-
 
     // MARK: - Subscribe
 

@@ -15,13 +15,13 @@ final class StoreViewNoDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.3
     @StoreOf(\.rootStore) var store
-      
+
     @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
-                props: { (state: Int, dispatch: Dispatch<Int>) -> String in
+                props: { (state: Int, _: Dispatch<Int>) -> String in
                     propsEvaluatedExpectation.fulfill()
                     return "\(state)"
                 },
@@ -63,7 +63,7 @@ extension StoreViewNoDeduplicationPropsTests {
         let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
-        
+
         setupWindowForTests(propsEvaluatedExpectation: expectation)
 
         (0..<actionsCount).forEach { idx in

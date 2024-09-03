@@ -34,14 +34,14 @@ public extension Store {
         subscribeHandler(observer)
     }
 }
-                         
+
 extension Store: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
-    
+
     public var instance: Store<State, Action> { self }
 }
- 
+
 extension Store {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe,
@@ -51,7 +51,7 @@ extension Store {
         subscribeHandler = { subscribe($0) }
         getStoreObject = storeObject
     }
-    
+
     func weakStore() -> Store<State, Action> {
         let storeObject = getStoreObject()
         return Store<State, Action>(
@@ -67,7 +67,7 @@ extension Store {
         guard let action = action as? (any AsyncAction) else {
             return
         }
-        
+
         action.execute(self.dispatchHandler)
     }
 }

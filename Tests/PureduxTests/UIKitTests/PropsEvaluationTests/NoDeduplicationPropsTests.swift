@@ -23,7 +23,7 @@ final class NoDeduplicationPropsUIKitTests: XCTestCase {
                 state.reduce(action)
             })
     }()
- 
+
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
@@ -32,7 +32,7 @@ final class NoDeduplicationPropsUIKitTests: XCTestCase {
             propsEvaluatedExpectation.fulfill()
             return .init(title: state.subStateWithTitle.title)
         })
-        
+
         return testVC
     }
 }

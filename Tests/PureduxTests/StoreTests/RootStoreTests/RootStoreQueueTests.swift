@@ -23,7 +23,7 @@ final class StateStoreQueueTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         let observer = Observer<TestState> { _, complete in
             complete(.active)
 
@@ -52,7 +52,7 @@ final class StateStoreQueueTests: XCTestCase {
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
         }
- 
+
         store.dispatch(UpdateIndex(index: stateIndex))
 
         waitForExpectations(timeout: timeout)
@@ -79,7 +79,7 @@ final class StateStoreQueueTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenAsyncActionSetGlobalQueue_ThenActionExecutionCalledNotOnMainThread() {
         let initialStateIndex = 1
         let stateIndex = 2

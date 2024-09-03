@@ -10,9 +10,9 @@ import XCTest
 
 final class ChildStorePresenterRefCycleTests: XCTestCase {
     let timeout: TimeInterval = 4
-    
+
     let state = TestAppStateWithIndex()
-    
+
     lazy var factory: StateStore = {
         StateStore<TestAppStateWithIndex, Action>(
              state,
@@ -20,20 +20,20 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
                 state.reduce(action)
             })
     }()
-    
+
     func test_WhenStrongRefToVC_ThenStrongRefToChildStoreState() {
         var strongViewController: StubViewController?
-        
+
         assertNotDeallocated {
             let object = ReferenceTypeState()
-            
+
             let store = self.factory.with(
                  object,
                 reducer: { state, action in state.reduce(action) }
             )
-           
+
             let viewController = StubViewController()
-            
+
             viewController.setPresenter(store: store,
                                         props: { _, _ in .init(title: "") }
             )
@@ -42,20 +42,20 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
             return object as AnyObject
         }
     }
-    
+
     func test_WhenNoStrongRefToVC_ThenChildStoreStateIsReleased() {
         weak var weakViewController: StubViewController?
-        
+
         assertDeallocated {
             let object = ReferenceTypeState()
-            
+
             let store = self.factory.with(
                  object,
                 reducer: { state, action in state.reduce(action) }
             )
-            
+
             let viewController = StubViewController()
-            
+
             viewController.setPresenter(store: store,
                                         props: { _, _ in .init(title: "") }
             )

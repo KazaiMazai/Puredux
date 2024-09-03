@@ -9,8 +9,7 @@ import UIKit
 import SwiftUI
 
 extension UIWindow {
-    
-    
+
     @discardableResult static func setupForSwiftUITests<V: View>(rootView: V) -> UIWindow {
         setupForTests(viewController: UIHostingController(rootView: rootView))
     }

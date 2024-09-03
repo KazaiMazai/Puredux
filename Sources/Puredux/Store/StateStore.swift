@@ -55,7 +55,7 @@ public typealias Reducer<State, Action> = (inout State, Action) -> Void
  */
 public struct StateStore<State, Action> {
     let storeObject: AnyStoreObject<State, Action>
-    
+
     /**
      Dispatches an action to the store, which will be processed by the reducer to update the state.
      
@@ -65,7 +65,7 @@ public struct StateStore<State, Action> {
         storeObject.dispatch(action)
         executeAsyncAction(action)
     }
-    
+
     /**
      Subscribes an observer to receive updates whenever the state changes.
 
@@ -74,7 +74,7 @@ public struct StateStore<State, Action> {
     public func subscribe(observer: Observer<State>) {
         storeObject.subscribe(observer: observer)
     }
-    
+
     init(storeObject: any StoreObjectProtocol<State, Action>) {
         self.storeObject = AnyStoreObject(storeObject)
     }
@@ -107,7 +107,7 @@ public extension StateStore {
     init(_ initialState: State,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<State, Action>) {
-        
+
         self.init(storeObject: RootStoreNode.initRootStore(
             initialState: initialState,
             interceptor: { _, _ in },
@@ -120,7 +120,7 @@ public extension StateStore {
 extension StateStore: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
-   
+
     public var instance: Store<State, Action> {
         Store<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
@@ -188,7 +188,7 @@ public extension StateStore {
     */
     func with<T>(_ initialState: T,
                  reducer: @escaping Reducer<T, Action>) -> StateStore<(State, T), Action> {
-        
+
         StateStore<(State, T), Action>(
             storeObject: storeObject.createChildStore(
                 initialState: initialState,
@@ -199,13 +199,12 @@ public extension StateStore {
     }
 }
 
-  
 extension StateStore {
     func executeAsyncAction(_ action: Action) {
         guard let action = action as? (any AsyncAction) else {
             return
         }
-        
+
         action.execute { [weak storeObject] in
             storeObject?.dispatch($0)
         }

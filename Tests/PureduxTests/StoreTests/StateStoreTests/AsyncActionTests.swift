@@ -62,12 +62,12 @@ final class ActionsOnChildStoreAsyncActionTests: XCTestCase {
         let childStore = factory.with(
             ChildTestState(currentIndex: 0),
             reducer: { state, action  in
-                
+
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-                
+
                 expectations[resultAction.index].fulfill()
             }
         ).map { rootState, childState in
@@ -112,7 +112,7 @@ final class ActionsOnMainStoreAsyncActionTests: XCTestCase {
         }
 
         let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
-        
+
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -136,12 +136,12 @@ final class ActionsOnMainStoreAsyncActionTests: XCTestCase {
         let childStore = store.with(
             ChildTestState(currentIndex: 0),
             reducer: { state, action  in
-                
+
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-                
+
                 unexpected[resultAction.index].fulfill()
             }
         ).map { rootState, childState in
@@ -149,7 +149,7 @@ final class ActionsOnMainStoreAsyncActionTests: XCTestCase {
         }
 
         let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
-       
+
         actions.forEach { store.dispatch($0) }
 
         wait(for: unexpected, timeout: timeout, enforceOrder: true)
@@ -172,7 +172,7 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-                
+
                 expectations[resultAction.index].fulfill()
             }
         )
@@ -210,7 +210,7 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-                
+
                 expectations[resultAction.index].fulfill()
             }
         )
@@ -225,7 +225,7 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
         }
 
         let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
-     
+
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)

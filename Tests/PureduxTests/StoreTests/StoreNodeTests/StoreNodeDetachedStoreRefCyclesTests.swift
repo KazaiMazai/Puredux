@@ -29,7 +29,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
- 
+
             store = strongChildStore.weakRefStore()
             return strongChildStore as AnyObject
         }
@@ -45,7 +45,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
- 
+
             referencedStore = strongChildStore.stateStore()
             return strongChildStore as AnyObject
         }
@@ -61,7 +61,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 },
                 reducer: { state, action  in  state.reduce(action: action) }
             )
- 
+
             referencedStore = strongChildStore.stateStore()
             return strongChildStore as AnyObject
         }

@@ -18,7 +18,7 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     func unsubscribe(observer: Observer<State>)
 
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
- 
+
     func subscribe(observer: Observer<State>)
 }
 
@@ -46,7 +46,6 @@ extension StoreObjectProtocol {
     }
 }
 
-
 extension StoreObjectProtocol {
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
@@ -60,7 +59,7 @@ extension StoreObjectProtocol {
                 reducer: reducer
             )
         }
-    
+
     func createChildStore<T, LocalState>(
         initialState: LocalState,
         transform: @escaping (State) -> T,
@@ -73,13 +72,13 @@ extension StoreObjectProtocol {
                 reducer: reducer
             )
         }
-    
+
     func map<T>(transform: @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
             StoreNode(
                 initialState: Void(),
                 stateMapping: { state, _ in transform(state) },
                 parentStore: self,
-                reducer: {_,_ in }
+                reducer: {_, _ in }
             )
         }
 }

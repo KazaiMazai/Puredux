@@ -18,7 +18,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     private let parentStore: ParentStore
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
-    
+
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
@@ -34,7 +34,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
             initialState: initialState,
             reducer: reducer
         )
-        
+
         localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
     }
@@ -72,7 +72,7 @@ extension StoreNode where LocalState == State {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
-            stateMapping: { _, state in return state }, 
+            stateMapping: { _, state in return state },
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 initialState: Void(),
@@ -94,7 +94,7 @@ extension StoreNode: StoreObjectProtocol {
         localStore.syncDispatch(action)
         parentStore.syncDispatch(action)
     }
-    
+
     func dispatch(_ action: Action) {
         queue.async { [weak self] in
             self?.syncDispatch(action)
@@ -158,4 +158,3 @@ private extension StoreNode {
         }
     }
 }
-

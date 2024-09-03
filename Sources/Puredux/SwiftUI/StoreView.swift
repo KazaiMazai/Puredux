@@ -26,9 +26,9 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
     private let content: (_ props: Props) -> Content
     private(set) var removeStateDuplicates: Equating<ViewState>?
     private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
-    
+
     @State private var currentProps: Props?
-    
+
     public var body: some View {
         makeContent()
             .subscribe(
@@ -39,7 +39,7 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View {
                     currentProps = $0
                 }
     }
-    
+
     @ViewBuilder
     private func makeContent() -> some View {
         switch currentProps {
@@ -63,7 +63,7 @@ public extension StoreView {
         selfCopy.removeStateDuplicates = equating
         return selfCopy
     }
- 
+
     /**
      Returns a copy of the `StoreView` configured to use a specific `DispatchQueue` for state presentation updates.
      
@@ -94,7 +94,7 @@ public extension StoreView {
         self.props = props
         self.content = content
     }
-    
+
     /**
      Initializes a `StoreView` with a store that conforms to `StoreProtocol`, and provides closures for deriving properties and content, where the store dispatch function is directly accessible.
          
@@ -111,7 +111,6 @@ public extension StoreView {
         self.content = content
     }
 }
-
 
 public extension StoreView where Props == (ViewState, Store<ViewState, Action>) {
     /**

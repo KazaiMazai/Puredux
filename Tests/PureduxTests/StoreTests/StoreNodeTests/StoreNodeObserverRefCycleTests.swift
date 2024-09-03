@@ -10,7 +10,7 @@ import XCTest
 
 final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
-    
+
     let timeout: TimeInterval = 3
     let rootStore = RootStoreNode<TestState, Action>.initRootStore(
         initialState: TestState(currentIndex: 0),
@@ -23,10 +23,10 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let object = ReferenceTypeState()
             let store = self.rootStore.createChildStore(
                 initialState: object,
-                stateMapping: { state, childState in childState },
+                stateMapping: { _, childState in childState },
                 reducer: { state, action  in  state.reduce(action) }
             )
-             
+
             let referencedStore = store.stateStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
@@ -44,10 +44,10 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let object = ReferenceTypeState()
             let store = self.rootStore.createChildStore(
                 initialState: object,
-                stateMapping: { state, childState in childState },
+                stateMapping: { _, childState in childState },
                 reducer: { state, action in state.reduce(action) }
             )
-            
+
             let referencedStore = store.stateStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
@@ -65,10 +65,10 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let object = ReferenceTypeState()
             let store = self.rootStore.createChildStore(
                 initialState: object,
-                stateMapping: { state, childState in childState },
+                stateMapping: { _, childState in childState },
                 reducer: { state, action  in  state.reduce(action) }
             )
-            
+
             let weakRefStore = store.weakRefStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in

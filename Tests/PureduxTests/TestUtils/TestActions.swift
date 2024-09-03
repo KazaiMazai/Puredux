@@ -20,12 +20,12 @@ struct ResultAction: Action {
     let index: Int
 }
 
-struct AsyncResultAction: Action & AsyncAction  {
+struct AsyncResultAction: Action & AsyncAction {
     let index: Int
     var dispatchQueue: DispatchQueue  = .main
-    
+
     let executionCallback: (@escaping (ResultAction) -> Void) -> Void
-    
+
     func execute(completeHandler: @escaping (ResultAction) -> Void) {
         executionCallback(completeHandler)
     }
@@ -33,12 +33,12 @@ struct AsyncResultAction: Action & AsyncAction  {
 
 struct AsyncIndexAction: Action & AsyncAction {
     let index: Int
-    
+
     func execute(completeHandler: @escaping (ResultAction) -> Void) {
         completeHandler(ResultAction(index: index))
     }
 }
- 
+
 struct NonMutatingStateAction: Action {
 
 }
@@ -46,13 +46,13 @@ struct NonMutatingStateAction: Action {
 struct UpdateTitle: Action {
     let title: String
 }
-  
+
 struct UpdateIndexCallBack: Action & AsyncAction {
     let index: Int
     let executionCallback: () -> Void
-    
+
     var dispatchQueue: DispatchQueue = .main
-    
+
     func execute(completeHandler: @escaping (ResultAction) -> Void) {
         executionCallback()
     }

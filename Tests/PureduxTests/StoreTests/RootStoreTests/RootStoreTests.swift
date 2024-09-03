@@ -23,7 +23,7 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
- 
+
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
         }
@@ -44,7 +44,7 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         let actions = (0..<actionsCount).map { idx in
             UpdateIndexCallBack(index: idx) {
                 expectations[idx].fulfill()
@@ -66,7 +66,7 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         var receivedStateIndex: Int?
 
         let observer = Observer<TestState> { receivedState, complete in
@@ -96,7 +96,6 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -126,7 +125,6 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -158,7 +156,6 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -189,7 +186,6 @@ final class StateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
 
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
@@ -220,7 +216,6 @@ final class StateStoreTests: XCTestCase {
                 stateChangesProcessedExpectation.fulfill()
             }
         }
- 
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in

@@ -10,12 +10,12 @@ let package = Package(
        .macOS(.v10_15),
        .tvOS(.v12),
        .watchOS(.v7)
-       
+
     ],
     products: [
         .library(
             name: "Puredux",
-            targets: ["Puredux"]),
+            targets: ["Puredux"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
@@ -36,17 +36,17 @@ let package = Package(
                 "PureduxMacros",
                 "PureduxMacrosPlugin"
             ]),
-        
+
         .testTarget(
             name: "PureduxTests",
             dependencies: ["Puredux"]),
-        
+
         .testTarget(
             name: "PureduxMacrosTests",
             dependencies: [
                 "PureduxMacros",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
             ])
     ]
 )

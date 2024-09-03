@@ -41,11 +41,10 @@ final class FactoryStateStoreTests: XCTestCase {
 
         let store = StateStore<TestState, Action>(
             TestState(currentIndex: 0),
-            
+
             reducer: { state, action  in state.reduce(action: action) }
         )
 
-        
         let actions = (0..<actionsCount).map { idx in
             AsyncResultAction(index: idx) { handler in
                 expectations[idx].fulfill()
@@ -69,7 +68,6 @@ final class FactoryStateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-       
         var receivedStateIndex: Int?
 
         let observer = Observer<TestState> { receivedState, complete in
@@ -99,7 +97,7 @@ final class FactoryStateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
@@ -128,7 +126,7 @@ final class FactoryStateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
@@ -159,7 +157,7 @@ final class FactoryStateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
@@ -189,7 +187,7 @@ final class FactoryStateStoreTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
             complete(.active)
@@ -219,7 +217,7 @@ final class FactoryStateStoreTests: XCTestCase {
                 stateChangesProcessedExpectation.fulfill()
             }
         }
- 
+
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in
 

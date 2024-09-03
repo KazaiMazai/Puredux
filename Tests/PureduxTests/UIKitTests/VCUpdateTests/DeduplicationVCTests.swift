@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class DeduplicationVCTests: XCTestCase {
     let timeout: TimeInterval = 10
 
@@ -24,7 +23,7 @@ final class DeduplicationVCTests: XCTestCase {
                 state.reduce(action)
             })
     }()
- 
+
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 

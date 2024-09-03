@@ -66,7 +66,7 @@ public extension View {
             )
         }
     }
-    
+
     /**
     Attaches a state observer to the view, enabling it to react to changes in the `Store`'s state and update accordingly.
 
@@ -100,7 +100,7 @@ public extension View {
              )
          }
      }
-     
+
     /**
     Subscribes a view to a `Store`, allowing it to observe and react to changes in the store's state.
 
@@ -149,7 +149,7 @@ public extension View {
             )
         }
     }
-    
+
     /**
     Subscribes a view to a `Store`, allowing it to observe and react to changes in the store's state, while also providing the ability to dispatch actions.
 
@@ -190,7 +190,7 @@ public extension View {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) -> some View {
-        
+
         withObserver { observer in
             observer.subscribe(
                 store,
@@ -200,7 +200,7 @@ public extension View {
             )
         }
     }
-     
+
     /**
     Subscribes a view to a `Store`, allowing it to observe and react to changes in the store's state, while also having access to the store itself.
 
@@ -241,7 +241,7 @@ public extension View {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Store<State, Action>) -> Void) -> some View {
-        
+
         withObserver { observer in
             observer.subscribe(
                 store: store,

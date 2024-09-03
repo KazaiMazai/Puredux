@@ -42,7 +42,7 @@ final class ChildStoreDispatchActionsTests: XCTestCase {
         }
 
         let actions = (0..<actionsCount).map { UpdateIndex(index: $0) }
-       
+
         actions.forEach { store.dispatch($0) }
 
         wait(for: unexpected, timeout: timeout, enforceOrder: true)
@@ -73,7 +73,7 @@ final class ChildStoreDispatchActionsTests: XCTestCase {
                 guard let action = (action as? UpdateIndex) else {
                     return
                 }
-                
+
                 expectations[action.index].fulfill()
             }
         ).map { rootState, childState in
@@ -87,7 +87,7 @@ final class ChildStoreDispatchActionsTests: XCTestCase {
                 guard let action = (action as? UpdateIndex) else {
                     return
                 }
-                
+
                 unexpected[action.index].fulfill()
             }
         ).map { rootState, childState in

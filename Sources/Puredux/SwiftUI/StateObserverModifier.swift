@@ -15,14 +15,13 @@ extension View {
 
 struct StateObserverModifier: ViewModifier {
     private class StateObserver: UIStateObserver {}
-    
+
     let with: (UIStateObserver) -> Void
-    
+
     @State private var observer = StateObserver()
-    
+
     func body(content: Content) -> some View {
         content
             .onAppear { with(observer) }
     }
 }
-  

@@ -25,7 +25,7 @@ final class FactoryStateStoreQueueTests: XCTestCase {
 
             state.reduce(action: action)
         }
- 
+
         let observer = Observer<TestState> { _, complete in
             complete(.active)
 
@@ -54,7 +54,7 @@ final class FactoryStateStoreQueueTests: XCTestCase {
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
         }
- 
+
         store.dispatch(UpdateIndex(index: stateIndex))
 
         waitForExpectations(timeout: timeout)
@@ -73,13 +73,13 @@ final class FactoryStateStoreQueueTests: XCTestCase {
                 state.reduce(action: action)
             })
 
-        var action = AsyncResultAction(index: stateIndex) { handler in
+        var action = AsyncResultAction(index: stateIndex) { _ in
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
         }
-        
+
         action.dispatchQueue = .global(qos: .background)
-         
+
         store.dispatch(action)
 
         waitForExpectations(timeout: timeout)
