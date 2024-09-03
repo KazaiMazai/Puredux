@@ -193,25 +193,44 @@ let root = StateStore<AppState, Action>(AppState()) { state, action in
     state.reduce(action)
 }
 
+// `featureOne` store will receive
+// - shared `AppState` updates
 let featureOne = root.with(FeatureOne()) { state, action in 
     state.reduce(action) 
 }
 
+
+// `featureOne` store will receive
+//  - shared `AppState` updates
+// will be isolated from
+//  - featureOne store
 let featureTwo = root.with(FeatureTwo()) { state, action in 
     state.reduce(action) 
 }
 
-let ScreenOne = featureTwo.with(ScreenOne()) { state, action in 
+// `screenOne` will receive 
+//  -    shared `AppState` updates
+//  -   `featureTwo` shared state
+// will be isolated from
+// -  `featureOne`
+// -  `screenTwo`
+let screenOne = featureTwo.with(ScreenOne()) { state, action in 
     state.reduce(action) 
 }
 
-let ScreenTwo = featureTwo.with(ScreenOne()) { state, action in 
+// `screenTwo` will receive 
+//  -    shared `AppState` updates
+//  -   `featureTwo` shared state
+// will be isolated from
+// -  `featureOne`
+// -  `screenOne`
+let screenTwo = featureTwo.with(ScreenTwo()) { state, action in 
     state.reduce(action) 
 }
 
 ```
 
-<details><summary>Will result in the following app tree structure</summary>
+<details><summary>Will result in the following app tree hierarchy</summary>
 <p>
 
  ```text
