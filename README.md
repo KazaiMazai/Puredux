@@ -19,23 +19,23 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ## Table of Contents
 
- * [Getting Started](#getting-started)
-    + [Basics](#basics)
-    + [Store Definitions](#store-definitions)
-    + [UI Bindings](#ui-bindings)
-  * [Hierarchical Stores Tree Architecture](#hierarchical-stores-tree-architecture)
-  * [Side Effects](#side-effects)
-    + [Async Actions](#async-actions)
-  * [Performance Tuning](#performance-tuning)
-    + [Quality of Service](#quality-of-service)
-    + [Deduplicated State Updates](#deduplicated-state-updates)
-    + [UI Updates Debouncing](#ui-updates-debouncing)
-    + [Extra Presentational Layer](#extra-presentational-layer)
-  * [Installation](#installation)
-    + [Swift Package Manager.](#swift-package-manager)
-  * [Migration Guiges](#migration-guiges)
+- [Getting Started](#getting-started)
+  * [Basics](#basics)
+  * [Store Definitions](#store-definitions)
+  * [UI Bindings](#ui-bindings)
+- [Hierarchical Stores Tree Architecture](#hierarchical-stores-tree-architecture)
+- [Side Effects](#side-effects)
+  * [Async Actions](#async-actions)
+- [Performance Tuning](#performance-tuning)
+  * [Quality of Service](#quality-of-service)
+  * [Deduplicated State Updates](#deduplicated-state-updates)
+  * [UI Updates Debouncing](#ui-updates-debouncing)
+  * [Extra Presentational Layer](#extra-presentational-layer)
+- [Installation](#installation)
+  * [Swift Package Manager.](#swift-package-manager)
+- [Documentation](#documentation)
+- [Migration Guiges](#migration-guiges)
 - [Licensing](#licensing)
-
 
 ## Getting Started
 
@@ -453,13 +453,16 @@ To install it, in Xcode 11.0 or later select File > Swift Packages > Add Package
 ```
 https://github.com/KazaiMazai/Puredux
 ```
- 
+
+## Documentation
+
+- [Archive](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Archive)
+
 ## Migration Guiges
 
-- [Migration Guides](Docs/Migration-Guides.md)
+- [Migration Guides](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Migration-Guides.md)
 
-
-# Licensing
+## Licensing
 
 Puredux and all its modules are licensed under MIT license.
 

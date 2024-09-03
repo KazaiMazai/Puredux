@@ -1,3 +1,25 @@
+## Table Of Contents
+
+- [Getting Prepared for Puredux 2.0](#getting-prepared-for-puredux-20)
+  * [StoreFactory Changes](#storefactory-changes)
+  * [Child Store Changes](#child-store-changes)
+  * [Scope Store Tranformation Changes](#scope-store-tranformation-changes)
+  * [SwiftUI Bindings Changes](#swiftui-bindings-changes)
+  * [UIKit Bindings changes](#uikit-bindings-changes)
+- [Puredux 1.2.0 - 1.3.0 Minor breaking changes](#puredux-120---130-minor-breaking-changes)
+  * [Referenced StoreObject](#referenced-storeobject)
+  * [StoreObject constructor](#storeobject-constructor)
+- [Puredux 1.2.0: From legacy multirepo to a single repository](#puredux-120--from-legacy-multirepo-to-a-single-repository)
+  * [1. Change the package:](#1-change-the-package-)
+  * [2. Fix imports:](#2-fix-imports-)
+- [Puredux 1.0.x - 1.1.x Update](#puredux-10x---11x-update)
+  * [Store migration](#store-migration)
+    + [1. Migrate From `RootStore` to `StoreFactory`:](#1-migrate-from--rootstore--to--storefactory--)
+    + [2. Update actions interceptor and pass in to store factory:](#2-update-actions-interceptor-and-pass-in-to-store-factory-)
+    + [3. Migrate from `proxy(...)` to `scope(...)`:](#3-migrate-from--proxy----to--scope----)
+  * [PureduxSwiftUI Bindings Migration Guide](#pureduxswiftui-bindings-migration-guide)
+  * [PureduxUIKit Bindings Migration Guide](#pureduxuikit-bindings-migration-guide)
+
 
 ## Getting Prepared for Puredux 2.0
 
@@ -405,7 +427,6 @@ ViewWithStore(props: presenter.makeProps) {
 
                     
 ```
-
 
 ### PureduxUIKit Bindings Migration Guide
 
