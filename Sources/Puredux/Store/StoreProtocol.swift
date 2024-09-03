@@ -39,7 +39,7 @@ public protocol StoreProtocol<State, Action> {
 
     func subscribe(observer: Observer<State>) 
 }
-
+ 
 extension StoreProtocol {
     func weakStore() -> Store<State, Action> {
         instance.weakStore()

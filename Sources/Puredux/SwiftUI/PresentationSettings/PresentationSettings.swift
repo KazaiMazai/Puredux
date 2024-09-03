@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(*, deprecated, message: "Will be removed in 2.0")
 struct PresentationSettings<AppState> {
     var removeDuplicates: (AppState, AppState) -> Bool
     var queue: PresentationQueue

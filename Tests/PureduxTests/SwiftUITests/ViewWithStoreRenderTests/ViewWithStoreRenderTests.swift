@@ -13,7 +13,7 @@ import UIKit
 
 class ViewWithStoreRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
-    let actionDelay: TimeInterval = 0.1
+    let actionDelay: TimeInterval = 0.2
 
     let state = TestAppState(
         subStateWithTitle: SubStateWithTitle(title: ""),
@@ -97,14 +97,12 @@ extension ViewWithStoreRenderTests {
 
         setupWindowForTests(contentRenderedExpectation: contentRendered)
 
-        (0..<actionsCount).forEach {
-            let delay = actionDelay * Double($0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                self?.store.dispatch(UpdateTitle(title: "\(delay)"))
-            }
+        (0..<actionsCount).forEach { idx in
+            let delay = actionDelay * Double(idx)
+            store.dispatch(UpdateTitle(title: "\(delay)"), after: delay)
         }
 
-        waitForExpectations(timeout: max(actionDelay * Double(actionsCount) * 4, 10))
+        waitForExpectations(timeout: (actionDelay * Double(actionsCount) * 4))
     }
 
     func test_WhenManyActionsDispatchedPropsNotChanged_ThenViewRenderedOnce() {

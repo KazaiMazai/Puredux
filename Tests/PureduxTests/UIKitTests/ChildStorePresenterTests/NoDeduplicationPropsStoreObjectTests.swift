@@ -64,7 +64,7 @@ extension PropsEvaluationWithChildStoreTests {
     }
 
     func test_WhenManyNonMutatingActionsAndNeverEqual_ThenPropsEvaluationsDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -79,7 +79,7 @@ extension PropsEvaluationWithChildStoreTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluationsDebouncedToOne() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

@@ -34,7 +34,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-
+@available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
 public struct ViewWithStoreFactory<AppState, Aciton, Content: View>: View {
     private let storeFactory: EnvStoreFactory<AppState, Aciton>
     private let content: () -> Content

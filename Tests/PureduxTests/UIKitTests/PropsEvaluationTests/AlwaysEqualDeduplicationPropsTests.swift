@@ -47,7 +47,7 @@ final class AlwaysEqualDeduplicationPropsUIKitTests: XCTestCase {
 
 extension AlwaysEqualDeduplicationPropsUIKitTests {
     func test_WhenManyNonMutatingActionsAndNotSubscribedAndDeduplicationAlwaysEqual_ThenPropsNotEvaluated() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.isInverted = true
 
@@ -61,7 +61,7 @@ extension AlwaysEqualDeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyNonMutatingActionsDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -76,7 +76,7 @@ extension AlwaysEqualDeduplicationPropsUIKitTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

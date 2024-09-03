@@ -38,7 +38,7 @@ import SwiftUI
 /// let envFactory = EnvStoreFactory(factory)
 /// ```
 ///
-
+@available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
 public final class EnvStoreFactory<AppState, Action>: ObservableObject {
     private let storeFactory: StoreFactory<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>

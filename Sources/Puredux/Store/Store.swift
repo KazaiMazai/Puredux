@@ -93,15 +93,13 @@ public extension Store {
     /// All dispatched Actions and subscribtions are forwarded to the root store.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
-    @available(*, deprecated, message: "Will be removed in the next major release. Consider migrating to scope(...)")
+    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to scope(...)")
     func proxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         map(toLocalState)
     }
 }
 
 public extension Store {
-
-    
 
     /// Initializes a new scope Store with state mapping to local substate.
     ///

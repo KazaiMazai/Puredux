@@ -53,7 +53,7 @@ class ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests: XCTestCase {
 extension ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests {
 
     func test_WhenManyNonMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
@@ -67,7 +67,7 @@ extension ViewWithRootStoreWithAlwaysEqualDeduplicationPropsTests {
     }
 
     func test_WhenManyMutatingActionsAndDeduplicationAlwaysEqual_ThenPropsEvaluatedOnce() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 

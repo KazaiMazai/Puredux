@@ -40,7 +40,7 @@ extension View {
     ///  )
     ///
     ///  ```
-    @available(*, deprecated, message: "Will be removed in the next major release. Use ViewWithStore instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use ViewWithStore instead")
     public static func withEnvStore<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
         props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
@@ -90,7 +90,7 @@ extension View {
     ///  )
     ///
     /// ```
-    @available(*, deprecated, message: "Will be removed in the next major release. Use ViewWithStore instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use ViewWithStore instead")
     public static func with<AppState, Action, Props>(
         store: PublishingStore<AppState, Action>,
         removeStateDuplicates by: Equating<AppState> = .neverEqual,

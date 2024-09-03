@@ -11,7 +11,7 @@ import Combine
 /// PublishingStoreObject is a publishing wrap around Puredux's StoreObject to be used in SwiftUI view hierarchy.
 /// PublishingStoreObject owns a `StoreObject` inside allowing to control the `StoreObject`'s lifecycle.
 ///
-
+@available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
 public struct PublishingStoreObject<AppState, Action> {
     private let stateStore: StateStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -28,7 +28,7 @@ public struct PublishingStoreObject<AppState, Action> {
     /// For all other cases, EnvStoreFactory's methods should be used to create viable PublishingStoreObject.
     ///
     ///
-    @available(*, deprecated, renamed: "init(stateStore:)", message: "Will be removed in the next major release.")
+    @available(*, deprecated, renamed: "init(stateStore:)", message: "Will be removed in 2.0.")
     public init(storeObject: StoreObject<AppState, Action>) {
         self.stateStore = storeObject
         self.stateSubject = PassthroughSubject<AppState, Never>()

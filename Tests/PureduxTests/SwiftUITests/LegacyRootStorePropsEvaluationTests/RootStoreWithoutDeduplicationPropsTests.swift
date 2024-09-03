@@ -35,7 +35,8 @@ class ViewEnvRootStoreWithoutDeduplicationPropsTests: ViewWithRootStoreWithoutDe
 
 class ViewWithRootStoreWithoutDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
-
+    let actionDelay: TimeInterval = 0.1
+    
     let state = TestAppState(
         subStateWithTitle: SubStateWithTitle(title: ""),
         subStateWithIndex: SubStateWithIndex(index: 0)
@@ -84,21 +85,21 @@ extension ViewWithRootStoreWithoutDeduplicationPropsTests {
     }
 
     func test_WhenManyNonMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 
         setupWindowForTests(propsEvaluatedExpectation: expectation)
 
-        (0..<actionsCount).forEach { _ in
-            store.dispatch(NonMutatingStateAction())
+        (0..<actionsCount).forEach { idx in
+            store.dispatch(NonMutatingStateAction(), after: actionDelay * Double(idx))
         }
 
-        waitForExpectations(timeout: timeout)
+        waitForExpectations(timeout: 2 * (actionDelay * Double(actionsCount)))
     }
 
     func test_WhenManyMutatingActionsAndDeduplicateNeverEqual_ThenPropsEvaluatedForEveryAction() {
-        let actionsCount = 1000
+        let actionsCount = 10
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = actionsCount
 

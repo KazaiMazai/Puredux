@@ -36,7 +36,7 @@ public extension StoreProtocol {
             }
         )
     }
-   
+
     /**
      Maps the state of the store to a new optional state of type `T`, preserving optional results.
 
@@ -84,8 +84,7 @@ public extension StoreProtocol {
     func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
         map { $0[keyPath: keyPath] }
     }
- 
-    
+
     /**
      Maps the state of the store to a new optional state of type `T` using a key path, preserving optional results.
 
@@ -232,6 +231,7 @@ public extension StoreProtocol {
 
 
 //MARK: - Actions Transformations
+
 //
 //extension Store {
 //    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
@@ -250,3 +250,4 @@ public extension StoreProtocol {
 //        instance.map(action: transform)
 //    }
 //}
+
