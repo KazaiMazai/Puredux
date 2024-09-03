@@ -40,7 +40,8 @@ protocol SyncStoreProtocol<State, Action> {
 extension StoreObjectProtocol {
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) }
+              subscribe: { [weak self] in self?.subscribe(observer: $0) },
+              storeObject: { [weak self] in self.map { AnyStoreObject($0) } }
         )
     }
 
@@ -79,4 +80,27 @@ extension StoreObjectProtocol {
                 reducer: reducer
             )
         }
+    
+    func createChildStore<T, LocalState>(
+        initialState: LocalState,
+        transform: @escaping (State) -> T,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<(T, LocalState), Action> {
+
+            StoreNode(
+                initialState: initialState,
+                stateMapping: { (transform($0), $1) },
+                parentStore: self,
+                reducer: reducer
+            )
+        }
+    
+    func map<T>(transform: @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
+            StoreNode(
+                initialState: Void(),
+                stateMapping: { state, _ in transform(state) },
+                parentStore: self,
+                reducer: {_,_ in }
+            )
+        }
+     
 }

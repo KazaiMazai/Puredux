@@ -38,7 +38,6 @@ Example usage:
         // ...
      }
  }
- 
  ```
 */
 @propertyWrapper

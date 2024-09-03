@@ -21,7 +21,7 @@ import SwiftUI
  
 */
 public struct StoreView<ViewState, Action, Props, Content: View>: View {
-    private let store: Store<ViewState, Action>
+    private let store: any StoreProtocol<ViewState, Action>
     private let props: (_ state: ViewState, _ store: Store<ViewState, Action>) -> Props
     private let content: (_ props: Props) -> Content
     private(set) var removeStateDuplicates: Equating<ViewState>?
@@ -90,7 +90,7 @@ public extension StoreView {
     init(store: any StoreProtocol<ViewState, Action>,
          props: @escaping (ViewState, Store<ViewState, Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.getStore()
+        self.store = store.instance
         self.props = props
         self.content = content
     }
@@ -106,7 +106,7 @@ public extension StoreView {
     init(_ store: any StoreProtocol<ViewState, Action>,
          props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.getStore()
+        self.store = store.instance
         self.props = { state, store in props(state, store.dispatch) }
         self.content = content
     }
@@ -123,7 +123,7 @@ public extension StoreView where Props == (ViewState, Store<ViewState, Action>) 
     */
     init(store: any StoreProtocol<ViewState, Action>,
          content: @escaping (Props) -> Content) {
-        self.store = store.getStore()
+        self.store = store
         self.props = { state, store in (state, store) }
         self.content = content
     }
@@ -139,7 +139,7 @@ public extension StoreView where Props == (ViewState, Store<ViewState, Action>) 
     */
     init(_ store: any StoreProtocol<ViewState, Action>,
          content: @escaping (ViewState, @escaping Dispatch<Action>) -> Content) {
-        self.store = store.getStore()
+        self.store = store
         self.props = { state, store in (state, store) }
         self.content = { props in content(props.0, props.1.dispatch) }
     }

@@ -54,9 +54,8 @@ public typealias StoreObject = StateStore
     - Action: The type of actions that can be dispatched to the store.
  */
 public struct StateStore<State, Action> {
-    private let storeObject: any StoreObjectProtocol<State, Action>
-    private let erasedStore: Store<State, Action>
-
+    let storeObject: AnyStoreObject<State, Action>
+    
     /**
      Returns the `Store` instance associated with this `StateStore`.
 
@@ -73,7 +72,8 @@ public struct StateStore<State, Action> {
      - Parameter action: The action to be dispatched.
     */
     public func dispatch(_ action: Action) {
-        erasedStore.dispatch(action)
+        storeObject.dispatch(action)
+        executeAsyncAction(action)
     }
     
     /**
@@ -82,15 +82,11 @@ public struct StateStore<State, Action> {
      - Parameter observer: an Observer instance
      */
     public func subscribe(observer: Observer<State>) {
-        erasedStore.subscribe(observer: observer)
+        storeObject.subscribe(observer: observer)
     }
     
     init(storeObject: any StoreObjectProtocol<State, Action>) {
-        self.storeObject = storeObject
-        self.erasedStore = Store<State, Action>(
-            dispatcher: { [storeObject] in storeObject.dispatch($0) },
-            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) }
-        )
+        self.storeObject = AnyStoreObject(storeObject)
     }
 }
 
@@ -128,6 +124,19 @@ public extension StateStore {
             qos: qos,
             reducer: reducer
         ))
+    }
+}
+
+extension StateStore: StoreProtocol {
+    public typealias State = State
+    public typealias Action = Action
+   
+    public var instance: Store<State, Action> {
+        Store<State, Action>(
+            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
+            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
+            storeObject: { [storeObject] in storeObject }
+        )
     }
 }
 
@@ -200,14 +209,6 @@ public extension StateStore {
     }
 }
 
-extension StateStore: StoreProtocol {
-    public typealias State = State
-    public typealias Action = Action
-   
-    public func getStore() -> Store<State, Action> {
-        strongStore()
-    }
-}
 
 public extension StateStore {
     @available(*, deprecated, renamed: "init(_:qos:reducer:)", message: "Actions Interceptor will be removed in 2.0, use AsyncAction instead.")
@@ -291,18 +292,14 @@ extension StateStore {
     }
 }
 
-
 extension StateStore {
-    func weakStore() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
-            subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) }
-        )
-    }
-    
-    func strongStore() -> Store<State, Action> {
-        Store<State, Action>(
-            dispatcher: { [storeObject] in storeObject.dispatch($0) },
-            subscribe: { [storeObject] in storeObject.subscribe(observer: $0) })
+    func executeAsyncAction(_ action: Action) {
+        guard let action = action as? (any AsyncAction) else {
+            return
+        }
+        
+        action.execute { [weak storeObject] in
+            storeObject?.dispatch($0)
+        }
     }
 }

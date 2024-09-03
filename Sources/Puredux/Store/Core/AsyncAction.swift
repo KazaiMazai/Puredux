@@ -17,3 +17,18 @@ public protocol AsyncAction {
 public extension AsyncAction {
     var dispatchQueue: DispatchQueue { .main }
 }
+
+
+
+extension AsyncAction {
+    func execute<Action>(_ dispatch: @escaping Dispatch<Action>) {
+        dispatchQueue.async {
+            execute { result in
+                guard let resultAction = result as? Action else {
+                    return
+                }
+                dispatch(resultAction)
+            }
+        }
+    }
+}

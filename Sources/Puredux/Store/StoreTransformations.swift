@@ -21,40 +21,18 @@ public extension StoreProtocol {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
     func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: getStore().dispatchHandler,
+        let weakStore = weakStore()
+        return Store<T, Action>(
+            dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
-            }
-        )
-    }
-    
-    /**
-     Maps the state of the store to a new state of type `T`, filtering out `nil` results.
-
-     This function is similar to `map(_:)` but returns a new store that only includes non-`nil` transformed states.
-     If the transformation closure returns `nil`, those states are excluded from the resulting store.
-
-     - Parameter transform: A closure that takes the current state of type `State` and returns an optional new state of type `T?`.
-     - Returns: A new `Store` with the non-optional transformed state of type `T` and the same action type `Action`.
-     - Note: This method filters out states where the transformation closure returns `nil`, resulting in a store with a reduced set of states.
-    */
-    @available(*, deprecated, message: "Will be removed in 2.0")
-    func compactMap<T>(_ transform: @escaping (State) -> T?) -> Store<T, Action> {
-        Store<T, Action>(
-            dispatcher: getStore().dispatchHandler,
-            subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
-                    guard let localState = transform(state) else {
-                        complete(.active)
-                        return
-                    }
-
-                    localStateObserver.send(localState, complete: complete)
-                })
+            },
+            storeObject: { instance
+                .getStoreObject()?
+                .map(transform)
             }
         )
     }
@@ -71,13 +49,19 @@ public extension StoreProtocol {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        Store<T?, Action>(
-            dispatcher: getStore().dispatchHandler,
+        let store = instance
+        let weakStore = instance.weakStore()
+        return Store<T?, Action>(
+            dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
-                getStore().subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
+            },
+            storeObject: { instance
+                .getStoreObject()?
+                .map(transform)
             }
         )
     }
@@ -101,22 +85,6 @@ public extension StoreProtocol {
         map { $0[keyPath: keyPath] }
     }
 
-    /**
-     Maps the state of the store to a new state of type `T` using a key path, filtering out `nil` results.
-
-     This function transforms the current state of the store 
-     by applying a key path that extracts an optional property or substate.
-     Only non-`nil` extracted properties are included in the resulting store.
-
-     - Parameter keyPath: A key path that specifies the optional property of type `T?` to extract from the current state of type `State`.
-     - Returns: A new `Store` with the non-optional transformed state of type `T` and the same action type `Action`.
-     - Note: This method filters out states where the key path resolves to `nil`, resulting in a store with a reduced set of non-optional states.
-    */
-    @available(*, deprecated, message: "Will be removed in 2.0")
-    func compactMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T, Action> {
-        compactMap { $0[keyPath: keyPath] }
-    }
-    
     /**
      Maps the state of the store to a new optional state of type `T` using a key path, preserving optional results.
 
@@ -264,18 +232,22 @@ public extension StoreProtocol {
 
 //MARK: - Actions Transformations
 
-extension Store {
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        Store<State, A>(
-            dispatcher: { action in dispatch(transform(action)) },
-            subscribe: subscribe
-        )
-    }
-}
+//
+//extension Store {
+//    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
+//        let store = instance
+//        let weakStore = weakStore()
+//        return Store<State, A>(
+//            dispatcher: { action in weakStore.dispatch(transform(action)) },
+//            subscribe: weakStore.subscribeHandler,
+//            storeObject: store.getStoreObject
+//        )
+//    }
+//}
+//
+//extension StateStore {
+//    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
+//        instance.map(action: transform)
+//    }
+//}
 
-extension StateStore {
-    
-    func map<A>(_ transform: @escaping (A) -> Action) -> Store<State, A> {
-        strongStore().map(transform)
-    }
-}

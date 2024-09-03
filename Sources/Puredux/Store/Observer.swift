@@ -115,7 +115,7 @@ extension Observer {
     init(id: UUID, observe: @escaping StateHandler) {
         self.init(id: id, keepsCurrentState: false) { state, _, complete in
             observe(state, complete)
-            return nil
+            return state
         }
     }
     
@@ -132,7 +132,7 @@ extension Observer {
 
 extension Observer {
     
-    init(_ observer: AnyObject,
+    init(_ observer: AnyObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping StateHandler) {
@@ -143,7 +143,7 @@ extension Observer {
         }
     }
     
-    init(_ observer: AnyObject,
+    init(_ observer: AnyObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping ObserverHandler) {
@@ -173,7 +173,6 @@ extension Observer {
         
         self.init(id: id, keepsCurrentState: equating != nil) { state, prevState, complete in
             guard let equating else {
-                complete(.active)
                 return observe(state, prevState, complete)
             }
             

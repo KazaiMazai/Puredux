@@ -20,7 +20,8 @@ public extension Store {
 
 public struct Store<State, Action> {
     let dispatchHandler: Dispatch
-    private let subscribeHandler: Subscribe
+    let subscribeHandler: Subscribe
+    let getStoreObject: () -> AnyStoreObject<State, Action>?
 }
 
 public extension Store {
@@ -48,7 +49,7 @@ public extension Store {
     @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
     init(dispatch: @escaping Dispatch,
          subscribe: @escaping Subscribe) {
-        self.init(dispatcher: dispatch, subscribe: subscribe)
+        self.init(dispatcher: dispatch, subscribe: subscribe, storeObject: { nil })
     }
 
     /// Initializes a mock Store
@@ -63,10 +64,15 @@ public extension Store {
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
     ///
-    static func mockStore(dispatch: @escaping Dispatch,
-                          subscribe: @escaping Subscribe) -> Store<State, Action> {
+    static func mockStore(
+        dispatch: @escaping Dispatch,
+        subscribe: @escaping Subscribe) -> Store<State, Action> {
 
-        Store(dispatcher: dispatch, subscribe: subscribe)
+            Store(
+                dispatcher: dispatch,
+                subscribe: subscribe,
+                storeObject: { nil }
+            )
     }
 }
                          
@@ -74,9 +80,7 @@ extension Store: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
     
-    public func getStore() -> Store<State, Action> {
-        self
-    }
+    public var instance: Store<State, Action> { self }
 }
 
 public extension Store {
@@ -106,21 +110,6 @@ public extension Store {
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     /// When the result local state is nill, subscribers are not triggered.
     ///
-    ///
-    @available(*, deprecated, message: "Will be removed in 2.0")
-    func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
-        compactMap(localState)
-    }
-
-    /// Initializes a new scope Store with state mapping to local substate.
-    ///
-    /// - Returns: Store with local substate
-    ///
-    /// Store is a proxy for the root store.
-    /// All dispatched Actions and subscribtions are forwarded to the root store.
-    /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
-    /// When the result local state is nill, subscribers are not triggered.
-    ///
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         map(localState)
     }
@@ -128,10 +117,21 @@ public extension Store {
 
 extension Store {
     init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe) {
+         subscribe: @escaping Subscribe,
+         storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
 
-        dispatchHandler = dispatcher
-        subscribeHandler = subscribe
+        dispatchHandler = { dispatcher($0) }
+        subscribeHandler = { subscribe($0) }
+        getStoreObject = storeObject
+    }
+    
+    func weakStore() -> Store<State, Action> {
+        let storeObject = getStoreObject()
+        return Store<State, Action>(
+            dispatcher: dispatchHandler,
+            subscribe: subscribeHandler,
+            storeObject: { [weak storeObject] in storeObject }
+        )
     }
 }
 
@@ -141,13 +141,6 @@ extension Store {
             return
         }
         
-        action.dispatchQueue.async {
-            action.execute { result in
-                guard let resultAction = result as? Action else {
-                    return
-                }
-                dispatch(resultAction)
-            }
-        }
+        action.execute(self.dispatchHandler)
     }
 }
