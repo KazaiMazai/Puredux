@@ -27,7 +27,6 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
-                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
  
@@ -44,7 +43,6 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
-                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
  
@@ -61,7 +59,6 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
                 stateMapping: { state, childState in
                     StateComposition(state: state, childState: childState)
                 },
-                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action: action) }
             )
  

@@ -24,7 +24,6 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
-                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action) }
             )
              
@@ -46,7 +45,6 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
-                qos: .userInitiated,
                 reducer: { state, action in state.reduce(action) }
             )
             
@@ -68,7 +66,6 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             let store = self.rootStore.createChildStore(
                 initialState: object,
                 stateMapping: { state, childState in childState },
-                qos: .userInitiated,
                 reducer: { state, action  in  state.reduce(action) }
             )
             
