@@ -7,20 +7,13 @@
 
 import Foundation
 
-public extension AnyStore {
+public typealias Dispatch<Action> = (_ action: Action) -> Void
 
-    /// Closure that handles Store's dispatching Actions
-    ///
-    typealias Dispatch = (_ action: Action) -> Void
-
-    /// Closure that takes Observer as a parameter and handles Store's subscribtions
-    ///
-    typealias Subscribe = (_ observer: Observer<State>) -> Void
-}
-
+typealias Subscribe<State> = (_ observer: Observer<State>) -> Void
+ 
 public struct AnyStore<State, Action>: Store {
-    let dispatchHandler: Dispatch
-    let subscribeHandler: Subscribe
+    let dispatchHandler: Dispatch<Action>
+    let subscribeHandler: Subscribe<State>
     let getStoreObject: () -> AnyStoreObject<State, Action>?
     
     public func eraseToAnyStore() -> AnyStore<State, Action> { self }
@@ -38,8 +31,8 @@ public extension AnyStore {
 }
 
 extension AnyStore {
-    init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe,
+    init(dispatcher: @escaping Dispatch<Action>,
+         subscribe: @escaping Subscribe<State> ,
          storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
 
         dispatchHandler = { dispatcher($0) }

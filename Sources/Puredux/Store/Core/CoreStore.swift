@@ -8,7 +8,7 @@
 import Dispatch
 import Foundation
 
-public typealias Dispatch<Action> = (_ action: Action) -> Void
+
 public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> Void
 
 typealias StoreID = UUID
