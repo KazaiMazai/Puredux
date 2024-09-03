@@ -20,8 +20,15 @@ struct ResultAction: Action {
     let index: Int
 }
 
-struct AsyncResultAction: Action {
+struct AsyncResultAction: Action & AsyncAction  {
     let index: Int
+    var dispatchQueue: DispatchQueue  = .main
+    
+    let executionCallback: (@escaping (ResultAction) -> Void) -> Void
+    
+    func execute(completeHandler: @escaping (ResultAction) -> Void) {
+        executionCallback(completeHandler)
+    }
 }
 
 struct AsyncIndexAction: Action & AsyncAction {

@@ -18,9 +18,7 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     func unsubscribe(observer: Observer<State>)
 
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
-
-    func dispatch(scopedAction: ScopedAction<Action>)
-
+ 
     func subscribe(observer: Observer<State>)
 }
 
@@ -32,7 +30,7 @@ protocol SyncStoreProtocol<State, Action> {
 
     func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
-    func syncDispatch(scopedAction: ScopedAction<Action>)
+    func syncDispatch(_  action: Action)
 }
 
 extension StoreObjectProtocol {

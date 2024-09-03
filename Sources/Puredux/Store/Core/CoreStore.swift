@@ -83,22 +83,14 @@ extension CoreStore: StoreObjectProtocol {
 
     // MARK: - Dispatch
 
-    func scopeAction(_ action: Action) -> ScopedAction<Action> {
-        ScopedAction(storeId: id, action: action)
-    }
-
-    func dispatch(scopedAction: ScopedAction<Action>) {
+    func dispatch(_ action: Action) {
         queue.async { [weak self] in
-            self?.syncDispatch(scopedAction: scopedAction)
+            self?.syncDispatch(action)
         }
     }
 
-    func dispatch(_ action: Action) {
-        dispatch(scopedAction: scopeAction(action))
-    }
-
-    func syncDispatch(scopedAction: ScopedAction<Action>) {
-        reducer(&self.state, scopedAction.action)
+    func syncDispatch(_ action: Action) {
+        reducer(&self.state, action)
         observers.forEach { send(state, to: $0) }
     }
 }

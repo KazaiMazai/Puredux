@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct ScopedAction<Action> {
-    let storeId: StoreID
-    let action: Action
-}
+//struct ScopedAction<Action> {
+//    let storeId: StoreID
+//    let action: Action
+//}
 //
 //struct ActionsInterceptor<Action> {
 //    let storeId: StoreID

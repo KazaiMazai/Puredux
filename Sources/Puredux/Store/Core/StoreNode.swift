@@ -90,21 +90,14 @@ extension StoreNode: StoreObjectProtocol {
         parentStore.queue
     }
 
-    func syncDispatch(scopedAction: ScopedAction<Action>) {
-        localStore.syncDispatch(scopedAction: scopedAction)
-        parentStore.syncDispatch(scopedAction: ScopedAction(
-            storeId: scopedAction.storeId,
-            action: scopedAction.action
-        ))
+    func syncDispatch(_ action: Action) {
+        localStore.syncDispatch(action)
+        parentStore.syncDispatch(action)
     }
-
+    
     func dispatch(_ action: Action) {
-        dispatch(scopedAction: localStore.scopeAction(action))
-    }
-
-    func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
-            self?.syncDispatch(scopedAction: scopedAction)
+            self?.syncDispatch(action)
         }
     }
 

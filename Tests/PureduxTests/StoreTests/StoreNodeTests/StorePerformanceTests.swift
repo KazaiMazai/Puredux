@@ -42,8 +42,8 @@ final class StorePerformanceTests: XCTestCase {
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let store = rootStore.stateStore(Array(repeating: 0, count: 2000),
-                                            reducer: { state, action in state = state.map { $0 + action } }
+            let store = rootStore.with(Array(repeating: 0, count: 2000),
+                                       reducer: { state, action in state = state.map { $0 + action } }
             )
             
             let expectation = expectation(description: "finished")
@@ -74,12 +74,12 @@ final class StorePerformanceTests: XCTestCase {
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childOne = rootStore.stateStore(Array(repeating: 0, count: 2000),
-                                               reducer: { state, action in state = state.map { $0 + action } }
+            let childOne = rootStore.with(Array(repeating: 0, count: 2000),
+                                          reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childTwo = childOne.stateStore(Array(repeating: 0, count: 2000),
-                                              reducer: { state, action in state = state.map { $0 + action } }
+            let childTwo = childOne.with(Array(repeating: 0, count: 2000),
+                                         reducer: { state, action in state = state.map { $0 + action } }
             )
             
             let expectation = expectation(description: "finished")
@@ -111,16 +111,16 @@ final class StorePerformanceTests: XCTestCase {
                 reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childOne = rootStore.stateStore(Array(repeating: 0, count: 2000),
-                                               reducer: { state, action in state = state.map { $0 + action } }
+            let childOne = rootStore.with(Array(repeating: 0, count: 2000),
+                                          reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childTwo = childOne.stateStore(Array(repeating: 0, count: 2000),
-                                              reducer: { state, action in state = state.map { $0 + action } }
+            let childTwo = childOne.with(Array(repeating: 0, count: 2000),
+                                         reducer: { state, action in state = state.map { $0 + action } }
             )
             
-            let childThree = childTwo.stateStore(Array(repeating: 0, count: 2000),
-                                                reducer: { state, action in state = state.map { $0 + action } }
+            let childThree = childTwo.with(Array(repeating: 0, count: 2000),
+                                           reducer: { state, action in state = state.map { $0 + action } }
             )
             
             let expectation = expectation(description: "finished")

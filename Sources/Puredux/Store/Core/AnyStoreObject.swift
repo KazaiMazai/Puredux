@@ -35,10 +35,6 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol  {
         boxed.subscribe(observer: observer, receiveCurrentState: receiveCurrentState)
     }
     
-    func dispatch(scopedAction: ScopedAction<Action>) {
-        boxed.dispatch(scopedAction: scopedAction)
-    }
-    
     func subscribe(observer: Observer<State>) {
         boxed.subscribe(observer: observer)
     }
@@ -51,8 +47,8 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol  {
         boxed.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
     }
     
-    func syncDispatch(scopedAction: ScopedAction<Action>) {
-        boxed.syncDispatch(scopedAction: scopedAction)
+    func syncDispatch(_ action: Action) {
+        boxed.syncDispatch(action)
     }
 }
 
@@ -89,11 +85,7 @@ private extension AnyStoreObject {
         override func subscribe(observer: Observer<State>, receiveCurrentState: Bool) {
             storeObject.subscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
-        
-        override func dispatch(scopedAction: ScopedAction<Action>) {
-            storeObject.dispatch(scopedAction: scopedAction)
-        }
-        
+     
         override func subscribe(observer: Observer<State>) {
             storeObject.subscribe(observer: observer)
         }
@@ -106,8 +98,8 @@ private extension AnyStoreObject {
             storeObject.syncSubscribe(observer: observer, receiveCurrentState: receiveCurrentState)
         }
         
-        override func syncDispatch(scopedAction: ScopedAction<Action>) {
-            storeObject.syncDispatch(scopedAction: scopedAction)
+        override func syncDispatch(_ action: Action) {
+            storeObject.syncDispatch(action)
         }
     }
 }
@@ -135,11 +127,7 @@ private extension AnyStoreObject {
         func subscribe(observer: Observer<State>, receiveCurrentState: Bool) {
             fatalError("Cannot initialise, must subclass")
         }
-        
-        func dispatch(scopedAction: ScopedAction<Action>) {
-            fatalError("Cannot initialise, must subclass")
-        }
-        
+    
         func subscribe(observer: Observer<State>) {
             fatalError("Cannot initialise, must subclass")
         }
@@ -152,7 +140,7 @@ private extension AnyStoreObject {
             fatalError("Cannot initialise, must subclass")
         }
         
-        func syncDispatch(scopedAction: ScopedAction<Action>) {
+        func syncDispatch(_ action: Action) {
             fatalError("Cannot initialise, must subclass")
         }
     }

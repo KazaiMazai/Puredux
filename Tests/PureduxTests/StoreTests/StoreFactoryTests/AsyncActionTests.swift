@@ -166,21 +166,13 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-
-                expectations[asyncAction.index].fulfill()
-                dispatch(ResultAction(index: asyncAction.index))
-            },
+            TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-
+                
                 expectations[resultAction.index].fulfill()
             }
         )
@@ -194,7 +186,12 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncIndexAction(index: $0) }
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                expectations[idx].fulfill()
+                handler(ResultAction(index: idx))
+            }
+        }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -207,13 +204,13 @@ final class ChildStoreAsyncActionOnceTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
+            TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
                     return
                 }
-
+                
                 expectations[resultAction.index].fulfill()
             }
         )

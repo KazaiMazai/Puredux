@@ -60,7 +60,7 @@ final class FactoryStateStoreQueueTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenActionDispatched_ThenInterceptorCalledNotOnMainThread() {
+    func test_WhenActionQueueIsSetToGlobal_ThenInterceptorCalledNotOnMainThread() {
         let initialStateIndex = 1
         let stateIndex = 2
 
@@ -68,17 +68,19 @@ final class FactoryStateStoreQueueTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 1
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: initialStateIndex),
-            interceptor: { _, _  in
-                XCTAssertFalse(Thread.isMainThread)
-                asyncExpectation.fulfill()
-            },
+            TestState(currentIndex: initialStateIndex),
             reducer: { state, action  in
                 state.reduce(action: action)
             })
 
+        var action = AsyncResultAction(index: stateIndex) { handler in
+            XCTAssertFalse(Thread.isMainThread)
+            asyncExpectation.fulfill()
+        }
+        
+        action.dispatchQueue = .global(qos: .background)
          
-        store.dispatch(UpdateIndex(index: stateIndex))
+        store.dispatch(action)
 
         waitForExpectations(timeout: timeout)
     }

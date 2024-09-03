@@ -40,19 +40,17 @@ final class FactoryStateStoreTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
-            interceptor: { action, _  in
-                guard let action = (action as? UpdateIndex) else {
-                    return
-                }
-                expectations[action.index].fulfill()
-            },
+            TestState(currentIndex: 0),
+            
             reducer: { state, action  in state.reduce(action: action) }
         )
 
         
-        let actions = (0..<actionsCount).map {
-            UpdateIndex(index: $0)
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                expectations[idx].fulfill()
+                handler(ResultAction(index: idx))
+            }
         }
 
         actions.forEach { store.dispatch($0) }

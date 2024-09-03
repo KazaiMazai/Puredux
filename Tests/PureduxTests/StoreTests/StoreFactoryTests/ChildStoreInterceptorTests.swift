@@ -19,12 +19,6 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
 
         let store = StateStore<TestState, Action>(
             TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
@@ -44,7 +38,12 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                handler(ResultAction(index: idx))
+            }
+            
+        }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -57,13 +56,7 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
+            TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -84,7 +77,11 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                handler(ResultAction(index: idx))
+            }
+        }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -102,13 +99,7 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
 
         let store = StateStore<TestState, Action>(
              TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
-            reducer: { state, action  in
+             reducer: { state, action  in
                 state.reduce(action: action)
                 guard let resultAction = (action as? ResultAction) else {
                     return
@@ -127,8 +118,11 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
-     
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                handler(ResultAction(index: idx))
+            }
+        }
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -144,13 +138,7 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
 
         let store = StateStore<TestState, Action>(
              TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                dispatch(ResultAction(index: asyncAction.index))
-            },
-            reducer: { state, action  in
+             reducer: { state, action  in
                 state.reduce(action: action)
             }
         )
@@ -170,7 +158,11 @@ final class ActionsOnMainStoreInterceptionTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                handler(ResultAction(index: idx))
+            }
+        }
         
         actions.forEach { store.dispatch($0) }
         
@@ -189,14 +181,6 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
         
         let factory = StateStore<TestState, Action>(
             TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-                
-                expectations[asyncAction.index].fulfill()
-                dispatch(ResultAction(index: asyncAction.index))
-            },
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -210,8 +194,13 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
         ).map { rootState, childState in
             StateComposition(state: rootState, childState: childState)
         }
-
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
+        
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                expectations[idx].fulfill()
+                handler(ResultAction(index: idx))
+            }
+        }
         actions.forEach { childStore.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
@@ -224,15 +213,7 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
         }
 
         let store = StateStore<TestState, Action>(
-             TestState(currentIndex: 0),
-            interceptor: { asyncAction, dispatch  in
-                guard let asyncAction = (asyncAction as? AsyncResultAction) else {
-                    return
-                }
-
-                expectations[asyncAction.index].fulfill()
-                dispatch(ResultAction(index: asyncAction.index))
-            },
+            TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
             }
@@ -248,8 +229,12 @@ final class ChildStoreInterceptOnceTests: XCTestCase {
             StateComposition(state: rootState, childState: childState)
         }
 
-        let actions = (0..<actionsCount).map { AsyncResultAction(index: $0) }
-       
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                expectations[idx].fulfill()
+                handler(ResultAction(index: idx))
+            }
+        }
         actions.forEach { store.dispatch($0) }
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
