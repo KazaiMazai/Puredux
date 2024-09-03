@@ -36,7 +36,7 @@ streamline state management with a focus on unidirectional data flow and separat
 ```swift
 
 
-// Define action. It can be an `enum` or a protocol for even more flexiblity.
+// Let's cover actions with a protocol
 
 protocol Action {
 
@@ -58,11 +58,10 @@ extension Injected {
     @InjectEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
         state.reduce(action)
     }
- }
+}
 ```
 
 ### SwiftUI Integration
-
 
 ```swift
 
@@ -131,6 +130,48 @@ class MyViewController: ViewController  {
          // Update UI elements with the new view state
      }
 }
+
+```
+
+## Side Effects
+
+In UDF world we call "side effects" async work: network requests, database fetches and other I/O operations, timer events, location service callbacks, etc.
+
+In Puredix it can be done with Async Actions.
+
+### Async Actions
+
+```swift
+
+// Define result and error actions:
+
+struct FetchDataResult: Action {
+    // ...
+}
+
+struct FetchDataError: Action {
+    // ...
+}
+
+// Define async action:
+
+struct FetchDataAction: AsyncAction {
+
+    func execute(completeHandler: @escaping (Action) -> Void) {  
+        APIClient.shared.fetchData {
+            switch $0 {
+            case .success(let result):
+                completeHandler(FetchDataResult(result))
+            case .success(let error):
+                completeHandler(FetchDataError(error))
+            }
+        }
+    }
+}
+
+// When async action is dispatched to the store, it will be executed:
+
+store.dispatch(FetchDataAction())
 
 ```
 
