@@ -13,7 +13,7 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
 
     let state = TestAppStateWithIndex()
 
-    lazy var stateStore : StateStore = {
+    lazy var stateStore: StateStore = {
         StateStore<TestAppStateWithIndex, Action>(
              state,
             reducer: { state, action in
