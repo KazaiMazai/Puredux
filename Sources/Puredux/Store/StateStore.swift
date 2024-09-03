@@ -106,8 +106,8 @@ public extension StateStore {
          Example usage:
          ```swift
          let store = StateStore(
-             initialState: MyInitialState(),
-             qos: .background,
+             MyInitialState(),
+             qos: .userInteractive,
              reducer: myReducer
          )
          ```

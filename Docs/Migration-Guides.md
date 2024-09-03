@@ -1,13 +1,65 @@
 
-## PureduxStore Migration Guide
+## Puredux legacy to a single repository migration guide
 
-The old API will be deprecated in the next major release. 
-Please consider migration to the new API.
+Puredux was refactored from a set of packages to a single monorepository.
 
-<details><summary>Click for details, it's not a big deal</summary>
-<p>
+These changes will require a few updates.
 
-### 1. Migrate From `RootStore` to `StoreFactory`:
+### 1. Change the package:
+
+If you were using any of the packages individually:
+
+- PureduxStore
+- PureduxSwiftUI
+- PureduxUIKit
+
+You should update them to Puredux:
+
+In Xcode 11.0 or later select File > Swift Packages > Add Package Dependency... and add Puredux repository URL:
+
+```
+https://github.com/KazaiMazai/Puredux
+```
+
+Remove the individual repositories:
+
+```
+- https://github.com/KazaiMazai/PureduxUIKit
+ 
+- https://github.com/KazaiMazai/PureduxSwiftUI
+  
+- https://github.com/KazaiMazai/PureduxStore
+```
+
+### 2. Fix imports:
+
+Find and relace all the occurences of:
+
+```swift
+import PureduxSwiftUI
+```
+
+```
+import PureduxUIKit
+```
+
+```
+import PireduxStore
+
+```
+
+on 
+
+```swift
+import Puredux
+
+```
+
+## Puredux 1.0.x - 1.1.x Update
+
+### Store migration
+
+#### 1. Migrate From `RootStore` to `StoreFactory`:
 
 Before: 
 
@@ -38,7 +90,7 @@ let store: Store<AppState, Action> = storeFactory.rootStore()
 MainQueue is not available for Stores any more. 
 Since now, stores always operate on a global serial queue with configurable QoS.
 
-### 2. Update actions interceptor and pass in to store factory:
+#### 2. Update actions interceptor and pass in to store factory:
 
 Before:
 
@@ -74,7 +126,7 @@ let storeFactory = StoreFactory<AppState, Action>(
 )
 
 ```
-### 3. Migrate from `proxy(...)` to `scope(...)`:
+#### 3. Migrate from `proxy(...)` to `scope(...)`:
 
 Before:
 
@@ -89,18 +141,9 @@ Now:
 let scopeStore = storeFactory.scopeStore { appState in appState.subState }
 
 ```
+ 
+### PureduxSwiftUI Bindings Migration Guide
 
-</p>
-</details>
-
-
-## PureduxSwiftUI Bindings Migration Guide
-
-Old API will be deprecated in the next major update. 
-Good time to migrate to new API, especially if you plan to use new features like child stores.
-
-<details><summary>Click for details</summary>
-<p>
 
 1. Migrate to from `RootStore` to `StoreFactory` like mentioned in PureduxStore [docs](https://github.com/KazaiMazai/PureduxStore)
 
@@ -209,6 +252,6 @@ ViewWithStore(props: presenter.makeProps) {
 ```
 
 
-## PureduxUIKit Bindings Migration Guide
+### PureduxUIKit Bindings Migration Guide
 
 Nothing needs to be changed.
