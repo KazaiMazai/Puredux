@@ -47,6 +47,41 @@ Here is an overview of what to be changed:
 + )
 ```
 
+### Action Interceptor Changes
+
+Now there is no need in Action Interceptor any more, built-in `AsyncActions` protocol should be used instead:
+
+
+```diff
+
+- protocol AsyncAppAction: Action {
+-     func execute(completeHandler: @escaping (AppAction) -> Void)
+- }
++ protocol AsyncAppAction: AsyncAction & AppAction {}
+
+- let storeFactory = StoreFactory<AppState, Action>(
+-     initialState: initialState, 
+-     interceptor: { action, dispatch in
+-        guard let action = (action as? AsyncAppAction) else  {
+-            return
+-        }
+-
+-        DispatchQueue.main.async {
+-            action.execute(completeHandler: dispatch)
+-        }
+-    },
+-   reducer: reducer
+-)
+
++ let store = StateStore(
++     MyInitialState(),
++     qos: .userInteractive,
++     reducer: myReducer
++ )
+```
+
+
+
 ### Child Store Changes
 
 ```diff
