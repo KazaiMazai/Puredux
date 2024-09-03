@@ -1,15 +1,12 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
   <img src="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
 </picture>
 
 
-<p align="left">
-    <a href="https://github.com/KazaiMazai/Puredux/actions">
-        <img src="https://github.com/KazaiMazai/Puredux/workflows/Tests/badge.svg" alt="Continuous Integration">
-    </a>
-</p>
+[![CI](https://github.com/KazaiMazai/Puredux/workflows/Tests/badge.svg)](https://github.com/KazaiMazai/Puredux/actions?query=workflow%3ATests)
+
 
 Puredux is an architecture framework for SwiftUI and UIKit designed to
 streamline state management with a focus on unidirectional data flow and separation of concerns.
