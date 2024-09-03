@@ -27,10 +27,6 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol  {
         boxed.queue
     }
     
-    var actionsInterceptor: ActionsInterceptor<Action>? {
-        boxed.actionsInterceptor
-    }
-    
     func unsubscribe(observer: Observer<State>) {
         boxed.unsubscribe(observer: observer)
     }
@@ -85,11 +81,7 @@ private extension AnyStoreObject {
         override var queue: DispatchQueue {
             storeObject.queue
         }
-        
-        override var actionsInterceptor: ActionsInterceptor<Action>? {
-            storeObject.actionsInterceptor
-        }
-        
+     
         override func unsubscribe(observer: Observer<State>) {
             storeObject.unsubscribe(observer: observer)
         }
@@ -133,10 +125,6 @@ private extension AnyStoreObject {
         }
         
         var queue: DispatchQueue {
-            fatalError("Cannot initialise, must subclass")
-        }
-        
-        var actionsInterceptor: ActionsInterceptor<Action>? {
             fatalError("Cannot initialise, must subclass")
         }
         

@@ -15,8 +15,6 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
 
     var queue: DispatchQueue { get }
 
-    var actionsInterceptor: ActionsInterceptor<Action>? { get }
-
     func unsubscribe(observer: Observer<State>)
 
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)

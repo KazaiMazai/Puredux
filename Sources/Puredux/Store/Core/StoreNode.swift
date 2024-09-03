@@ -31,20 +31,9 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
 
         localStore = CoreStore(
             queue: parentStore.queue,
-            actionsInterceptor: nil,
             initialState: initialState,
             reducer: reducer
         )
-
-        if let parentInterceptor = parentStore.actionsInterceptor {
-            let interceptor = ActionsInterceptor(
-                storeId: localStore.id,
-                handler: parentInterceptor.handler,
-                dispatcher: { [weak self] action in self?.dispatch(action) }
-            )
-            
-            localStore.setInterceptorSync(interceptor)
-        }
         
         localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
@@ -86,11 +75,6 @@ extension StoreNode where LocalState == State {
             stateMapping: { _, state in return state }, 
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
-                actionsInterceptor: ActionsInterceptor(
-                    storeId: StoreID(),
-                    handler: interceptor,
-                    dispatcher: { _ in }
-                ),
                 initialState: Void(),
                 reducer: { _, _ in }
             ),
@@ -104,10 +88,6 @@ extension StoreNode where LocalState == State {
 extension StoreNode: StoreObjectProtocol {
     var queue: DispatchQueue {
         parentStore.queue
-    }
-
-    var actionsInterceptor: ActionsInterceptor<Action>? {
-        localStore.actionsInterceptor
     }
 
     func syncDispatch(scopedAction: ScopedAction<Action>) {

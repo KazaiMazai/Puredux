@@ -21,17 +21,15 @@ final class CoreStore<State, Action> {
     private var state: State
 
     let dispatchQueue: DispatchQueue
-    private(set) var actionsInterceptor: ActionsInterceptor<Action>?
+   
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
     init(queue: DispatchQueue,
-         actionsInterceptor: ActionsInterceptor<Action>?,
          initialState: State,
          reducer: @escaping Reducer<State, Action>) {
 
         self.dispatchQueue = queue
-        self.actionsInterceptor = actionsInterceptor
         self.state = initialState
         self.reducer = reducer
     }
@@ -54,26 +52,6 @@ extension CoreStore: StoreObjectProtocol {
         dispatchQueue
     }
 
-    // MARK: - Interceptor
-
-    func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
-        queue.async { [weak self] in
-            self?.setInterceptorSync(interceptor)
-        }
-    }
-
-    func setInterceptor(with handler: @escaping Interceptor<Action>) {
-        let interceptor = ActionsInterceptor(
-            storeId: self.id,
-            handler: handler,
-            dispatcher: { [weak self] in self?.dispatch($0) })
-
-        setInterceptor(interceptor)
-    }
-
-    func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
-        self.actionsInterceptor = interceptor
-    }
 
     // MARK: - Subscribe
 
@@ -120,7 +98,6 @@ extension CoreStore: StoreObjectProtocol {
     }
 
     func syncDispatch(scopedAction: ScopedAction<Action>) {
-        actionsInterceptor?.interceptIfNeeded(scopedAction)
         reducer(&self.state, scopedAction.action)
         observers.forEach { send(state, to: $0) }
     }
