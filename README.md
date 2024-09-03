@@ -177,7 +177,10 @@ store.dispatch(FetchDataAction())
 Puredux allows you to build a hierarchical store tree. 
 Actions are propagated upstream from child stores to the root store, while state updates are propagated downstream from the root store to child stores and, ultimately, to store observers.
 
-This architecture facilitates building applications where certain parts of the state can be shared or isolated, and state mutations remain predictable.
+This architecture facilitates building applications where certain parts of the state can be shared or isolated,
+and state mutations remain predictable.
+
+
 
 ```swift
 
@@ -218,24 +221,24 @@ let ScreenTwo = featureTwo.with(ScreenOne()) { state, action in
   +------------------+                +------------------+   
   | FeatureOne Store |                | FeatureTwo Store | 
   +------------------+                +--------+---------+   
-                                               |
-                                               |
-                                  +------------+------------+
-                                  |                         |
+    |                                          |
+  +----+                                       |
+  | UI |                          +------------+------------+
+  +----+                          |                         |
                                   |                         |
                                   |                         |
                                   |                         |
                            +------+----------+       +------+----------+
                            | ScreenOne Store |       | ScreenTwo Store |
                            +-----------------+       +-----------------+
-                              |                       |
+                             |                         |
                            +----+                    +----+
                            | UI |                    | UI |
                            +----+                    +----+
 ```
 
 
-## UI Performance Tuning
+## Performance Tuning
 
 ### Quality of Service
 
@@ -278,6 +281,7 @@ struct MyView: View {
 
 <details><summary>Click to expand UIViewController example</summary>
 <p>
+
  ```swift
  class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
@@ -300,6 +304,7 @@ struct MyView: View {
      }
 }
 ```
+
 </p>
 </details>
 
@@ -330,6 +335,7 @@ struct MyView: View {
 
 <details><summary>Click to expand UIViewController example</summary>
 <p>
+
  ```swift
  class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
