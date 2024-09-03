@@ -62,6 +62,7 @@ public struct StateStore<State, Action> {
 
      - Returns: The `Store` instance.
     */
+    @available(*, deprecated, message: "Will be removed in 2.0. ")
     public func store() -> Store<State, Action> {
         weakStore()
     }
