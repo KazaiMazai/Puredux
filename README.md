@@ -263,7 +263,7 @@ When creating the root store, you can choose the quality of service for the queu
  )
 ```
 
-### Deduplicated UI Updates
+### Deduplicated State Updates
 
 Puredux supports state change deduplication to enable granular UI updates based on changes to specific parts of the state.
 
@@ -315,7 +315,7 @@ struct MyView: View {
 </p>
 </details>
 
-### UI Updates debouncing
+### UI Updates Debouncing
 
 There are situations where frequent state updates are unavoidable, but triggering the UI for each update can be too resource-intensive. 
 To handle this, Puredux provides a debouncing option. 
