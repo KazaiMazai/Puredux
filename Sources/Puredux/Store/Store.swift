@@ -7,20 +7,14 @@
 
 import Foundation
 
-public extension Store {
 
-    /// Closure that handles Store's dispatching Actions
-    ///
-    typealias Dispatch = (_ action: Action) -> Void
-
-    /// Closure that takes Observer as a parameter and handles Store's subscribtions
-    ///
-    typealias Subscribe = (_ observer: Observer<State>) -> Void
-}
+public typealias Dispatch<Action> = (_ action: Action) -> Void
+ 
+public typealias Subscribe<S> = (_ observer: Observer<S>) -> Void
 
 public struct Store<State, Action> {
-    let dispatchHandler: Dispatch
-    private let subscribeHandler: Subscribe
+    let dispatchHandler: Dispatch<Action>
+    private let subscribeHandler: Subscribe<State>
 }
 
 public extension Store {
@@ -45,9 +39,9 @@ public extension Store {
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
     ///
-    @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
-    init(dispatch: @escaping Dispatch,
-         subscribe: @escaping Subscribe) {
+    @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in 2.0")
+    init(dispatch: @escaping Dispatch<Action>,
+         subscribe: @escaping Subscribe<State>) {
         self.init(dispatcher: dispatch, subscribe: subscribe)
     }
 
@@ -62,9 +56,9 @@ public extension Store {
     ///
     /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
     ///
-    ///
-    static func mockStore(dispatch: @escaping Dispatch,
-                          subscribe: @escaping Subscribe) -> Store<State, Action> {
+    @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in 2.0")
+    static func mockStore(dispatch: @escaping Dispatch<Action>,
+                          subscribe: @escaping Subscribe<State>) -> Store<State, Action> {
 
         Store(dispatcher: dispatch, subscribe: subscribe)
     }
@@ -89,7 +83,7 @@ public extension Store {
     /// All dispatched Actions and subscribtions are forwarded to the root store.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     ///
-    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to scope(...)")
+    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to map(...)")
     func proxy<LocalState>(_ toLocalState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         map(toLocalState)
     }
@@ -107,7 +101,7 @@ public extension Store {
     /// When the result local state is nill, subscribers are not triggered.
     ///
     ///
-    @available(*, deprecated, message: "Will be removed in 2.0")
+    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to flatMap(...)")
     func scope<LocalState>(toOptional localState: @escaping (State) -> LocalState?) -> Store<LocalState, Action> {
         compactMap(localState)
     }
@@ -120,15 +114,15 @@ public extension Store {
     /// All dispatched Actions and subscribtions are forwarded to the root store.
     /// Store is thread safe. Actions can be dispatched from any thread. Can be subscribed from any thread.
     /// When the result local state is nill, subscribers are not triggered.
-    ///
+    @available(*, deprecated, message: "Will be removed in 2.0. Consider migrating to map(...)")
     func scope<LocalState>(to localState: @escaping (State) -> LocalState) -> Store<LocalState, Action> {
         map(localState)
     }
 }
 
 extension Store {
-    init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe) {
+    init(dispatcher: @escaping Dispatch<Action>,
+         subscribe: @escaping Subscribe<State>) {
 
         dispatchHandler = dispatcher
         subscribeHandler = subscribe

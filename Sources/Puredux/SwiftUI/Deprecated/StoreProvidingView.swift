@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-
+@available(*, deprecated, message: "Will be removed in 2.0. Check ViewWithStore migration guide")
 public struct StoreProvidingView<AppState, Aciton, Content: View>: View {
     private let rootStore: RootEnvStore<AppState, Aciton>
     private let content: () -> Content
