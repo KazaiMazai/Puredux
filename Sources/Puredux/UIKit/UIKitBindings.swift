@@ -108,8 +108,6 @@ public extension UIStateObserver {
      Usage Example for `UIViewController`:
      
      ```swift
-         
-     
      class MyViewController: UIViewController {
                 
          let store = Store<AppState, Action>()
