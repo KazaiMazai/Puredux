@@ -32,10 +32,7 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ### Store Definitions
 
-
 ```swift
-
-
 // Let's cover actions with a protocol
 
 protocol Action {
@@ -61,7 +58,7 @@ extension Injected {
 }
 ```
 
-### SwiftUI Integration
+### UI Bindings
 
 ```swift
 
@@ -78,6 +75,7 @@ struct ViewState {
 struct ContentView: View  {
     // We can create take an injected root store,
     // Create a local store and seamlessly merge them together:
+    // `Store<(AppState,ViewState)>` lifecycle will be controller by view
     @State var store: StoreOf(\.root).with(ViewState()) { state, action in 
         state.reduce(action) 
     }
@@ -94,9 +92,9 @@ struct ContentView: View  {
 }
 
 ```
-
-### UIKit Integration
-
+<details><summary>Click to expand UIViewController example</summary>
+<p>
+ 
 ```swift
 
 // We can do the same thing almost with the same API for UIKit view controller:
@@ -129,6 +127,8 @@ class MyViewController: ViewController  {
 }
 
 ```
+</p>
+</details>
 
 ## Side Effects
 
@@ -171,6 +171,70 @@ struct FetchDataAction: AsyncAction {
 store.dispatch(FetchDataAction())
 
 ```
+## Application Stores Architecture
+
+
+Puredux allows you to build a hierarchical store tree. 
+Actions are propagated upstream from child stores to the root store, while state updates are propagated downstream from the root store to child stores and, ultimately, to store observers.
+
+This architecture facilitates building applications where certain parts of the state can be shared or isolated, and state mutations remain predictable.
+
+```swift
+
+let root = StateStore<AppState, Action>(AppState()) { state, action in
+        state.reduce(action)
+}
+
+let featureOne = root.with(FeatureOne()) { state, action in 
+    state.reduce(action) 
+}
+
+let featureTwo = root.with(FeatureTwo()) { state, action in 
+    state.reduce(action) 
+}
+
+let ScreenOne = featureTwo.with(ScreenOne()) { state, action in 
+    state.reduce(action) 
+}
+
+let ScreenTwo = featureTwo.with(ScreenOne()) { state, action in 
+    state.reduce(action) 
+}
+
+```
+
+
+ ```text
+            +----------------+    
+            | AppState Store |
+            +----------------+    
+                     |
+                     |
+        +------------+-------------------------+
+        |                                      |
+        |                                      |
+        |                                      |
+        |                                      |
+  +------------------+                +------------------+   
+  | FeatureOne Store |                | FeatureTwo Store | 
+  +------------------+                +--------+---------+   
+                                               |
+                                               |
+                                  +------------+------------+
+                                  |                         |
+                                  |                         |
+                                  |                         |
+                                  |                         |
+                           +------+----------+       +------+----------+
+                           | ScreenOne Store |       | ScreenTwo Store |
+                           +-----------------+       +-----------------+
+                              |                       |
+                           +----+                    +----+
+                           | UI |                    | UI |
+                           +----+                    +----+
+```
+
+
 ## UI Performance Tuning
 
 ### Quality of Service
@@ -193,8 +257,6 @@ When creating the root store, you can choose the quality of service for the queu
 
 Puredux supports state change deduplication to enable granular UI updates based on changes to specific parts of the state.
 
-#### Deduplicated SwiftUI View Updates  
-
 ```swift
 struct MyView: View {
     let store: Store<ViewState, Action>
@@ -214,8 +276,8 @@ struct MyView: View {
 }
 ```
 
-#### Deduplicated UIViewController Updates 
-
+<details><summary>Click to expand UIViewController example</summary>
+<p>
  ```swift
  class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
@@ -238,14 +300,14 @@ struct MyView: View {
      }
 }
 ```
+</p>
+</details>
 
 ### UI Updates debouncing
 
 There are situations where frequent state updates are unavoidable, but triggering the UI for each update can be too resource-intensive. 
 To handle this, Puredux provides a debouncing option. 
 With debouncing, the UI update will only be triggered after a specified time interval has elapsed between state changes.
-
-#### Debouncing SwiftUI View Updates  
 
 ```swift
 struct MyView: View {
@@ -266,8 +328,8 @@ struct MyView: View {
 }
 ```
 
-#### Debouncing UIViewController Updates 
-
+<details><summary>Click to expand UIViewController example</summary>
+<p>
  ```swift
  class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
@@ -287,15 +349,15 @@ struct MyView: View {
      }
 }
 ```
+</p>
+</details>
 
-### Presentational Layer 
+### Extra Presentational Layer 
 
 A very common use case involves converting raw model data into a more presentable format, 
 which may include mapping `AttributedStrings`, using `DateFormatter`, and more. These operations can be resource-intensive.
 
 Puredux allows you to add a presentational layer in the state change processing pipeline between the store and the UI. This enables you to offload these computations to a background queue, keeping the UI responsive.
-
-#### Presentational Layer for SwiftUI view
 
 ```swift
 struct MyView: View {
@@ -322,7 +384,8 @@ struct MyView: View {
 }
 ```
 
-#### Presentational Layer for UIViewController
+<details><summary>Click to expand UIViewController example</summary>
+<p>
 
  ```swift
  class MyViewController: ViewController  {
@@ -350,6 +413,8 @@ struct MyView: View {
      }
 }
 ```
+</p>
+</details>
 
 ## Installation
 
