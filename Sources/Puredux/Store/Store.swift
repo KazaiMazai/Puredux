@@ -34,24 +34,6 @@ public extension Store {
         subscribeHandler(observer)
     }
 
-    /// Initializes a new light-weight Store
-    ///
-    /// - Parameter dispatch: Closure that handles Store's dispatching Actions
-    /// - Parameter subscribe: Closure that handles Store's subscription
-    /// - Returns: Light-weight Store
-    ///
-    /// Generally, Store has no reason to be Initialized directly with this initializer
-    /// unless you want to mock the Store completely or provide your own implementation.
-    ///
-    /// For all other cases, RootStore or StoreFactory should be used to create viable light-weight Store.
-    ///
-    ///
-    @available(*, deprecated, renamed: "Store.mockStore(dispatch:subscribe:)", message: "Will be removed in the next major release")
-    init(dispatch: @escaping Dispatch,
-         subscribe: @escaping Subscribe) {
-        self.init(dispatcher: dispatch, subscribe: subscribe, storeObject: { nil })
-    }
-
     /// Initializes a mock Store
     ///
     /// - Parameter dispatch: Closure that handles Store's dispatching Actions

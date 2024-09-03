@@ -25,13 +25,7 @@ public extension Observer {
     ///
     typealias StateHandler = (_ state: State, _ complete: @escaping  StatusHandler) -> Void
     
-    ///     Observer's main closure that handle State changes and calls complete handler
-    ///        - Parameter state: newly observed State
-    ///        - Parameter prev: previous State
-    ///        - Parameter complete: complete handler that Observer calls when the work is done
-    @available(*, deprecated, renamed: "StatesHandler", message: "StateObserver was renamed to StatesHandler")
-    typealias StateObserver = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> Void
-    ///
+
     ///     Observer's main closure that handle State changes and calls complete handler
     ///        - Parameter state: newly observed State
     ///        - Parameter prev: previous State
