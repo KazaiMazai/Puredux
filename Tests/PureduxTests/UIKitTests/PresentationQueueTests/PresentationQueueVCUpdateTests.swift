@@ -19,17 +19,14 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppState, Action>(
-            initialState: state,
+    lazy var store: StateStore = {
+        StateStore<TestAppState, Action>(
+             state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
-
-    lazy var store: Store = {
-        factory.rootStore()
-    }()
+ 
 
     func setupVCForTests(queue: PresentationQueue) -> StubViewController {
         let testVC = StubViewController()

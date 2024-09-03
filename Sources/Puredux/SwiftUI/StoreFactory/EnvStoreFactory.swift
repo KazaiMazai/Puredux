@@ -38,9 +38,10 @@ import SwiftUI
 /// let envFactory = EnvStoreFactory(factory)
 /// ```
 ///
+/*
 @available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
-public final class EnvStoreFactory<AppState, Action>: ObservableObject {
-    private let storeFactory: StoreFactory<AppState, Action>
+public final class StateStore<AppState, Action>: ObservableObject {
+    private let storeFactory: StateStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
 
     /// Initializes a new EnvStoreFactory with provided StoreFactory.
@@ -49,7 +50,7 @@ public final class EnvStoreFactory<AppState, Action>: ObservableObject {
     /// - Parameter storeFactory: Puredux's StoreFactory
     ///
     /// - Returns: `EnvStoreFactory<AppState, Action>`
-    public init(storeFactory: StoreFactory<AppState, Action>) {
+    public init(storeFactory: StateStore<AppState, Action>) {
         self.storeFactory = storeFactory
         self.stateSubject = PassthroughSubject<AppState, Never>()
         storeFactory.rootStore().subscribe(observer: asObserver)
@@ -57,7 +58,7 @@ public final class EnvStoreFactory<AppState, Action>: ObservableObject {
 }
 
 
-extension EnvStoreFactory {
+extension StateStore {
 
     /// Initializes a PublishingStore as a proxy for the EnvStoreFactory's root store
     ///
@@ -181,7 +182,7 @@ extension EnvStoreFactory {
 }
 
 
-private extension EnvStoreFactory {
+private extension StateStore {
     func statePublisher() -> AnyPublisher<AppState, Never> {
         stateSubject.eraseToAnyPublisher()
     }
@@ -192,7 +193,7 @@ private extension EnvStoreFactory {
 }
 
 
-private extension EnvStoreFactory {
+private extension StateStore {
     var asObserver: Observer<AppState> {
         Observer { [weak self] state, complete in
             guard let self = self else {
@@ -205,3 +206,4 @@ private extension EnvStoreFactory {
         }
     }
 }
+*/

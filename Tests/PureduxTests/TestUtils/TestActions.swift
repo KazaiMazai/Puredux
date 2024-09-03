@@ -40,3 +40,11 @@ struct UpdateTitle: Action {
     let title: String
 }
   
+struct UpdateIndexCallBack: Action & AsyncAction {
+    let index: Int
+    let executionCallback: () -> Void
+    
+    func execute(completeHandler: @escaping (ResultAction) -> Void) {
+        executionCallback()
+    }
+}

@@ -6,9 +6,9 @@
 //
 
 import Foundation
-
+/*
 @available(*, deprecated, message: "Use StateStore directly")
-public final class StoreFactory<State, Action> {
+public final class StateStore<State, Action> {
     let rootStateStore: StateStore<State, Action>
 
     /// Initializes a new StoreFactory with provided initial state, actions interceptor, qos, and reducer
@@ -41,7 +41,7 @@ public final class StoreFactory<State, Action> {
     }
 }
 
-public extension StoreFactory {
+public extension StateStore {
 
     /// Initializes a new Store as a proxy to internal factory root store.
     ///
@@ -150,3 +150,4 @@ public extension StoreFactory {
 
         }
 }
+*/

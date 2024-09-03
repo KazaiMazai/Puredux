@@ -7,12 +7,12 @@
 
 import SwiftUI
 import Combine
-
+/*
 @available(*, deprecated, message: "Will be removed in 2.0")
 struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Content>: View
     where Content: View {
 
-    @EnvironmentObject private var storeFactory: EnvStoreFactory<AppState, Action>
+    @EnvironmentObject private var storeFactory: StateStore<AppState, Action>
     @State private var publishingChildStore: PublishingStoreObject<LocalState, Action>?
 
     let initialState: ChildState
@@ -47,3 +47,4 @@ struct ViewWithChildStore<AppState, ChildState, LocalState, Action, Props, Conte
         }
     }
 }
+*/

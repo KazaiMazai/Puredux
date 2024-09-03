@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-
+/*
 public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let rootStore: RootStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -48,9 +48,9 @@ public extension RootEnvStore {
     ///     ensuring that reference cycles will not be created.
     ///
     @available(*, deprecated, message: "Will be removed in 2.0. Use EnvStoreFactory's rootStore instead")
-    func store() -> PublishingStore<AppState, Action> {
+    func store() -> Store<AppState, Action> {
 
-        PublishingStore(
+        Store(
             statePublisher: statePublisher(),
             dispatch: { [weak self] in self?.dispatch($0) }
         )
@@ -82,3 +82,4 @@ private extension RootEnvStore {
         }
     }
 }
+*/

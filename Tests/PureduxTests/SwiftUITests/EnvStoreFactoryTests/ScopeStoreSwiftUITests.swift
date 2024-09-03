@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 import SwiftUI
 
-
+/*
 class ScopeStoreTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -18,22 +18,22 @@ class ScopeStoreTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: EnvStoreFactory = {
-        EnvStoreFactory(
-            storeFactory: StoreFactory<TestAppState, Action>(
-                initialState: state,
+    lazy var factory: StateStore = {
+        StateStore(
+            storeFactory: StateStore<TestAppState, Action>(
+                 state,
                 reducer: { state, action in
                     state.reduce(action)
                 })
         )
     }()
 
-    lazy var store: PublishingStore = {
+    lazy var store: Store = {
         factory.scopeStore(to: { $0.subStateWithIndex })
     }()
 
-    lazy var rootStore: PublishingStore = {
-        factory.rootStore()
+    lazy var StateStore: Store = {
+        factory.StateStore()
     }()
 }
 
@@ -56,11 +56,11 @@ extension ScopeStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenActionDispatchedToScopedRootStore_ThenExpectedStateReceived() {
+    func test_WhenActionDispatchedToScopedStateStore_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
         let expectedIndex = 100
  
-        let store = rootStore.scope { $0.subStateWithIndex }
+        let store = StateStore.scope { $0.subStateWithIndex }
 
         let cancellable = store.statePublisher.sink { state in
             guard state.index == expectedIndex else {
@@ -75,11 +75,11 @@ extension ScopeStoreTests {
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenActionDispatchedToRootStoreProxy_ThenExpectedStateReceived() {
+    func test_WhenActionDispatchedToStateStoreProxy_ThenExpectedStateReceived() {
         let receivedState = expectation(description: "receivedState")
         let expectedIndex = 100
  
-        let store = rootStore.proxy { $0.subStateWithIndex }
+        let store = StateStore.proxy { $0.subStateWithIndex }
 
         let cancellable = store.statePublisher.sink { state in
             guard state.index == expectedIndex else {
@@ -94,3 +94,4 @@ extension ScopeStoreTests {
         waitForExpectations(timeout: timeout)
     }
 }
+*/

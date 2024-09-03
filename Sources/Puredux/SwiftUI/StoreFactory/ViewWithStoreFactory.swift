@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+/*
 /// `ViewWithStoreFactory` is a view with a `EnvStoreFactory` injected into`Content` view via `environmentObject(...)`
 ///
 /// It's  is supposed to be used on top of the views hierarchy.
@@ -36,7 +36,7 @@ import SwiftUI
 ///
 @available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
 public struct ViewWithStoreFactory<AppState, Aciton, Content: View>: View {
-    private let storeFactory: EnvStoreFactory<AppState, Aciton>
+    private let storeFactory: StateStore<AppState, Aciton>
     private let content: () -> Content
 
     public var body: some View {
@@ -52,9 +52,10 @@ public extension ViewWithStoreFactory {
     /// - Parameter content: defines `Content`
     ///
     /// - Returns: `View` with injected EnvStoreFactory.
-    init(_ storeFactory: EnvStoreFactory<AppState, Aciton>,
+    init(_ storeFactory: StateStore<AppState, Aciton>,
                 content: @escaping () -> Content) {
         self.storeFactory = storeFactory
         self.content = content
     }
 }
+*/

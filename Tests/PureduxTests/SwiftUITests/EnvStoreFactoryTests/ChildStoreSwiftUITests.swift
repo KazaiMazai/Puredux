@@ -9,7 +9,7 @@ import XCTest
 @testable import Puredux
 import SwiftUI
 
-
+/*
 class ChildStoreSwiftUITests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -22,7 +22,7 @@ class ChildStoreSwiftUITests: XCTestCase {
 
     lazy var factory: EnvStoreFactory = {
         EnvStoreFactory(
-            storeFactory: StoreFactory<TestAppState, Action>(
+            storeFactory: StateStore<TestAppState, Action>(
                 initialState: state,
                 reducer: { state, action in state.reduce(action)}
             )
@@ -34,7 +34,7 @@ class ChildStoreSwiftUITests: XCTestCase {
     }()
 
     lazy var childStoreObject: PublishingStoreObject<(TestAppState, SubStateWithIndex), Action> = {
-        factory.childStore(
+        factory.with(
             initialState: initialChildState,
             reducer: { state, action in state.reduce(action)}
         )
@@ -98,3 +98,4 @@ extension ChildStoreSwiftUITests {
     }
 }
 
+*/

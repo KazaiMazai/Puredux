@@ -8,7 +8,7 @@
 import XCTest
 @testable import Puredux
 
-final class RootStoreProxyTests: XCTestCase {
+final class StateStoreProxyTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptachedToProxy_ThenDispatchOrderPreserved() {
@@ -17,14 +17,14 @@ final class RootStoreProxyTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -40,13 +40,13 @@ final class RootStoreProxyTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStateIndex: Int?
 
@@ -72,13 +72,13 @@ final class RootStoreProxyTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, updatedStateindex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -103,13 +103,13 @@ final class RootStoreProxyTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -136,13 +136,13 @@ final class RootStoreProxyTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -168,13 +168,13 @@ final class RootStoreProxyTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         let observer = Observer<Int> { receivedState, complete in
             expectations[receivedState].fulfill()
@@ -198,8 +198,8 @@ final class RootStoreProxyTests: XCTestCase {
         let stateChangesProcessedExpectation = expectation(
             description: "Actions and State changes processed for sure")
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -208,7 +208,7 @@ final class RootStoreProxyTests: XCTestCase {
             }
         }
 
-        let store = rootStore.store().proxy { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<Int> { receivedState, complete in

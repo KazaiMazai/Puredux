@@ -7,9 +7,9 @@
 
 import Foundation
 import Combine
-
+/*
 @available(*, deprecated, message: "Will be removed in 2.0. Checkout ViewWithStore migration guide")
-public struct PublishingStore<AppState, Action> {
+public struct Store<AppState, Action> {
     public let statePublisher: AnyPublisher<AppState, Never>
     private let dispatchClosure: (_ action: Action) -> Void
 
@@ -37,7 +37,7 @@ public struct PublishingStore<AppState, Action> {
 }
 
 
-public extension PublishingStore {
+public extension Store {
     /// Initializes a new proxy PublishingStore with state mapping to local substate.
     ///
     /// - Returns: `PublishingStore<LocalState, Action>` with local substate
@@ -48,9 +48,9 @@ public extension PublishingStore {
     ///
     @available(*, deprecated, message: "Will be removed in 2.0. Use scope(...) method instead")
     func proxy<LocalState>(
-        toLocalState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action> {
+        toLocalState: @escaping (AppState) -> LocalState) -> Store<LocalState, Action> {
 
-        PublishingStore<LocalState, Action>(
+        Store<LocalState, Action>(
             statePublisher: statePublisher
                 .map { toLocalState($0) }
                 .eraseToAnyPublisher(),
@@ -66,9 +66,9 @@ public extension PublishingStore {
     /// All dispatched Actions are forwarded to the root store.
     /// PublishingStore is thread safe. Actions can be safely dispatched from any thread.
     ///
-    func scope<LocalState>(to localState: @escaping (AppState) -> LocalState) -> PublishingStore<LocalState, Action> {
+    func scope<LocalState>(to localState: @escaping (AppState) -> LocalState) -> Store<LocalState, Action> {
 
-        PublishingStore<LocalState, Action>(
+        Store<LocalState, Action>(
             statePublisher: statePublisher
                 .map { localState($0) }
                 .eraseToAnyPublisher(),
@@ -76,3 +76,4 @@ public extension PublishingStore {
         )
     }
 }
+*/

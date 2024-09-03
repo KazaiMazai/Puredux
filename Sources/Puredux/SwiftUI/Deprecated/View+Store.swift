@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-
+/*
 extension View {
     /// Initializes a View with `ContentView` connected  to the implicitly provided`RootEnvStore`.
     ///
@@ -43,7 +43,7 @@ extension View {
     @available(*, deprecated, message: "Will be removed in 2.0. Use ViewWithStore instead")
     public static func withEnvStore<AppState, Action, Props>(
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
-        props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
+        props: @escaping (AppState, Store<AppState, Action>) -> Props,
         queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
@@ -92,9 +92,9 @@ extension View {
     /// ```
     @available(*, deprecated, message: "Will be removed in 2.0. Use ViewWithStore instead")
     public static func with<AppState, Action, Props>(
-        store: PublishingStore<AppState, Action>,
+        store: Store<AppState, Action>,
         removeStateDuplicates by: Equating<AppState> = .neverEqual,
-        props: @escaping (AppState, PublishingStore<AppState, Action>) -> Props,
+        props: @escaping (AppState, Store<AppState, Action>) -> Props,
         queue: PresentationQueue = .sharedPresentationQueue,
         content: @escaping (Props) -> Self) -> some View {
 
@@ -111,3 +111,4 @@ extension View {
         )
     }
 }
+*/

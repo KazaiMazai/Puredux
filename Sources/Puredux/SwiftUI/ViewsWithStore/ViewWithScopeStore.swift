@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-
+/*
 @available(*, deprecated, message: "Will be removed in 2.0")
 struct ViewWithScopeStore<AppState, LocalState, Action, Props, Content>: View
     where
     Content: View {
 
-    @EnvironmentObject private var storeFactory: EnvStoreFactory<AppState, Action>
+    @EnvironmentObject private var storeFactory: StateStore<AppState, Action>
 
     let localState: (AppState) -> LocalState
     let content: ViewWithStore<LocalState, Action, Props, Content>
@@ -26,3 +26,4 @@ struct ViewWithScopeStore<AppState, LocalState, Action, Props, Content>: View
         )
     }
 }
+*/

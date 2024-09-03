@@ -7,13 +7,13 @@
 
 import SwiftUI
 import Combine
-
+/*
 @available(*, deprecated, message: "Will be removed in 2.0")
 struct ViewWithRootStore<AppState, Action, Props, Content>: View
     where
     Content: View {
 
-    @EnvironmentObject private var storeFactory: EnvStoreFactory<AppState, Action>
+    @EnvironmentObject private var storeFactory: StateStore<AppState, Action>
 
     let content: ViewWithStore<AppState, Action, Props, Content>
     private(set) var presentationSettings: PresentationSettings<AppState>
@@ -26,3 +26,4 @@ struct ViewWithRootStore<AppState, Action, Props, Content>: View
         )
     }
 }
+*/
