@@ -34,7 +34,6 @@ streamline state management with a focus on unidirectional data flow and separat
 - [Installation](#installation)
   * [Swift Package Manager.](#swift-package-manager)
 - [Documentation](#documentation)
-- [Migration Guiges](#migration-guiges)
 - [Licensing](#licensing)
 
 ## Getting Started
@@ -457,9 +456,6 @@ https://github.com/KazaiMazai/Puredux
 ## Documentation
 
 - [Archive](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Archive)
-
-## Migration Guiges
-
 - [Migration Guides](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Migration-Guides.md)
 
 ## Licensing
