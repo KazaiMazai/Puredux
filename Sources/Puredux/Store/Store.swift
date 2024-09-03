@@ -1,68 +1,46 @@
 //
 //  File.swift
+//  
 //
-//
-//  Created by Sergey Kazakov on 02.12.2021.
+//  Created by Sergey Kazakov on 29/08/2024.
 //
 
 import Foundation
 
-public extension AnyStore {
+/**
+ A protocol that defines the basic requirements for a store in a state management system.
 
-    /// Closure that handles Store's dispatching Actions
-    ///
-    typealias Dispatch = (_ action: Action) -> Void
+ `Store` is a generic protocol that defines the fundamental operations required for a store that manages application state and actions.
 
-    /// Closure that takes Observer as a parameter and handles Store's subscribtions
-    ///
-    typealias Subscribe = (_ observer: Observer<State>) -> Void
+ - Associated Types:
+    - `State`: The type representing the state managed by the store. This type encapsulates all the information about the current state of the application.
+    - `Action`: The type representing the actions that can be dispatched to the store to trigger state changes. Actions define the possible changes that can occur in the state.
+
+ - Requirements:
+    - `getStore()`: A function that returns a `Store` instance. This function provides access to the store that manages state and handles actions.
+
+ - Usage:
+    The `Store` is used as an abstraction layer for different store implementations. Types conforming to this protocol must specify the `State` and `Action` associated types and provide a concrete implementation of the `getStore()` method.
+*/
+public protocol Store<State, Action> {
+    /** The type representing the state managed by the store. */
+    associatedtype State
+
+    /** The type representing the actions that can be performed on the store.  */
+    associatedtype Action
+
+    /**
+     A func that returns a `Store` object that matches the specified `State` and `Action` types.
+     */
+    func eraseToAnyStore() -> AnyStore<State, Action>
+
+    func dispatch(_ action: Action)
+
+    func subscribe(observer: Observer<State>)
 }
 
-public struct AnyStore<State, Action>: StoreProtocol {
-    let dispatchHandler: Dispatch
-    let subscribeHandler: Subscribe
-    let getStoreObject: () -> AnyStoreObject<State, Action>?
-    
-    public func eraseToAnyStore() -> AnyStore<State, Action> { self }
-}
-
-public extension AnyStore {
-    func dispatch(_ action: Action) {
-        dispatchHandler(action)
-        executeAsyncAction(action)
-    }
-
-    func subscribe(observer: Observer<State>) {
-        subscribeHandler(observer)
-    }
-}
-
-extension AnyStore {
-    init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe,
-         storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
-
-        dispatchHandler = { dispatcher($0) }
-        subscribeHandler = { subscribe($0) }
-        getStoreObject = storeObject
-    }
-
+extension Store {
     func weakStore() -> AnyStore<State, Action> {
-        let storeObject = getStoreObject()
-        return AnyStore<State, Action>(
-            dispatcher: dispatchHandler,
-            subscribe: subscribeHandler,
-            storeObject: { [weak storeObject] in storeObject }
-        )
-    }
-}
-
-extension AnyStore {
-    func executeAsyncAction(_ action: Action) {
-        guard let action = action as? (any AsyncAction) else {
-            return
-        }
-
-        action.execute(self.dispatchHandler)
+        eraseToAnyStore().weakStore()
     }
 }
