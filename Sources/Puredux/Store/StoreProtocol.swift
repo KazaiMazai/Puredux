@@ -32,7 +32,7 @@ public protocol StoreProtocol<State, Action> {
     /**
      A func that returns a `Store` object that matches the specified `State` and `Action` types.
      */
-    var instance: Store<State, Action> { get }
+    func eraseToAnyStore() -> Store<State, Action>
 
     func dispatch(_ action: Action)
 
@@ -41,6 +41,6 @@ public protocol StoreProtocol<State, Action> {
 
 extension StoreProtocol {
     func weakStore() -> Store<State, Action> {
-        instance.weakStore()
+        eraseToAnyStore().weakStore()
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Basic Transformations
 
-public extension StoreProtocol {
+public extension Store {
     /**
      Maps the state of the store to a new state of type `T`.
 
@@ -30,7 +30,7 @@ public extension StoreProtocol {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { instance
+            storeObject: { eraseToAnyStore()
                 .getStoreObject()?
                 .map(transform)
             }
@@ -49,8 +49,7 @@ public extension StoreProtocol {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
-        let store = instance
-        let weakStore = instance.weakStore()
+        let weakStore = weakStore()
         return Store<T?, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
@@ -59,7 +58,7 @@ public extension StoreProtocol {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { instance
+            storeObject: { eraseToAnyStore()
                 .getStoreObject()?
                 .map(transform)
             }
@@ -69,7 +68,7 @@ public extension StoreProtocol {
 
 // MARK: - KeyPath Transformations
 
-public extension StoreProtocol {
+public extension Store {
     /**
      Maps the state of the store to a new state of type `T` using a key path.
 
@@ -104,7 +103,7 @@ public extension StoreProtocol {
 // MARK: - Tuples Transformations
 
 // swiftlint:disable large_tuple identifier_name
-public extension StoreProtocol {
+public extension Store {
     /**
      Flattens the state of the store from a nested tuple to a flat tuple.
 

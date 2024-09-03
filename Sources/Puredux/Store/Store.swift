@@ -39,7 +39,7 @@ extension Store: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
 
-    public var instance: Store<State, Action> { self }
+    public func eraseToAnyStore() -> Store<State, Action> { self }
 }
 
 extension Store {

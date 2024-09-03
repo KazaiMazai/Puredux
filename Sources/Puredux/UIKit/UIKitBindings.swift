@@ -84,7 +84,7 @@ public extension UIStateObserver {
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in
                 Effect {
-                    let props = props(state, store.instance)
+                    let props = props(state, store.eraseToAnyStore())
                     guard presentationQueue == DispatchQueue.main else {
                         DispatchQueue.main.async { observe(props) }
                         return

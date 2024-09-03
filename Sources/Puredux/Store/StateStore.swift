@@ -120,8 +120,8 @@ public extension StateStore {
 extension StateStore: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
-
-    public var instance: Store<State, Action> {
+    
+    public func eraseToAnyStore() -> Store<State, Action> {
         Store<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
             subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
