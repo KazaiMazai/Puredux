@@ -13,7 +13,7 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
 
     let state = TestAppStateWithIndex()
 
-    lazy var factory: StateStore = {
+    lazy var stateStore : StateStore = {
         StateStore<TestAppStateWithIndex, Action>(
              state,
             reducer: { state, action in
@@ -27,7 +27,7 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
         assertNotDeallocated {
             let object = ReferenceTypeState()
 
-            let store = self.factory.with(
+            let store = self.stateStore.with(
                  object,
                 reducer: { state, action in state.reduce(action) }
             )
@@ -49,7 +49,7 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
         assertDeallocated {
             let object = ReferenceTypeState()
 
-            let store = self.factory.with(
+            let store = self.stateStore.with(
                  object,
                 reducer: { state, action in state.reduce(action) }
             )

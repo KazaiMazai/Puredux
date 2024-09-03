@@ -13,7 +13,7 @@ final class PropsEvaluationWithChildStoreTests: XCTestCase {
 
     let state = TestAppStateWithIndex()
 
-    lazy var factory: StateStore = {
+    lazy var stateStore : StateStore = {
         StateStore<TestAppStateWithIndex, Action>(
              state,
             reducer: { state, action in
@@ -22,7 +22,7 @@ final class PropsEvaluationWithChildStoreTests: XCTestCase {
     }()
 
     lazy var store: StateStore<(TestAppStateWithIndex, SubStateWithTitle), Action> = {
-        factory.with(SubStateWithTitle(title: "title"),
+        stateStore.with(SubStateWithTitle(title: "title"),
                      reducer: { state, action in state.reduce(action) }
         )
     }()

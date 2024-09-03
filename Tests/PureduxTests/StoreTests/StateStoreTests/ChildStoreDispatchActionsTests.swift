@@ -106,7 +106,7 @@ final class ChildStoreDispatchActionsTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StateStore<TestState, Action>(
+        let stateStore = StateStore<TestState, Action>(
              TestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)
@@ -118,7 +118,7 @@ final class ChildStoreDispatchActionsTests: XCTestCase {
             }
         )
 
-        let childStore = factory.with(
+        let childStore = stateStore.with(
             ChildTestState(currentIndex: 0),
             reducer: { state, action  in
                 state.reduce(action: action)

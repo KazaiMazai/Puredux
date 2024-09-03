@@ -16,7 +16,7 @@ final class ChildStoreTests: XCTestCase {
         childState: ChildTestState(currentIndex: 0)
     )
 
-    lazy var factory = {
+    lazy var stateStore = {
         StateStore<TestState, Action>(
              initialState.state) { state, action  in
 
@@ -25,7 +25,7 @@ final class ChildStoreTests: XCTestCase {
     }()
 
     lazy var childStore = {
-        factory.with(
+        stateStore.with(
              initialState.childState,
              reducer: { state, action  in
                  state.reduce(action: action)
@@ -164,7 +164,7 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
     let initialState = TestState(currentIndex: 0)
     let initialChildState = ChildTestState(currentIndex: 0)
 
-    lazy var factory = {
+    lazy var stateStore = {
         StateStore<TestState, Action>(
              initialState) { state, action  in
 
@@ -173,7 +173,7 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
     }()
 
     lazy var childStore = {
-        factory.with(
+        stateStore.with(
              initialChildState,
             reducer: { state, action  in
                 state.reduce(action: action)
