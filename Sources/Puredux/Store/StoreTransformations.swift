@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Basic Transformations
 
-public extension Store {
+public extension AnyStore {
     /**
      Maps the state of the store to a new state of type `T`.
 
@@ -20,9 +20,9 @@ public extension Store {
      - Parameter transform: A closure that takes the current state of type `State` and returns a new state of type `T`.
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
-    func map<T>(_ transform: @escaping (State) -> T) -> Store<T, Action> {
+    func map<T>(_ transform: @escaping (State) -> T) -> AnyStore<T, Action> {
         let weakStore = weakStore()
-        return Store<T, Action>(
+        return AnyStore<T, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
                 weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
@@ -48,9 +48,9 @@ public extension Store {
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
-    func flatMap<T>(_ transform: @escaping (State) -> T?) -> Store<T?, Action> {
+    func flatMap<T>(_ transform: @escaping (State) -> T?) -> AnyStore<T?, Action> {
         let weakStore = weakStore()
-        return Store<T?, Action>(
+        return AnyStore<T?, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
                 weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
@@ -68,7 +68,7 @@ public extension Store {
 
 // MARK: - KeyPath Transformations
 
-public extension Store {
+public extension AnyStore {
     /**
      Maps the state of the store to a new state of type `T` using a key path.
 
@@ -80,7 +80,7 @@ public extension Store {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
      - Note: This method allows you to create a store focused on a specific property of the original state using a key path, simplifying access to that property.
      */
-    func map<T>(_ keyPath: KeyPath<State, T>) -> Store<T, Action> {
+    func map<T>(_ keyPath: KeyPath<State, T>) -> AnyStore<T, Action> {
         map { $0[keyPath: keyPath] }
     }
 
@@ -95,7 +95,7 @@ public extension Store {
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
      - Note: This method differs from `compactMap(_:)` by preserving the `nil` values extracted by the key path, resulting in a store where the state type is optional.
     */
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> Store<T?, Action> {
+    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> AnyStore<T?, Action> {
         flatMap { $0[keyPath: keyPath] }
     }
 }
@@ -103,7 +103,7 @@ public extension Store {
 // MARK: - Tuples Transformations
 
 // swiftlint:disable large_tuple identifier_name
-public extension Store {
+public extension AnyStore {
     /**
      Flattens the state of the store from a nested tuple to a flat tuple.
 
@@ -116,7 +116,7 @@ public extension Store {
      The transformation extracts the inner tuple elements `T1` and `T2` and combines them with `T3` into a flat tuple `(T1, T2, T3)`.
      */
     func flatMap<T1, T2, T3>() ->
-        Store<(T1, T2, T3), Action>
+        AnyStore<(T1, T2, T3), Action>
         where
         State == ((T1, T2), T3) {
 
@@ -130,7 +130,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4>() ->
-        Store<(T1, T2, T3, T4), Action>
+        AnyStore<(T1, T2, T3, T4), Action>
         where
         State == (((T1, T2), T3), T4) {
 
@@ -144,7 +144,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5>() ->
-        Store<(T1, T2, T3, T4, T5), Action>
+        AnyStore<(T1, T2, T3, T4, T5), Action>
         where
         State == ((((T1, T2), T3), T4), T5) {
 
@@ -158,7 +158,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5, T6>() ->
-        Store<(T1, T2, T3, T4, T5, T6), Action>
+        AnyStore<(T1, T2, T3, T4, T5, T6), Action>
         where
         State == (((((T1, T2), T3), T4), T5), T6) {
 
@@ -172,7 +172,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5, T6, T7>() ->
-        Store<(T1, T2, T3, T4, T5, T6, T7), Action>
+        AnyStore<(T1, T2, T3, T4, T5, T6, T7), Action>
         where
         State == ((((((T1, T2), T3), T4), T5), T6), T7) {
 
@@ -186,7 +186,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8>() ->
-        Store<(T1, T2, T3, T4, T5, T6, T7, T8), Action>
+        AnyStore<(T1, T2, T3, T4, T5, T6, T7, T8), Action>
         where
         State == (((((((T1, T2), T3), T4), T5), T6), T7), T8) {
 
@@ -200,7 +200,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9>() ->
-        Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9), Action>
+        AnyStore<(T1, T2, T3, T4, T5, T6, T7, T8, T9), Action>
         where
         State == ((((((((T1, T2), T3), T4), T5), T6), T7), T8), T9) {
 
@@ -214,7 +214,7 @@ public extension Store {
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
     func flatMap<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() ->
-        Store<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), Action>
+        AnyStore<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), Action>
         where
         State == (((((((((T1, T2), T3), T4), T5), T6), T7), T8), T9), T10) {
 
@@ -231,10 +231,10 @@ public extension Store {
 
 //
 // extension Store {
-//    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
+//    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
 //        let store = instance
 //        let weakStore = weakStore()
-//        return Store<State, A>(
+//        return AnyStore<State, A>(
 //            dispatcher: { action in weakStore.dispatch(transform(action)) },
 //            subscribe: weakStore.subscribeHandler,
 //            storeObject: store.getStoreObject
@@ -243,7 +243,7 @@ public extension Store {
 // }
 //
 // extension StateStore {
-//    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
+//    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
 //        instance.map(action: transform)
 //    }
 // }

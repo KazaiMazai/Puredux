@@ -44,7 +44,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -72,7 +72,7 @@ public extension UIStateObserver {
      ```
      */
     func subscribe<State, Action, Props>(store: any StoreProtocol<State, Action>,
-                                         props: @escaping (State, Store<State, Action>) -> Props,
+                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
@@ -115,7 +115,7 @@ public extension UIStateObserver {
      ```swift
      class MyViewController: UIViewController {
                 
-         let store = Store<AppState, Action>()
+         let store = AnyStore<AppState, Action>()
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -177,7 +177,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -232,7 +232,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -285,7 +285,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -301,7 +301,7 @@ public extension UIStateObserver {
              )
          }
          
-         private func updateUI(with state: AppState, store: Store<AppState, Action>) {
+         private func updateUI(with state: AppState, store: AnyStore<AppState, Action>) {
              // Update UI elements based on the new state
          }
      }
@@ -310,7 +310,7 @@ public extension UIStateObserver {
     func subscribe<State, Action>(store: any StoreProtocol<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, Store<State, Action>) -> Void) {
+                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) {
 
         subscribe(
             store: store,

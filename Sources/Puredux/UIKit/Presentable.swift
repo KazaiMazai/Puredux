@@ -92,7 +92,7 @@ public extension Presentable {
      ```
     */
     func setPresenter<State, Action>(store: any StoreProtocol<State, Action>,
-                                     props: @escaping (State, Store<State, Action>) -> Self.Props,
+                                     props: @escaping (State, AnyStore<State, Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {

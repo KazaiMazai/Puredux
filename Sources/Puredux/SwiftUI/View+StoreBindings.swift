@@ -28,7 +28,7 @@ public extension View {
 
     ```swift
     struct MyView: View {
-        let store: Store<AppState, Action>
+        let store: AnyStore<AppState, Action>
 
         @State var viewState: ViewState? = nil
 
@@ -50,7 +50,7 @@ public extension View {
     ```
     */
     func subscribe<State, Action, Props>(store: any StoreProtocol<State, Action>,
-                                         props: @escaping (State, Store<State, Action>) -> Props,
+                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
@@ -118,7 +118,7 @@ public extension View {
     Usage Example:
     ```swift
     struct MyView: View {
-        let store: Store<ViewState, Action>
+        let store: AnyStore<ViewState, Action>
         
         @State var viewState: ViewState?
     
@@ -168,7 +168,7 @@ public extension View {
      
     ```swift
     struct ContentView: View {
-       let store = Store<AppState, Action>()
+       let store = AnyStore<AppState, Action>()
        
        @State var viewState: ViewState?
     
@@ -219,7 +219,7 @@ public extension View {
      
     ```swift
     struct ContentView: View {
-        let store = Store<AppState, Action>()
+        let store = AnyStore<AppState, Action>()
         
         @State var viewState: ViewState?
         
@@ -240,7 +240,7 @@ public extension View {
     func subscribe<State, Action>(store: any StoreProtocol<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, Store<State, Action>) -> Void) -> some View {
+                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) -> some View {
 
         withObserver { observer in
             observer.subscribe(

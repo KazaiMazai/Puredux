@@ -19,7 +19,7 @@ final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
     )
 
     func test_WhenStore_ThenWeakRefToChildStoreCreated() {
-        var store: Store<StateComposition, Action>?
+        var store: AnyStore<StateComposition, Action>?
 
         assertDeallocated {
             let strongChildStore = self.rootStore.createChildStore(

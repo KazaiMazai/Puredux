@@ -121,8 +121,8 @@ extension StateStore: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
     
-    public func eraseToAnyStore() -> Store<State, Action> {
-        Store<State, Action>(
+    public func eraseToAnyStore() -> AnyStore<State, Action> {
+        AnyStore<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
             subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
             storeObject: { [storeObject] in storeObject }

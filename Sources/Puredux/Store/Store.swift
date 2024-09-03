@@ -7,7 +7,7 @@
 
 import Foundation
 
-public extension Store {
+public extension AnyStore {
 
     /// Closure that handles Store's dispatching Actions
     ///
@@ -18,15 +18,15 @@ public extension Store {
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
-public struct Store<State, Action>: StoreProtocol {
+public struct AnyStore<State, Action>: StoreProtocol {
     let dispatchHandler: Dispatch
     let subscribeHandler: Subscribe
     let getStoreObject: () -> AnyStoreObject<State, Action>?
     
-    public func eraseToAnyStore() -> Store<State, Action> { self }
+    public func eraseToAnyStore() -> AnyStore<State, Action> { self }
 }
 
-public extension Store {
+public extension AnyStore {
     func dispatch(_ action: Action) {
         dispatchHandler(action)
         executeAsyncAction(action)
@@ -37,7 +37,7 @@ public extension Store {
     }
 }
 
-extension Store {
+extension AnyStore {
     init(dispatcher: @escaping Dispatch,
          subscribe: @escaping Subscribe,
          storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
@@ -47,9 +47,9 @@ extension Store {
         getStoreObject = storeObject
     }
 
-    func weakStore() -> Store<State, Action> {
+    func weakStore() -> AnyStore<State, Action> {
         let storeObject = getStoreObject()
-        return Store<State, Action>(
+        return AnyStore<State, Action>(
             dispatcher: dispatchHandler,
             subscribe: subscribeHandler,
             storeObject: { [weak storeObject] in storeObject }
@@ -57,7 +57,7 @@ extension Store {
     }
 }
 
-extension Store {
+extension AnyStore {
     func executeAsyncAction(_ action: Action) {
         guard let action = action as? (any AsyncAction) else {
             return

@@ -22,7 +22,7 @@ import SwiftUI
 */
 public struct StoreView<ViewState, Action, Props, Content: View>: View {
     private let store: any StoreProtocol<ViewState, Action>
-    private let props: (_ state: ViewState, _ store: Store<ViewState, Action>) -> Props
+    private let props: (_ state: ViewState, _ store: AnyStore<ViewState, Action>) -> Props
     private let content: (_ props: Props) -> Content
     private(set) var removeStateDuplicates: Equating<ViewState>?
     private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
@@ -88,7 +88,7 @@ public extension StoreView {
        - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
     init(store: any StoreProtocol<ViewState, Action>,
-         props: @escaping (ViewState, Store<ViewState, Action>) -> Props,
+         props: @escaping (ViewState, AnyStore<ViewState, Action>) -> Props,
          content: @escaping (Props) -> Content) {
         self.store = store.eraseToAnyStore()
         self.props = props
@@ -112,9 +112,9 @@ public extension StoreView {
     }
 }
 
-public extension StoreView where Props == (ViewState, Store<ViewState, Action>) {
+public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action>) {
     /**
-     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, Store<ViewState, Action>)`.
+     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, AnyStore<ViewState, Action>)`.
      
     - Parameters:
         - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`.
@@ -128,9 +128,9 @@ public extension StoreView where Props == (ViewState, Store<ViewState, Action>) 
     }
 }
 
-public extension StoreView where Props == (ViewState, Store<ViewState, Action>) {
+public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action>) {
     /**
-     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, Store<ViewState, Action>)`, with a content closure that uses a dispatch function.
+     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, AnyStore<ViewState, Action>)`, with a content closure that uses a dispatch function.
          
     - Parameters:
         - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`.

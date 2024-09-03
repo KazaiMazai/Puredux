@@ -100,7 +100,7 @@ extension ViewStore {
      
      - Note: This initializer is used when the type `Value` is `Store<S, A>`.
      */
-    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Value) where Value == Store<S, A> {
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Value) where Value == AnyStore<S, A> {
         self.store = wrappedValue(cancellable)
     }
 
@@ -155,7 +155,7 @@ extension State {
 
      - Note: This initializer is used when the `Value` type of `State` is `ViewStore<Store<S, A>>`.
     */
-    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Store<S, A>) where Value == ViewStore<Store<S, A>> {
+    init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> AnyStore<S, A>) where Value == ViewStore<AnyStore<S, A>> {
         self.init(initialValue: ViewStore(wrappedValue: wrappedValue))
     }
 

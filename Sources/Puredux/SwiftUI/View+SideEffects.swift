@@ -12,7 +12,7 @@ extension View {
     typealias CreateEffect<T> = (T) -> Effect
 
     func forEachEffect<ViewState, Action, Effects>(
-        _ store: Store<ViewState, Action>,
+        _ store: AnyStore<ViewState, Action>,
         _ keyPath: KeyPath<ViewState, Effects>,
         on queue: DispatchQueue = .main,
         create: @escaping CreateForEachEffect<ViewState>) -> some View
@@ -29,7 +29,7 @@ extension View {
         }
     }
 
-    func effect<ViewState, Action>(_ store: Store<ViewState, Action>,
+    func effect<ViewState, Action>(_ store: AnyStore<ViewState, Action>,
                                    _ keyPath: KeyPath<ViewState, Effect.State>,
                                    on queue: DispatchQueue = .main,
                                    create: @escaping CreateEffect<ViewState>) -> some View {
@@ -44,7 +44,7 @@ extension View {
         }
     }
 
-    func effect<ViewState, Action, T>(_ store: Store<ViewState, Action>,
+    func effect<ViewState, Action, T>(_ store: AnyStore<ViewState, Action>,
                                       onChange keyPath: KeyPath<ViewState, T>,
                                       on queue: DispatchQueue = .main,
                                       create: @escaping CreateEffect<ViewState>) -> some View
@@ -61,7 +61,7 @@ extension View {
     }
 
     func effect<ViewState, Action>(
-        _ store: Store<ViewState, Action>,
+        _ store: AnyStore<ViewState, Action>,
         toggle keyPath: KeyPath<ViewState, Bool>,
         on queue: DispatchQueue = .main,
         create: @escaping CreateEffect<ViewState>) -> some View {
@@ -78,7 +78,7 @@ extension View {
 }
 
 extension View {
-    func effect<ViewState, Action>(_ store: Store<ViewState, Action>,
+    func effect<ViewState, Action>(_ store: AnyStore<ViewState, Action>,
                                    withDelay interval: TimeInterval,
                                    removeStateDuplicates equating: Equating<ViewState>?,
                                    on dispatchQueue: DispatchQueue,
