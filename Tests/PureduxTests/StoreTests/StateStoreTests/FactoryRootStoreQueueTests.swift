@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import Puredux
 
-final class FactoryRootStoreQueueTests: XCTestCase {
+final class FactoryStateStoreQueueTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionDispatched_ThenObserverCalledNotOnMainThread() {
@@ -20,13 +20,11 @@ final class FactoryRootStoreQueueTests: XCTestCase {
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 2
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         let observer = Observer<TestState> { _, complete in
             complete(.active)
@@ -48,8 +46,8 @@ final class FactoryRootStoreQueueTests: XCTestCase {
         let asyncExpectation = expectation(description: "Reducer")
         asyncExpectation.expectedFulfillmentCount = 1
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -57,33 +55,32 @@ final class FactoryRootStoreQueueTests: XCTestCase {
             asyncExpectation.fulfill()
         }
 
-        let store = factory.rootStore()
-
         store.dispatch(UpdateIndex(index: stateIndex))
 
         waitForExpectations(timeout: timeout)
     }
 
-    func test_WhenActionDispatched_ThenInterceptorCalledNotOnMainThread() {
+    func test_WhenActionQueueIsSetToGlobal_ThenInterceptorCalledNotOnMainThread() {
         let initialStateIndex = 1
         let stateIndex = 2
 
         let asyncExpectation = expectation(description: "Reducer")
         asyncExpectation.expectedFulfillmentCount = 1
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex),
-            interceptor: { _, _  in
-                XCTAssertFalse(Thread.isMainThread)
-                asyncExpectation.fulfill()
-            },
+        let store = StateStore<TestState, Action>(
+            TestState(currentIndex: initialStateIndex),
             reducer: { state, action  in
                 state.reduce(action: action)
             })
 
-        let store = factory.rootStore()
+        var action = AsyncResultAction(index: stateIndex) { _ in
+            XCTAssertFalse(Thread.isMainThread)
+            asyncExpectation.fulfill()
+        }
 
-        store.dispatch(UpdateIndex(index: stateIndex))
+        action.dispatchQueue = .global(qos: .background)
+
+        store.dispatch(action)
 
         waitForExpectations(timeout: timeout)
     }

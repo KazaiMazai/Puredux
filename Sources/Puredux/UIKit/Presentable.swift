@@ -26,13 +26,12 @@ public protocol Presentable: UIStateObserver {
      The type of properties that the presentable will use to update its UI.
     */
     associatedtype Props
-    
+
     /**
      The presenter associated with the presentable that owns the state and handles state subscriptions.
     */
     var presenter: PresenterProtocol? { get set }
 
-    
     /**
      Sets the properties of the presentable component.
 
@@ -97,20 +96,20 @@ public extension Presentable {
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {
-        
+
         presenter = Presenter { [weak self] in
             guard let self else { return }
             subscribe(
                 store: store,
                 props: props,
                 presentationQueue: presentationQueue,
-                removeStateDuplicates: equating, 
+                removeStateDuplicates: equating,
                 debounceFor: timeInterval) { [weak self] props in
                     self?.setProps(props)
             }
         }
     }
-    
+
     /**
      Binds the presentable to a store, allowing it to observe state changes and update its properties accordingly.
      
@@ -125,7 +124,7 @@ public extension Presentable {
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {
-        
+
         presenter = Presenter { [weak self] in
             guard let self else { return }
             subscribe(
@@ -140,38 +139,7 @@ public extension Presentable {
     }
 }
 
-public extension Presentable {
-    
-    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
-    func with<State, Action>(store: StateStore<State, Action>,
-                             props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil) {
-        
-        setPresenter(
-             store: store,
-             props: props,
-             presentationQueue: presentationQueue.dispatchQueue,
-             removeStateDuplicates: equating
-        )
-    }
-    
-    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
-    func with<State, Action>(store: Store<State, Action>,
-                             props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil) {
-        
-        setPresenter(
-            store: store,
-            props: props,
-            presentationQueue: presentationQueue.dispatchQueue,
-            removeStateDuplicates: equating
-        )
-    }
-}
-
-fileprivate struct Presenter: PresenterProtocol {
+private struct Presenter: PresenterProtocol {
     let subscribe: () -> Void
 
     func subscribeToStore() {

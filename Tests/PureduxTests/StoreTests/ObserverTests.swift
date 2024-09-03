@@ -44,13 +44,13 @@ final class ObserverTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenObserverObjectDeallocated_ThenObserverDies() {
         let asyncExpectation = expectation(description: "Observer handler")
         asyncExpectation.expectedFulfillmentCount = 2
         var someClass: ReferenceTypeObserver? = ReferenceTypeObserver()
-        
-        let observer = Observer<Int>(someClass!) { state, complete in
+
+        let observer = Observer<Int>(someClass!) { _, complete in
             asyncExpectation.fulfill()
             complete(.active)
         }
@@ -58,18 +58,18 @@ final class ObserverTests: XCTestCase {
         observer.send(100) { _  in }
         observer.send(200) { _  in }
         someClass = nil
-        
+
         observer.send(200) { status in XCTAssertEqual(status, .dead)}
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenObserverObjectIsAlive_ThenObserverClosureCalledWithState() {
         let asyncExpectation = expectation(description: "Observer handler")
-        
+
         let someClass = ReferenceTypeObserver()
-        
-        let observer = Observer<Int>(someClass) { state, complete in
+
+        let observer = Observer<Int>(someClass) { _, complete in
             asyncExpectation.fulfill()
             complete(.active)
         }
@@ -78,51 +78,51 @@ final class ObserverTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenObserverDedublicatesEqualValues_ThenObserverIsCalledOnce() {
         let asyncExpectation = expectation(description: "Observer handler")
         asyncExpectation.expectedFulfillmentCount = 1
         let someClass = ReferenceTypeObserver()
-        
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { state, complete in
+
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _, complete in
             asyncExpectation.fulfill()
             complete(.active)
         }
- 
+
         observer.send(300) { _ in }
         observer.send(300) { _ in }
         observer.send(300) { _ in }
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenObserverDedublicatesAsAlwaysEqual_ThenObserverIsCalledOnce() {
         let asyncExpectation = expectation(description: "Observer handler")
         asyncExpectation.expectedFulfillmentCount = 1
         let someClass = ReferenceTypeObserver()
-        
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { state, complete in
+
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _, complete in
             asyncExpectation.fulfill()
             complete(.active)
         }
- 
+
         observer.send(1) { _ in }
         observer.send(2) { _ in }
         observer.send(3) { _ in }
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenObserverDedublicatesAsEquatable_ThenObserverIsCalledAccordingly() {
         let asyncExpectation = expectation(description: "Observer handler")
         asyncExpectation.expectedFulfillmentCount = 3
         let someClass = ReferenceTypeObserver()
-        
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .asEquatable) { state, complete in
+
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .asEquatable) { _, complete in
             asyncExpectation.fulfill()
             complete(.active)
         }
- 
+
         observer.send(1) { _ in }
         observer.send(2) { _ in }
         observer.send(3) { _ in }
@@ -132,5 +132,5 @@ final class ObserverTests: XCTestCase {
 }
 
 class ReferenceTypeObserver {
-    
+
 }

@@ -7,35 +7,34 @@
 
 import Foundation
 
-//MARK: - Basic Transformations
+// MARK: - Basic Transformations
 
 extension StateStore {
-    
+
     func map<T>(_ transformation: @escaping (State) -> T) -> StateStore<T, Action> {
-        
+
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
                 stateMapping: { state, _ in transformation(state) },
-                reducer: {_,_ in }
+                reducer: {_, _ in }
             )
         )
     }
-    
+
     func flatMap<T>(_ transformation: @escaping (State) -> T?) -> StateStore<T?, Action> {
-        
+
         StateStore<T?, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
                 stateMapping: { state, _ in transformation(state) },
-                reducer: {_,_ in }
+                reducer: {_, _ in }
             )
         )
     }
 }
 
-
-//MARK: - KeyPath Transformations
+// MARK: - KeyPath Transformations
 
 public extension StateStore {
     /**

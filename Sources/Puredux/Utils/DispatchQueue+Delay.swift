@@ -17,7 +17,7 @@ extension DispatchQueue {
             async(execute: workItem)
             return
         }
-        
+
         asyncAfter(deadline: .now() + delay, execute: workItem)
     }
 }

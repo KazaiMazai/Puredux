@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /**
  A protocol that defines the basic requirements for a store in a state management system.
 
@@ -26,20 +25,20 @@ import Foundation
 public protocol StoreProtocol<State, Action> {
     /** The type representing the state managed by the store. */
     associatedtype State
-    
+
     /** The type representing the actions that can be performed on the store.  */
     associatedtype Action
-    
+
     /**
      A func that returns a `Store` object that matches the specified `State` and `Action` types.
      */
     var instance: Store<State, Action> { get }
-    
+
     func dispatch(_ action: Action)
 
-    func subscribe(observer: Observer<State>) 
+    func subscribe(observer: Observer<State>)
 }
- 
+
 extension StoreProtocol {
     func weakStore() -> Store<State, Action> {
         instance.weakStore()

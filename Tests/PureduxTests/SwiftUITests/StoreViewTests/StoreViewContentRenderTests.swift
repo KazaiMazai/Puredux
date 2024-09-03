@@ -16,7 +16,7 @@ final class StoreViewContentRenderTests: XCTestCase {
     let actionDelay: TimeInterval = 0.1
 
     @StoreOf(\.rootStore) var store
-     
+
     @discardableResult func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
@@ -98,16 +98,15 @@ extension StoreViewContentRenderTests {
     }
 }
 
-
 final class StoreViewContentInitialRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
-    
+
     func test_WhenViewInitiallySetupWithRootStore_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
         let store = StoreOf(\.rootStore).store()
-         
+
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
@@ -123,13 +122,13 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenViewInitiallySetupWithChildStore_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
         let store = StoreOf(\.rootStore)
-            .with("text") {_,_ in }
-         
+            .with("text") {_, _ in }
+
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
@@ -145,14 +144,14 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
 
         waitForExpectations(timeout: timeout)
     }
-    
+
     func test_WhenViewInitiallySetup_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
         let store = StoreOf(\.rootStore)
-            .with("text") {_,_ in }
+            .with("text") {_, _ in }
             .map { $0.0 }
-         
+
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
@@ -169,4 +168,3 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 }
-

@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class PresentationQueuePropsEvaluationTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -17,22 +16,18 @@ final class PresentationQueuePropsEvaluationTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppState, Action>(
-            initialState: state,
+    lazy var store: StateStore = {
+        StateStore<TestAppState, Action>(
+            state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
 
-    lazy var store: Store = {
-        factory.rootStore()
-    }()
-
-    func setupVCForTests(queue: PresentationQueue, makeProps: @escaping () -> Void) -> StubViewController {
+    func setupVCForTests(queue: DispatchQueue, makeProps: @escaping () -> Void) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
                 makeProps()
@@ -89,7 +84,7 @@ extension PresentationQueuePropsEvaluationTests {
         }
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let testVC = setupVCForTests(queue: .serialQueue(queue), makeProps: makeProps)
+        let testVC = setupVCForTests(queue: queue, makeProps: makeProps)
         testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)
@@ -105,7 +100,7 @@ extension PresentationQueuePropsEvaluationTests {
             expectation.fulfill()
         }
 
-        let testVC = setupVCForTests(queue: .serialQueue(.main), makeProps: makeProps)
+        let testVC = setupVCForTests(queue: .main, makeProps: makeProps)
         testVC.viewDidLoad()
 
         waitForExpectations(timeout: timeout)

@@ -16,14 +16,13 @@ final class StoreViewAlwaysEqualDeduplicationPropsTests: XCTestCase {
     let actionDelay: TimeInterval = 0.1
 
     @StoreOf(\.rootStore) var store
-     
 
     @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                     store,
-                    props: { (state: Int, dispatch: Dispatch<Int>) -> String in
+                    props: { (state: Int, _: Dispatch<Int>) -> String in
                         propsEvaluatedExpectation.fulfill()
                         return "\(state)"
                     },

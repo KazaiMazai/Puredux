@@ -2,13 +2,13 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 22.02.2023.
+//  Created by Sergey Kazakov on 02.12.2021.
 //
 
 import XCTest
 @testable import Puredux
 
-final class FactoryRootStoreTests: XCTestCase {
+final class StateStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptached_ThenReduceOrderPreserved() {
@@ -17,14 +17,12 @@ final class FactoryRootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
-
-        let store = factory.rootStore()
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -41,21 +39,16 @@ final class FactoryRootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0),
-            interceptor: { action, _  in
-                guard let action = (action as? UpdateIndex) else {
-                    return
-                }
-                expectations[action.index].fulfill()
-            },
-            reducer: { state, action  in state.reduce(action: action) }
-        )
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
-        let store = factory.rootStore()
+            state.reduce(action: action)
+        }
 
-        let actions = (0..<actionsCount).map {
-            UpdateIndex(index: $0)
+        let actions = (0..<actionsCount).map { idx in
+            UpdateIndexCallBack(index: idx) {
+                expectations[idx].fulfill()
+            }
         }
 
         actions.forEach { store.dispatch($0) }
@@ -68,13 +61,11 @@ final class FactoryRootStoreTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         var receivedStateIndex: Int?
 
@@ -100,13 +91,11 @@ final class FactoryRootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, updatedStateIndex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -131,13 +120,11 @@ final class FactoryRootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -164,13 +151,11 @@ final class FactoryRootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -196,13 +181,11 @@ final class FactoryRootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = factory.rootStore()
 
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
@@ -224,8 +207,8 @@ final class FactoryRootStoreTests: XCTestCase {
         let initialStateIndex = 1
         let stateChangesProcessedExpectation = expectation(description: "State changes processed for sure")
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -233,8 +216,6 @@ final class FactoryRootStoreTests: XCTestCase {
                 stateChangesProcessedExpectation.fulfill()
             }
         }
-
-        let store = factory.rootStore()
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in

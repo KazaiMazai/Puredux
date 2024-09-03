@@ -13,25 +13,24 @@ final class PropsEvaluationWithChildStoreTests: XCTestCase {
 
     let state = TestAppStateWithIndex()
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppStateWithIndex, Action>(
-            initialState: state,
+    lazy var stateStore: StateStore = {
+        StateStore<TestAppStateWithIndex, Action>(
+             state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
 
     lazy var store: StateStore<(TestAppStateWithIndex, SubStateWithTitle), Action> = {
-        factory.childStore(
-            initialState: SubStateWithTitle(title: "title"),
-            reducer: { state, action in state.reduce(action) }
+        stateStore.with(SubStateWithTitle(title: "title"),
+                     reducer: { state, action in state.reduce(action) }
         )
     }()
 
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
                 propsEvaluatedExpectation.fulfill()

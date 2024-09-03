@@ -18,21 +18,21 @@ struct MacrosPlugin: CompilerPlugin {
 }
 
 public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
-    public static func expansion(of node: SwiftSyntax.AttributeSyntax, 
+    public static func expansion(of node: SwiftSyntax.AttributeSyntax,
                                  providingAccessorsOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
                                  in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.AccessorDeclSyntax] {
-       
+
         try PureduxMacros.InjectedStoreMacro.expansion(
             of: node,
             providingAccessorsOf: declaration,
             in: context
         )
     }
-    
-    public static func expansion(of node: SwiftSyntax.AttributeSyntax, 
+
+    public static func expansion(of node: SwiftSyntax.AttributeSyntax,
                                  providingPeersOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
                                  in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
-        
+
         try PureduxMacros.InjectedStoreMacro.expansion(
             of: node,
             providingPeersOf: declaration,

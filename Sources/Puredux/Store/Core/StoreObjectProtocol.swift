@@ -15,13 +15,9 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
 
     var queue: DispatchQueue { get }
 
-    var actionsInterceptor: ActionsInterceptor<Action>? { get }
-
     func unsubscribe(observer: Observer<State>)
 
     func subscribe(observer: Observer<State>, receiveCurrentState: Bool)
-
-    func dispatch(scopedAction: ScopedAction<Action>)
 
     func subscribe(observer: Observer<State>)
 }
@@ -34,7 +30,7 @@ protocol SyncStoreProtocol<State, Action> {
 
     func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
-    func syncDispatch(scopedAction: ScopedAction<Action>)
+    func syncDispatch(_  action: Action)
 }
 
 extension StoreObjectProtocol {
@@ -51,23 +47,6 @@ extension StoreObjectProtocol {
 }
 
 extension StoreObjectProtocol {
-    @available(*, deprecated, renamed: "createChildStore(stateStore:stateMapping:reducer:)", message: "qos parameter will have no effect. Root store's QoS is used.")
-    func createChildStore<LocalState, ResultState>(
-        initialState: LocalState,
-        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
-        qos: DispatchQoS,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action> {
-
-            StoreNode<Self, LocalState, ResultState, Action>(
-                initialState: initialState,
-                stateMapping: stateMapping,
-                parentStore: self,
-                reducer: reducer
-            )
-        }
-}
-
-extension StoreObjectProtocol {
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
         stateMapping: @escaping (Self.State, LocalState) -> ResultState,
@@ -80,7 +59,7 @@ extension StoreObjectProtocol {
                 reducer: reducer
             )
         }
-    
+
     func createChildStore<T, LocalState>(
         initialState: LocalState,
         transform: @escaping (State) -> T,
@@ -93,14 +72,13 @@ extension StoreObjectProtocol {
                 reducer: reducer
             )
         }
-    
+
     func map<T>(transform: @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
             StoreNode(
                 initialState: Void(),
                 stateMapping: { state, _ in transform(state) },
                 parentStore: self,
-                reducer: {_,_ in }
+                reducer: {_, _ in }
             )
         }
-     
 }

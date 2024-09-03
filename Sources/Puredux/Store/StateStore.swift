@@ -7,8 +7,8 @@
 
 import Foundation
 
-@available(*, deprecated, renamed: "StateStore", message: "Will be removed in 2.0. StateStore is a former StoreObject replacement")
-public typealias StoreObject = StateStore
+public typealias Reducer<State, Action> = (inout State, Action) -> Void
+
 /**
  A generic state store for managing state and handling actions within a store.
 
@@ -55,17 +55,7 @@ public typealias StoreObject = StateStore
  */
 public struct StateStore<State, Action> {
     let storeObject: AnyStoreObject<State, Action>
-    
-    /**
-     Returns the `Store` instance associated with this `StateStore`.
 
-     - Returns: The `Store` instance.
-    */
-    @available(*, deprecated, message: "Will be removed in 2.0. ")
-    public func store() -> Store<State, Action> {
-        weakStore()
-    }
-    
     /**
      Dispatches an action to the store, which will be processed by the reducer to update the state.
      
@@ -75,7 +65,7 @@ public struct StateStore<State, Action> {
         storeObject.dispatch(action)
         executeAsyncAction(action)
     }
-    
+
     /**
      Subscribes an observer to receive updates whenever the state changes.
 
@@ -84,7 +74,7 @@ public struct StateStore<State, Action> {
     public func subscribe(observer: Observer<State>) {
         storeObject.subscribe(observer: observer)
     }
-    
+
     init(storeObject: any StoreObjectProtocol<State, Action>) {
         self.storeObject = AnyStoreObject(storeObject)
     }
@@ -117,7 +107,7 @@ public extension StateStore {
     init(_ initialState: State,
          qos: DispatchQoS = .userInteractive,
          reducer: @escaping Reducer<State, Action>) {
-        
+
         self.init(storeObject: RootStoreNode.initRootStore(
             initialState: initialState,
             interceptor: { _, _ in },
@@ -130,7 +120,7 @@ public extension StateStore {
 extension StateStore: StoreProtocol {
     public typealias State = State
     public typealias Action = Action
-   
+
     public var instance: Store<State, Action> {
         Store<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
@@ -198,7 +188,7 @@ public extension StateStore {
     */
     func with<T>(_ initialState: T,
                  reducer: @escaping Reducer<T, Action>) -> StateStore<(State, T), Action> {
-        
+
         StateStore<(State, T), Action>(
             storeObject: storeObject.createChildStore(
                 initialState: initialState,
@@ -209,95 +199,12 @@ public extension StateStore {
     }
 }
 
-
-public extension StateStore {
-    @available(*, deprecated, renamed: "init(_:qos:reducer:)", message: "Actions Interceptor will be removed in 2.0, use AsyncAction instead.")
-    init(_ initialState: State,
-         interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void,
-         qos: DispatchQoS = .userInteractive,
-         reducer: @escaping Reducer<State, Action>) {
-        
-        self.init(storeObject: RootStoreNode.initRootStore(
-            initialState: initialState,
-            interceptor: interceptor,
-            qos: qos,
-            reducer: reducer
-        ))
-    }
-}
-
-public extension StateStore {
-    @available(*, deprecated, renamed: "stateStore(_:stateMapping:qos:reducer:)", message: "Will be removed in 2.0")
-    func childStore<LocalState, ResultState>(
-        initialState: LocalState,
-        stateMapping: @escaping (State, LocalState) -> ResultState,
-        qos: DispatchQoS = .userInteractive,
-        reducer: @escaping Reducer<LocalState, Action>) -> StateStore<ResultState, Action> {
-           
-            stateStore(
-                initialState,
-                stateMapping: stateMapping,
-                qos: qos,
-                reducer: reducer
-            )
-    }
-
-    @available(*, deprecated, message: "Use with(_:reducer) and store transformations instead. Will be removed in 2.0. ")
-    func stateStore<LocalState, ResultState>(
-        _ initialState: LocalState,
-        stateMapping: @escaping (State, LocalState) -> ResultState,
-        qos: DispatchQoS,
-        reducer: @escaping Reducer<LocalState, Action>
-    
-    ) -> StateStore<ResultState, Action> {
-            
-            StateStore<ResultState, Action>(
-                storeObject: storeObject.createChildStore(
-                    initialState: initialState,
-                    stateMapping: stateMapping,
-                    qos: qos,
-                    reducer: reducer
-                )
-            )
-        }
-    
-    @available(*, deprecated, message: "Use with(_:reducer) and store transformations instead. Will be removed in 2.0.")
-    func stateStore<LocalState, ResultState>(
-        _ initialState: LocalState,
-        stateMapping: @escaping (State, LocalState) -> ResultState,
-        reducer: @escaping Reducer<LocalState, Action>
-    
-    ) -> StateStore<ResultState, Action> {
-            
-            StateStore<ResultState, Action>(
-                storeObject: storeObject.createChildStore(
-                    initialState: initialState,
-                    stateMapping: stateMapping,
-                    reducer: reducer
-                )
-            )
-        }
-}
-
-extension StateStore {
-    @available(*, deprecated, message: "Qos parameter will have no effect. Root store's QoS is used. Use with(_:reducer) and store transformations instead. Will be removed in 2.0.")
-    public func stateStore<T>(
-        _ state: T,
-        qos: DispatchQoS = .userInitiated,
-        reducer: @escaping Reducer<T, Action>
-        
-    ) -> StateStore<(State, T), Action> {
-        
-        with(state, reducer: reducer)
-    }
-}
-
 extension StateStore {
     func executeAsyncAction(_ action: Action) {
         guard let action = action as? (any AsyncAction) else {
             return
         }
-        
+
         action.execute { [weak storeObject] in
             storeObject?.dispatch($0)
         }

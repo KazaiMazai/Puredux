@@ -23,7 +23,7 @@ final class StoreViewPresentationQueueTest: XCTestCase {
             rootView:
                 StoreView(
                     store,
-                    props: { (state: Int, dispatch: Dispatch<Int>) -> String in
+                    props: { (state: Int, _: Dispatch<Int>) -> String in
                         XCTAssertTrue(Thread.isMainThread)
                         return "\(state)"
                     },
@@ -45,7 +45,7 @@ final class StoreViewPresentationQueueTest: XCTestCase {
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
-                props: { (state: Int, dispatch: Dispatch<Int>) -> String in
+                props: { (state: Int, _: Dispatch<Int>) -> String in
                     XCTAssertFalse(Thread.isMainThread)
                     return "\(state)"
                 },
@@ -68,7 +68,7 @@ final class StoreViewPresentationQueueTest: XCTestCase {
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
                 store,
-                props: { (state: Int, dispatch: Dispatch<Int>) -> String in
+                props: { (state: Int, _: Dispatch<Int>) -> String in
                     XCTAssertFalse(Thread.isMainThread)
                     return "\(state)"
                 },

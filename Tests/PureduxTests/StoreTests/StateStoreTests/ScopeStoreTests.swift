@@ -19,14 +19,14 @@ final class ScopedStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -42,13 +42,13 @@ final class ScopedStoreTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStateIndex: Int?
 
@@ -74,13 +74,13 @@ final class ScopedStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, updatedStateindex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -105,13 +105,13 @@ final class ScopedStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -138,13 +138,13 @@ final class ScopedStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<Int> { receivedState, complete in
@@ -170,13 +170,13 @@ final class ScopedStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         let observer = Observer<Int> { receivedState, complete in
             expectations[receivedState].fulfill()
@@ -200,8 +200,8 @@ final class ScopedStoreTests: XCTestCase {
         let stateChangesProcessedExpectation = expectation(
             description: "Actions and State changes processed for sure")
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -210,7 +210,7 @@ final class ScopedStoreTests: XCTestCase {
             }
         }
 
-        let store = factory.scopeStore { $0.currentIndex }
+        let store = stateStore.map { $0.currentIndex }
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<Int> { receivedState, complete in
@@ -238,13 +238,13 @@ final class ScopedStoreOptionalStateTests: XCTestCase {
 
         let receivedExpectation = expectation(description: "Observer state handler")
 
-        let factory = StoreFactory<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let stateStore = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
 
-        let store: Store<Int?, Action> = factory.scopeStore(to: { _  in nil })
+        let store: Store<Int?, Action> = stateStore.flatMap { _  in nil }
 
         let observer = Observer<Int?> { _, complete in
             complete(.active)

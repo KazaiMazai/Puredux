@@ -18,7 +18,7 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     private let parentStore: ParentStore
 
     private let stateMapping: (ParentStore.State, LocalState) -> State
-    
+
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
@@ -31,21 +31,10 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
 
         localStore = CoreStore(
             queue: parentStore.queue,
-            actionsInterceptor: nil,
             initialState: initialState,
             reducer: reducer
         )
 
-        if let parentInterceptor = parentStore.actionsInterceptor {
-            let interceptor = ActionsInterceptor(
-                storeId: localStore.id,
-                handler: parentInterceptor.handler,
-                dispatcher: { [weak self] action in self?.dispatch(action) }
-            )
-            
-            localStore.setInterceptorSync(interceptor)
-        }
-        
         localStore.syncSubscribe(observer: localObserver, receiveCurrentState: true)
         parentStore.subscribe(observer: parentObserver, receiveCurrentState: true)
     }
@@ -83,14 +72,9 @@ extension StoreNode where LocalState == State {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
-            stateMapping: { _, state in return state }, 
+            stateMapping: { _, state in return state },
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
-                actionsInterceptor: ActionsInterceptor(
-                    storeId: StoreID(),
-                    handler: interceptor,
-                    dispatcher: { _ in }
-                ),
                 initialState: Void(),
                 reducer: { _, _ in }
             ),
@@ -106,25 +90,14 @@ extension StoreNode: StoreObjectProtocol {
         parentStore.queue
     }
 
-    var actionsInterceptor: ActionsInterceptor<Action>? {
-        localStore.actionsInterceptor
-    }
-
-    func syncDispatch(scopedAction: ScopedAction<Action>) {
-        localStore.syncDispatch(scopedAction: scopedAction)
-        parentStore.syncDispatch(scopedAction: ScopedAction(
-            storeId: scopedAction.storeId,
-            action: scopedAction.action
-        ))
+    func syncDispatch(_ action: Action) {
+        localStore.syncDispatch(action)
+        parentStore.syncDispatch(action)
     }
 
     func dispatch(_ action: Action) {
-        dispatch(scopedAction: localStore.scopeAction(action))
-    }
-
-    func dispatch(scopedAction: ScopedAction<Action>) {
         queue.async { [weak self] in
-            self?.syncDispatch(scopedAction: scopedAction)
+            self?.syncDispatch(action)
         }
     }
 
@@ -185,4 +158,3 @@ private extension StoreNode {
         }
     }
 }
-

@@ -16,26 +16,22 @@ final class NoDeduplicationPropsUIKitTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppState, Action>(
-            initialState: state,
+    lazy var store: StateStore = {
+        StateStore<TestAppState, Action>(
+             state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
 
-    lazy var store: Store = {
-        factory.rootStore()
-    }()
-
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(store: store,
-                props: { state, _ in
-                    propsEvaluatedExpectation.fulfill()
+        testVC.setPresenter(store: store,
+                            props: { state, _ in
+            propsEvaluatedExpectation.fulfill()
             return .init(title: state.subStateWithTitle.title)
-                })
+        })
 
         return testVC
     }

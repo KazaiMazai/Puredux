@@ -18,8 +18,6 @@ public extension AsyncAction {
     var dispatchQueue: DispatchQueue { .main }
 }
 
-
-
 extension AsyncAction {
     func execute<Action>(_ dispatch: @escaping Dispatch<Action>) {
         dispatchQueue.async {

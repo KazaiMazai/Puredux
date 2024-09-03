@@ -96,8 +96,8 @@ struct SubStateWithIndex {
 }
 
 class ReferenceTypeState {
-    
+
     func reduce(_ action: Action) {
-         
+
     }
 }

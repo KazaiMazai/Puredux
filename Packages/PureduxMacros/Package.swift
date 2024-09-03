@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "PureduxMacros",
-            targets: ["PureduxMacros"]),
+            targets: ["PureduxMacros"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
@@ -27,9 +27,9 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax")
             ]),
-        
+
         .testTarget(
             name: "PureduxMacrosTests",
-            dependencies: ["PureduxMacros"]),
+            dependencies: ["PureduxMacros"])
     ]
 )

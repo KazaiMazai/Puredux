@@ -12,7 +12,7 @@ import XCTest
 
 final class InjectedStoreMacroTests: XCTestCase {
     private let macros = ["InjectEntry": InjectedStoreMacro.self]
-    
+
     func testEnvironmentValue() {
         assertMacroExpansion(
               """
@@ -31,7 +31,7 @@ final class InjectedStoreMacroTests: XCTestCase {
                             Self [RootKey.self] = newValue
                         }
                     }
-                
+
                     enum RootKey: InjectionKey {
                         static var currentValue = StateStore<Int, Int>(10) { _, _ in
                         }

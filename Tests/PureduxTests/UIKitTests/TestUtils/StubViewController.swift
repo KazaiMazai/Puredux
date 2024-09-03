@@ -6,7 +6,6 @@
 //
 
 @testable import Puredux
-@testable import Puredux
 
 extension StubViewController {
     struct Props {

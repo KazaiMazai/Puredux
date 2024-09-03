@@ -21,17 +21,15 @@ final class CoreStore<State, Action> {
     private var state: State
 
     let dispatchQueue: DispatchQueue
-    private(set) var actionsInterceptor: ActionsInterceptor<Action>?
+
     private let reducer: Reducer<State, Action>
     private var observers: Set<Observer<State>> = []
 
     init(queue: DispatchQueue,
-         actionsInterceptor: ActionsInterceptor<Action>?,
          initialState: State,
          reducer: @escaping Reducer<State, Action>) {
 
         self.dispatchQueue = queue
-        self.actionsInterceptor = actionsInterceptor
         self.state = initialState
         self.reducer = reducer
     }
@@ -40,7 +38,7 @@ final class CoreStore<State, Action> {
 extension CoreStore {
     func weakRefStore() -> Store<State, Action> {
         Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) }, 
+              subscribe: { [weak self] in self?.subscribe(observer: $0) },
               storeObject: { [weak self] in self.map { AnyStoreObject($0) } })
     }
 }
@@ -52,27 +50,6 @@ extension CoreStore: StoreObjectProtocol {
 
     var queue: DispatchQueue {
         dispatchQueue
-    }
-
-    // MARK: - Interceptor
-
-    func setInterceptor(_ interceptor: ActionsInterceptor<Action>) {
-        queue.async { [weak self] in
-            self?.setInterceptorSync(interceptor)
-        }
-    }
-
-    func setInterceptor(with handler: @escaping Interceptor<Action>) {
-        let interceptor = ActionsInterceptor(
-            storeId: self.id,
-            handler: handler,
-            dispatcher: { [weak self] in self?.dispatch($0) })
-
-        setInterceptor(interceptor)
-    }
-
-    func setInterceptorSync(_ interceptor: ActionsInterceptor<Action>) {
-        self.actionsInterceptor = interceptor
     }
 
     // MARK: - Subscribe
@@ -105,23 +82,14 @@ extension CoreStore: StoreObjectProtocol {
 
     // MARK: - Dispatch
 
-    func scopeAction(_ action: Action) -> ScopedAction<Action> {
-        ScopedAction(storeId: id, action: action)
-    }
-
-    func dispatch(scopedAction: ScopedAction<Action>) {
+    func dispatch(_ action: Action) {
         queue.async { [weak self] in
-            self?.syncDispatch(scopedAction: scopedAction)
+            self?.syncDispatch(action)
         }
     }
 
-    func dispatch(_ action: Action) {
-        dispatch(scopedAction: scopeAction(action))
-    }
-
-    func syncDispatch(scopedAction: ScopedAction<Action>) {
-        actionsInterceptor?.interceptIfNeeded(scopedAction)
-        reducer(&self.state, scopedAction.action)
+    func syncDispatch(_ action: Action) {
+        reducer(&self.state, action)
         observers.forEach { send(state, to: $0) }
     }
 }

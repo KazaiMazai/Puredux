@@ -2,13 +2,13 @@
 //  File.swift
 //  
 //
-//  Created by Sergey Kazakov on 02.12.2021.
+//  Created by Sergey Kazakov on 22.02.2023.
 //
 
 import XCTest
 @testable import Puredux
 
-final class RootStoreTests: XCTestCase {
+final class FactoryStateStoreTests: XCTestCase {
     let timeout: TimeInterval = 10
 
     func test_WhenActionsDiptached_ThenReduceOrderPreserved() {
@@ -17,14 +17,12 @@ final class RootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
             expectations[state.currentIndex].fulfill()
         }
-
-        let store = rootStore.store()
 
         let actions = (0..<actionsCount).map {
             UpdateIndex(index: $0)
@@ -41,23 +39,17 @@ final class RootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let store = StateStore<TestState, Action>(
+            TestState(currentIndex: 0),
 
-            state.reduce(action: action)
-        }
+            reducer: { state, action  in state.reduce(action: action) }
+        )
 
-        let store = rootStore.store()
-
-        rootStore.interceptActions { action  in
-            guard let action = (action as? UpdateIndex) else {
-                return
+        let actions = (0..<actionsCount).map { idx in
+            AsyncResultAction(index: idx) { handler in
+                expectations[idx].fulfill()
+                handler(ResultAction(index: idx))
             }
-            expectations[action.index].fulfill()
-        }
-
-        let actions = (0..<actionsCount).map {
-            UpdateIndex(index: $0)
         }
 
         actions.forEach { store.dispatch($0) }
@@ -70,13 +62,11 @@ final class RootStoreTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: expectedStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: expectedStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = rootStore.store()
 
         var receivedStateIndex: Int?
 
@@ -102,13 +92,11 @@ final class RootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, updatedStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = rootStore.store()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -133,13 +121,11 @@ final class RootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = rootStore.store()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -166,13 +152,11 @@ final class RootStoreTests: XCTestCase {
 
         let expectedStateIndexValues = [initialStateIndex, initialStateIndex, initialStateIndex, updatedStateIndex]
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = rootStore.store()
 
         var receivedStatesIndexes: [Int] = []
         let observer = Observer<TestState> { receivedState, complete in
@@ -198,13 +182,11 @@ final class RootStoreTests: XCTestCase {
             XCTestExpectation(description: "index \($0)")
         }
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: 0)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: 0)) { state, action  in
 
             state.reduce(action: action)
         }
-
-        let store = rootStore.store()
 
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
@@ -226,8 +208,8 @@ final class RootStoreTests: XCTestCase {
         let initialStateIndex = 1
         let stateChangesProcessedExpectation = expectation(description: "State changes processed for sure")
 
-        let rootStore = RootStore<TestState, Action>(
-            initialState: TestState(currentIndex: initialStateIndex)) { state, action  in
+        let store = StateStore<TestState, Action>(
+             TestState(currentIndex: initialStateIndex)) { state, action  in
 
             state.reduce(action: action)
 
@@ -235,8 +217,6 @@ final class RootStoreTests: XCTestCase {
                 stateChangesProcessedExpectation.fulfill()
             }
         }
-
-        let store = rootStore.store()
 
         var observerLastReceivedStateIndex: Int?
         let observer = Observer<TestState> { receivedState, complete in

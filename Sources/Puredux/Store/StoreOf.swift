@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 /**
 A property wrapper that implements a Dependency Injection (DI) pattern by providing access to an injected instance of `StateStore`.
 
@@ -43,19 +42,19 @@ Example usage:
 @propertyWrapper
 public struct StoreOf<T> {
     private let keyPath: WritableKeyPath<Injected, T>
-    
+
     public var wrappedValue: T {
         get { Injected[keyPath] }
     }
-   
+
     public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action> {
         self.keyPath = keyPath
     }
-    
+
     public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action>? {
         self.keyPath = keyPath
     }
-    
+
     public func store() -> T {
         wrappedValue
     }
@@ -85,17 +84,17 @@ public extension StoreOf {
     func with<Root, Local, Action>(
         _ initialState: Local,
         reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action> where T == StateStore<Root, Action> {
-        
+
         wrappedValue.with(
             initialState,
             reducer: reducer
         )
     }
-    
+
     func with<Root, Local, Action>(
         _ initialState: Local,
         reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action>? where T == StateStore<Root, Action>? {
-        
+
         wrappedValue?.with(
             initialState,
             reducer: reducer

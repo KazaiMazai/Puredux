@@ -16,24 +16,23 @@ final class ChildStoreTests: XCTestCase {
         childState: ChildTestState(currentIndex: 0)
     )
 
-    lazy var factory = {
-        StoreFactory<TestState, Action>(
-            initialState: initialState.state) { state, action  in
+    lazy var stateStore = {
+        StateStore<TestState, Action>(
+             initialState.state) { state, action  in
 
                 state.reduce(action: action)
             }
     }()
 
     lazy var childStore = {
-        factory.childStore(
-            initialState: initialState.childState,
-            stateMapping: { rootState, childState in
-                StateComposition(state: rootState, childState: childState)
-            },
-            reducer: { state, action  in
-                state.reduce(action: action)
-            }
-        )
+        stateStore.with(
+             initialState.childState,
+             reducer: { state, action  in
+                 state.reduce(action: action)
+             }
+        ).map { rootState, childState in
+            StateComposition(state: rootState, childState: childState)
+        }
     }()
 
     func test_WhenSubscribed_ThenCurrentStateReceived() {
@@ -165,17 +164,17 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
     let initialState = TestState(currentIndex: 0)
     let initialChildState = ChildTestState(currentIndex: 0)
 
-    lazy var factory = {
-        StoreFactory<TestState, Action>(
-            initialState: initialState) { state, action  in
+    lazy var stateStore = {
+        StateStore<TestState, Action>(
+             initialState) { state, action  in
 
                 state.reduce(action: action)
             }
     }()
 
     lazy var childStore = {
-        factory.childStore(
-            initialState: initialChildState,
+        stateStore.with(
+             initialChildState,
             reducer: { state, action  in
                 state.reduce(action: action)
             }

@@ -75,13 +75,13 @@ struct ViewStore<Value> {
     and effects associated with the store.
     */
     private let cancellable = AnyCancellableEffect()
-    
+
     /**
      The store object being wrapped. This property is read-only to ensure
      encapsulation and controlled access.
     */
     private let store: Value
-    
+
     /**
      The property that provides read-only access to the wrapped store object.
      
@@ -103,7 +103,7 @@ extension ViewStore {
     init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Value) where Value == Store<S, A> {
         self.store = wrappedValue(cancellable)
     }
-    
+
     /**
      Initializes a new `ViewStore` with a `StateStore` object. This initializer allows the creation of a `ViewStore`
      by providing a closure that takes an `AnyCancellableEffect` and returns a `StateStore` instance.
@@ -113,7 +113,7 @@ extension ViewStore {
      
      - Note: This initializer is used when the type `Value` is `StateStore<S, A>`.
      */
-    
+
     init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Value) where Value == StateStore<S, A> {
         self.store = wrappedValue(cancellable)
     }
@@ -158,7 +158,7 @@ extension State {
     init<S, A>(wrappedValue: @escaping (AnyCancellableEffect) -> Store<S, A>) where Value == ViewStore<Store<S, A>> {
         self.init(initialValue: ViewStore(wrappedValue: wrappedValue))
     }
-    
+
     /**
     Initializes a new `State` instance with a `ViewStore` wrapping a `StateStore` object.
     
@@ -174,4 +174,3 @@ extension State {
         self.init(initialValue: ViewStore(wrappedValue: wrappedValue))
     }
 }
-

@@ -22,7 +22,7 @@ public protocol UIStateObserver: AnyObject { }
 extension UIStateObserver {
     var cancellable: AnyCancellableEffect { AnyCancellableEffect(self) }
 }
- 
+
 public extension UIStateObserver {
     /**
      Subscribes a `UIView` or `UIViewController` to a `Store`, allowing it to observe and react to changes in the store's state, while also having access to the store itself.
@@ -77,7 +77,7 @@ public extension UIStateObserver {
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
-        
+
         store.effect(
             cancellable,
             withDelay: timeInterval,
@@ -93,7 +93,7 @@ public extension UIStateObserver {
                 }
             }
     }
-    
+
     /**
      Subscribes a `UIView` or `UIViewController` to a `Store`, allowing it to observe and react to changes in the store's state, while also having access to the store's dispatch function.
 
@@ -148,7 +148,7 @@ public extension UIStateObserver {
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
-        
+
         subscribe(
             store: store,
             props: { state, store in props(state, store.dispatch) },
@@ -158,7 +158,7 @@ public extension UIStateObserver {
             observe: observe
         )
     }
-    
+
     /**
      Subscribes a `UIView` or `UIViewController` to a `Store`, allowing it to observe and react to changes in the store's state directly.
 
@@ -203,7 +203,7 @@ public extension UIStateObserver {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State) -> Void) {
-        
+
         subscribe(
             store,
             props: { state, _ in state },
@@ -213,7 +213,7 @@ public extension UIStateObserver {
             observe: observe
         )
     }
-    
+
     /**
      Subscribes a `UIView` or `UIViewController` to a `Store`, allowing it to observe and react to changes in the store's state, and providing access to the store's dispatch function.
 
@@ -258,7 +258,7 @@ public extension UIStateObserver {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval  = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) {
-        
+
         subscribe(
             store: store,
             removeStateDuplicates: equating,
@@ -266,7 +266,7 @@ public extension UIStateObserver {
             observe: { state, store in observe(state, store.dispatch) }
         )
     }
-    
+
     /**
      Subscribes a `UIView` or `UIViewController` to a `Store`, allowing it to observe and react to changes in the store's state and interact with the store directly.
 
@@ -311,15 +311,14 @@ public extension UIStateObserver {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Store<State, Action>) -> Void) {
-        
+
         subscribe(
             store: store,
             props: { state, store in (state, store) },
             presentationQueue: .main,
-            removeStateDuplicates: equating, 
+            removeStateDuplicates: equating,
             debounceFor: timeInterval,
             observe: observe
         )
     }
 }
-

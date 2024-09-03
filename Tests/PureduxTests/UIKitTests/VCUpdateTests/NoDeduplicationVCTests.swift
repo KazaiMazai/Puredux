@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 
-
 final class NoDeduplicationVCTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -17,25 +16,21 @@ final class NoDeduplicationVCTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppState, Action>(
-            initialState: state,
+    lazy var store: StateStore = {
+        StateStore<TestAppState, Action>(
+             state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
 
-    lazy var store: Store = {
-        factory.rootStore()
-    }()
-
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(store: store,
-                props: { state, _ in
-                    .init(title: state.subStateWithTitle.title)
-                })
+        testVC.setPresenter(store: store,
+                            props: { state, _ in
+                .init(title: state.subStateWithTitle.title)
+        })
 
         testVC.didSetProps = {
             vcUpdatedExpectation.fulfill()

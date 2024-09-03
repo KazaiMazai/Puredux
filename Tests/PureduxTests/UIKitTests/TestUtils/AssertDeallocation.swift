@@ -11,7 +11,7 @@ extension XCTestCase {
     func assertDeallocated<T: AnyObject>(of object: @escaping () -> T) {
         assertDeallocation(inversed: false, of: object)
     }
-    
+
     func assertNotDeallocated<T: AnyObject>(of object: @escaping () -> T) {
         assertDeallocation(inversed: true, of: object)
     }
@@ -20,7 +20,7 @@ extension XCTestCase {
 extension XCTestCase {
     private func assertDeallocation<T: AnyObject>(inversed: Bool,
                                           of object: @escaping () -> T) {
-        
+
         weak var weakReferenceToObject: T?
 
         let autoreleasepoolExpectation = expectation(description: "Autoreleasepool should drain")
@@ -51,13 +51,13 @@ extension XCTestCase {
     ///   - condition: The condition to check for.
     ///   - timeout: The timeout in which the callback should return true.
     ///   - description: A string to display in the test log for this expectation, to help diagnose failures.
-    func wait(inversed: Bool = false, 
+    func wait(inversed: Bool = false,
               for condition: @autoclosure @escaping () -> Bool,
               timeout: TimeInterval,
               description: String,
               file: StaticString = #file,
               line: UInt = #line) {
-        
+
         let end = Date().addingTimeInterval(timeout)
 
         var value: Bool = false
@@ -77,7 +77,7 @@ extension XCTestCase {
             XCTAssertTrue(value, "Timed out waiting for condition to be true: \"\(description)\"", file: file, line: line)
             return
         }
-       
+
         XCTAssertFalse(value, "Unexpected condition met: \"\(description)\"", file: file, line: line)
     }
 }

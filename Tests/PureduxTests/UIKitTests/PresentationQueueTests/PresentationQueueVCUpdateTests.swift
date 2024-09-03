@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Sergey Kazakov on 07.06.2022.
 //
@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 @testable import Puredux
 
-
 final class PresentationQueueVCUpdateTests: XCTestCase {
     let timeout: TimeInterval = 4
 
@@ -19,25 +18,21 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
         subStateWithIndex: SubStateWithIndex(index: 0)
     )
 
-    lazy var factory: StoreFactory = {
-        StoreFactory<TestAppState, Action>(
-            initialState: state,
+    lazy var store: StateStore = {
+        StateStore<TestAppState, Action>(
+            state,
             reducer: { state, action in
                 state.reduce(action)
             })
     }()
 
-    lazy var store: Store = {
-        factory.rootStore()
-    }()
-
-    func setupVCForTests(queue: PresentationQueue) -> StubViewController {
+    func setupVCForTests(queue: DispatchQueue) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
-                .init(title: state.subStateWithTitle.title)
+                    .init(title: state.subStateWithTitle.title)
             },
             presentationQueue: queue
         )
@@ -83,7 +78,7 @@ extension PresentationQueueVCUpdateTests {
         expectation.expectedFulfillmentCount = 1
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let testVC = setupVCForTests(queue: .serialQueue(queue))
+        let testVC = setupVCForTests(queue: queue)
         testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -98,7 +93,7 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC = setupVCForTests(queue: .serialQueue(.main))
+        let testVC = setupVCForTests(queue: .main)
         testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()

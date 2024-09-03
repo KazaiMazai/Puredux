@@ -7,7 +7,7 @@
 
 import Foundation
 
-//MARK: - Basic Transformations
+// MARK: - Basic Transformations
 
 public extension StoreProtocol {
     /**
@@ -67,7 +67,7 @@ public extension StoreProtocol {
     }
 }
 
-//MARK: - KeyPath Transformations
+// MARK: - KeyPath Transformations
 
 public extension StoreProtocol {
     /**
@@ -101,8 +101,7 @@ public extension StoreProtocol {
     }
 }
 
-
-//MARK: - Tuples Transformations
+// MARK: - Tuples Transformations
 
 // swiftlint:disable large_tuple identifier_name
 public extension StoreProtocol {
@@ -141,7 +140,7 @@ public extension StoreProtocol {
             return (t1, t2, t3, t4)
         }
     }
-    
+
     /**
      Refer to the  `flatMap<T1, T2, T3>()` documentation
      */
@@ -229,11 +228,10 @@ public extension StoreProtocol {
 
 // swiftlint:enable large_tuple identifier_name
 
-
-//MARK: - Actions Transformations
+// MARK: - Actions Transformations
 
 //
-//extension Store {
+// extension Store {
 //    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
 //        let store = instance
 //        let weakStore = weakStore()
@@ -243,11 +241,10 @@ public extension StoreProtocol {
 //            storeObject: store.getStoreObject
 //        )
 //    }
-//}
+// }
 //
-//extension StateStore {
+// extension StateStore {
 //    func map<A>(action transform: @escaping (A) -> Action) -> Store<State, A> {
 //        instance.map(action: transform)
 //    }
-//}
-
+// }
