@@ -92,9 +92,8 @@ struct ViewState {
 }
 
 struct ContentView: View  {
-    // We can create take an injected root store,
-    // Create a local store and seamlessly merge them together:
-    // `Store<(AppState,ViewState)>` lifecycle will be controller by view
+    // We can take an injected root store,
+    // create a local state store and merge them together.
     @State var store: StoreOf(\.root).with(ViewState()) { state, action in 
         state.reduce(action) 
     }
