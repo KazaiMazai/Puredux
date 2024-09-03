@@ -189,48 +189,24 @@ Make your app driven by business logic, not by the view hierarchy.
 
 ```swift
 
-let root = StateStore<AppState, Action>(AppState()) { state, action in
-    state.reduce(action)
-}
+// Root Store Configuration
+let root = StateStore<AppState, Action>(AppState()) { state, action in state.reduce(action) }
 
-// `featureOne` store will receive
-// - shared `AppState` updates
-let featureOne = root.with(FeatureOne()) { state, action in 
-    state.reduce(action) 
-}
+// FeatureOne Store Configuration
+let featureOne = root.with(FeatureOne()) { state, action in state.reduce(action) }
 
+// FeatureTwo Stores Configuration
+let featureTwo = root.with(FeatureTwo()) { state, action in state.reduce(action) }
 
-// `featureOne` store will receive
-//  - shared `AppState` updates
-// will be isolated from
-//  - featureOne store
-let featureTwo = root.with(FeatureTwo()) { state, action in 
-    state.reduce(action) 
-}
+let screenOne = featureTwo.with(ScreenOne()) { state, action in state.reduce(action) }
 
-// `screenOne` will receive 
-//  -    shared `AppState` updates
-//  -   `featureTwo` shared state
-// will be isolated from
-// -  `featureOne`
-// -  `screenTwo`
-let screenOne = featureTwo.with(ScreenOne()) { state, action in 
-    state.reduce(action) 
-}
-
-// `screenTwo` will receive 
-//  -    shared `AppState` updates
-//  -   `featureTwo` shared state
-// will be isolated from
-// -  `featureOne`
-// -  `screenOne`
-let screenTwo = featureTwo.with(ScreenTwo()) { state, action in 
-    state.reduce(action) 
-}
+let screenTwo = featureTwo.with(ScreenTwo()) { state, action in state.reduce(action) }
 
 ```
 
-<details><summary>Will result in the following app tree hierarchy</summary>
+We can connect UI to any of the stores and will end up with the following hierarchy:
+
+<details><summary>Click to expand</summary>
 <p>
 
  ```text
@@ -263,6 +239,7 @@ let screenTwo = featureTwo.with(ScreenTwo()) { state, action in
                            | UI |                    | UI |
                            +----+                    +----+
 ```
+
 
 </p>
 </details>
