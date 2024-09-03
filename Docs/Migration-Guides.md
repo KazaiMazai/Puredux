@@ -32,22 +32,19 @@ Here is an overview of what to be changed:
 
 1. Replace `StoreFactory` with `StateStore`.
 
-```swift
-// Before:
+```diff
 
-let storeFactory = StoreFactory(
-    MyInitialState(),
-    qos: .userInteractive,
-    reducer: myReducer
-)
+- let storeFactory = StoreFactory(
+-     MyInitialState(),
+-     qos: .userInteractive,
+-     reducer: myReducer
+- )
 
-// After:
-
-let store = StateStore(
-    MyInitialState(),
-    qos: .userInteractive,
-    reducer: myReducer
-)
++ let store = StateStore(
++     MyInitialState(),
++     qos: .userInteractive,
++     reducer: myReducer
++ )
 ```
 
 ### Child Store Changes
@@ -89,13 +86,13 @@ Follow deprecation notices documentation for more details.
  1. Migrate from `StoreFactory` and `EnvStoreFactory` to `StateStore`
  2. Inject root store with `@InjectEntry`:
 
- ```swift
+ ```diff
  
- extension Injected {
-     @InjectEntry var appState = StateStore<AppState, Action>(AppState()) { state, action in
-         state.reduce(action)
-     }
- }
++ extension Injected {
++     @InjectEntry var appState = StateStore<AppState, Action>(AppState()) { state, action in
++         state.reduce(action)
++     }
++  }
  
  ```
 
