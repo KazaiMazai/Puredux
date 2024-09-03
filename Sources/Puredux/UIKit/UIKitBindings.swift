@@ -5,12 +5,17 @@
 //  Created by Sergey Kazakov on 26/08/2024.
 //
 
+import Dispatch
+import Foundation
+
+#if canImport(UIKit)
 import UIKit
-import SwiftUI
 
 extension UIViewController: UIStateObserver { }
 
 extension UIView: UIStateObserver { }
+
+#endif
 
 public protocol UIStateObserver: AnyObject { }
 
