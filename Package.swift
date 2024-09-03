@@ -8,7 +8,9 @@ let package = Package(
     name: "Puredux",
     platforms: [
        .iOS(.v13),
-       .macOS(.v10_15)
+       .macOS(.v10_15),
+       .tvOS(.v12),
+       .watchOS(.v7)
        
     ],
     products: [
