@@ -18,10 +18,12 @@ public extension Store {
     typealias Subscribe = (_ observer: Observer<State>) -> Void
 }
 
-public struct Store<State, Action> {
+public struct Store<State, Action>: StoreProtocol {
     let dispatchHandler: Dispatch
     let subscribeHandler: Subscribe
     let getStoreObject: () -> AnyStoreObject<State, Action>?
+    
+    public func eraseToAnyStore() -> Store<State, Action> { self }
 }
 
 public extension Store {
@@ -33,13 +35,6 @@ public extension Store {
     func subscribe(observer: Observer<State>) {
         subscribeHandler(observer)
     }
-}
-
-extension Store: StoreProtocol {
-    public typealias State = State
-    public typealias Action = Action
-
-    public func eraseToAnyStore() -> Store<State, Action> { self }
 }
 
 extension Store {
