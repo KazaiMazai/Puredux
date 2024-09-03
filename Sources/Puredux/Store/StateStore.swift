@@ -57,16 +57,6 @@ public struct StateStore<State, Action> {
     let storeObject: AnyStoreObject<State, Action>
     
     /**
-     Returns the `Store` instance associated with this `StateStore`.
-
-     - Returns: The `Store` instance.
-    */
-    @available(*, deprecated, message: "Will be removed in 2.0. ")
-    public func store() -> Store<State, Action> {
-        weakStore()
-    }
-    
-    /**
      Dispatches an action to the store, which will be processed by the reducer to update the state.
      
      - Parameter action: The action to be dispatched.
