@@ -20,6 +20,25 @@ streamline state management with a focus on unidirectional data flow and separat
 - **Separation of Concerns**: Emphasizes separating business logic and side effects from UI components.
 - **Performance Optimization**: Offers granular performance tuning with state deduplication, debouncing, and offloading heavy UI-related work to the background.
 
+## Table of Contents
+
+ * [Getting Started](#getting-started)
+    + [Basics](#basics)
+    + [Store Definitions](#store-definitions)
+    + [UI Bindings](#ui-bindings)
+  * [Hierarchical Stores Tree Architecture](#hierarchical-stores-tree-architecture)
+  * [Side Effects](#side-effects)
+    + [Async Actions](#async-actions)
+  * [Performance Tuning](#performance-tuning)
+    + [Quality of Service](#quality-of-service)
+    + [Deduplicated State Updates](#deduplicated-state-updates)
+    + [UI Updates Debouncing](#ui-updates-debouncing)
+    + [Extra Presentational Layer](#extra-presentational-layer)
+  * [Installation](#installation)
+    + [Swift Package Manager.](#swift-package-manager)
+  * [Migration Guiges](#migration-guiges)
+- [Licensing](#licensing)
+
 
 ## Getting Started
 
@@ -130,59 +149,15 @@ class MyViewController: ViewController  {
 </p>
 </details>
 
-## Side Effects
-
-In UDF world we call "side effects" async work: network requests, database fetches and other I/O operations, timer events, location service callbacks, etc.
-
-In Puredix it can be done with Async Actions.
-
-### Async Actions
-
-```swift
-
-// Define result and error actions:
-
-struct FetchDataResult: Action {
-    // ...
-}
-
-struct FetchDataError: Action {
-    // ...
-}
-
-// Define async action:
-
-struct FetchDataAction: AsyncAction {
-
-    func execute(completeHandler: @escaping (Action) -> Void) {  
-        APIClient.shared.fetchData {
-            switch $0 {
-            case .success(let result):
-                completeHandler(FetchDataResult(result))
-            case .success(let error):
-                completeHandler(FetchDataError(error))
-            }
-        }
-    }
-}
-
-// When async action is dispatched to the store, it will be executed:
-
-store.dispatch(FetchDataAction())
-
-```
 ## Hierarchical Stores Tree Architecture
 
-
-Puredux allows you to build a hierarchical store tree.
+Puredux allows you to build a hierarchical store tree. This architecture facilitates building applications where state can be shared or isolated, while state mutations remain predictable.
 
 Actions are propagated upstream from child stores to the root store,
 while state updates flow downstream from the root store to child stores and, ultimately, to store observers.
 
-This architecture facilitates building applications where state can be shared or isolated, while state mutations remain predictable.
 
-The store tree hierarchy ensures that business logic is completely decoupled from the UI layer.
-This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
+The store tree hierarchy ensures that business logic is completely decoupled from the UI layer. This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
 
 Make your app driven by business logic, not by the view hierarchy.
 
@@ -243,6 +218,48 @@ We can connect UI to any of the stores and will end up with the following hierar
 
 </p>
 </details>
+
+## Side Effects
+
+In UDF world we call "side effects" async work: network requests, database fetches and other I/O operations, timer events, location service callbacks, etc.
+
+In Puredix it can be done with Async Actions.
+
+### Async Actions
+
+```swift
+
+// Define result and error actions:
+
+struct FetchDataResult: Action {
+    // ...
+}
+
+struct FetchDataError: Action {
+    // ...
+}
+
+// Define async action:
+
+struct FetchDataAction: AsyncAction {
+
+    func execute(completeHandler: @escaping (Action) -> Void) {  
+        APIClient.shared.fetchData {
+            switch $0 {
+            case .success(let result):
+                completeHandler(FetchDataResult(result))
+            case .success(let error):
+                completeHandler(FetchDataError(error))
+            }
+        }
+    }
+}
+
+// When async action is dispatched to the store, it will be executed:
+
+store.dispatch(FetchDataAction())
+
+```
 
 
 ## Performance Tuning
