@@ -98,7 +98,6 @@ public extension Presentable {
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {
         
-        let store = store.instance
         presenter = Presenter { [weak self] in
             guard let self else { return }
             subscribe(
@@ -127,7 +126,6 @@ public extension Presentable {
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {
         
-        let store = store.instance
         presenter = Presenter { [weak self] in
             guard let self else { return }
             subscribe(

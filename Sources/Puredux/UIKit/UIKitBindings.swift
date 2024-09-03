@@ -78,7 +78,7 @@ public extension UIStateObserver {
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @escaping (Props) -> Void) {
         
-        store.instance.effect(
+        store.effect(
             cancellable,
             withDelay: timeInterval,
             removeStateDuplicates: equating,
