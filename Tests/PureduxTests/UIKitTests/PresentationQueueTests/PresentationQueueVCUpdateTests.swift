@@ -28,10 +28,10 @@ final class PresentationQueueVCUpdateTests: XCTestCase {
     }()
  
 
-    func setupVCForTests(queue: PresentationQueue) -> StubViewController {
+    func setupVCForTests(queue: DispatchQueue) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
                 .init(title: state.subStateWithTitle.title)
@@ -80,7 +80,7 @@ extension PresentationQueueVCUpdateTests {
         expectation.expectedFulfillmentCount = 1
 
         let queue = DispatchQueue(label: "custom.serial.queue")
-        let testVC = setupVCForTests(queue: .serialQueue(queue))
+        let testVC = setupVCForTests(queue: queue)
         testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
@@ -95,7 +95,7 @@ extension PresentationQueueVCUpdateTests {
         let expectation = expectation(description: "propsEvaluated")
         expectation.expectedFulfillmentCount = 1
 
-        let testVC = setupVCForTests(queue: .serialQueue(.main))
+        let testVC = setupVCForTests(queue: .main)
         testVC.didSetProps = {
             XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()

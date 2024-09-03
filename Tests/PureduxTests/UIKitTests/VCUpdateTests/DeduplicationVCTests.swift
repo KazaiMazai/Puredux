@@ -28,10 +28,10 @@ final class DeduplicationVCTests: XCTestCase {
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
-                .init(title: state.subStateWithTitle.title)
+                    .init(title: state.subStateWithTitle.title)
             },
             removeStateDuplicates: .equal { $0.subStateWithIndex.index }
         )

@@ -30,7 +30,7 @@ final class PropsEvaluationWithChildStoreTests: XCTestCase {
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
                 propsEvaluatedExpectation.fulfill()

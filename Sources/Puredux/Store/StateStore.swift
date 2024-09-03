@@ -7,6 +7,8 @@
 
 import Foundation
 
+public typealias Reducer<State, Action> = (inout State, Action) -> Void
+
 @available(*, deprecated, renamed: "StateStore", message: "Will be removed in 2.0. StateStore is a former StoreObject replacement")
 public typealias StoreObject = StateStore
 /**

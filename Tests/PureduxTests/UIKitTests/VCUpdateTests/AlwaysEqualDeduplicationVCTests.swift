@@ -28,7 +28,7 @@ final class AlwaysEqualDeduplicationVCTests: XCTestCase {
     func setupVCForTests(vcUpdatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(
+        testVC.setPresenter(
             store: store,
             props: { state, _ in
                 .init(title: state.subStateWithTitle.title)

@@ -27,12 +27,12 @@ final class NoDeduplicationPropsUIKitTests: XCTestCase {
     func setupVCForTests(propsEvaluatedExpectation: XCTestExpectation) -> StubViewController {
         let testVC = StubViewController()
 
-        testVC.with(store: store,
-                props: { state, _ in
-                    propsEvaluatedExpectation.fulfill()
+        testVC.setPresenter(store: store,
+                            props: { state, _ in
+            propsEvaluatedExpectation.fulfill()
             return .init(title: state.subStateWithTitle.title)
-                })
-
+        })
+        
         return testVC
     }
 }

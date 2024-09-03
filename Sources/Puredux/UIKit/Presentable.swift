@@ -140,37 +140,6 @@ public extension Presentable {
     }
 }
 
-public extension Presentable {
-    
-    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
-    func with<State, Action>(store: StateStore<State, Action>,
-                             props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil) {
-        
-        setPresenter(
-             store: store,
-             props: props,
-             presentationQueue: presentationQueue.dispatchQueue,
-             removeStateDuplicates: equating
-        )
-    }
-    
-    @available(*, deprecated, renamed: "setPresenter(store:props:presentationQueue:removeStateDuplicates:debounceFor:)", message: "Will be removed in 2.0")
-    func with<State, Action>(store: Store<State, Action>,
-                             props: @escaping (State, Store<State, Action>) -> Self.Props,
-                             presentationQueue: PresentationQueue = .sharedPresentationQueue,
-                             removeStateDuplicates equating: Equating<State>? = nil) {
-        
-        setPresenter(
-            store: store,
-            props: props,
-            presentationQueue: presentationQueue.dispatchQueue,
-            removeStateDuplicates: equating
-        )
-    }
-}
-
 fileprivate struct Presenter: PresenterProtocol {
     let subscribe: () -> Void
 

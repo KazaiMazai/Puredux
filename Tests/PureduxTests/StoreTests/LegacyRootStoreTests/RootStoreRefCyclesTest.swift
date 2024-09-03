@@ -12,17 +12,18 @@ final class RootStoreRefCyclesTests: XCTestCase {
     let timeout: TimeInterval = 3
 
     func test_WhenGetStore_ThenNoStrongRefToRootStore() {
-        var store: Store<TestState, Action>?
+        var store: Store<ReferenceTypeState, Action>?
 
         assertDeallocated {
-            let rootStore = RootStore<TestState, Action>(
-                initialState: TestState(currentIndex: 1)) { state, action  in
+            let state = ReferenceTypeState()
+            let rootStore = StateStore<ReferenceTypeState, Action>(
+                state) { state, action  in
 
-                state.reduce(action: action)
+                state.reduce(action)
             }
 
-            store = rootStore.store()
-            return rootStore as AnyObject
+            store = rootStore.weakStore()
+            return state as AnyObject
         }
     }
 }

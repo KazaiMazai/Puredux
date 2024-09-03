@@ -34,8 +34,8 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
            
             let viewController = StubViewController()
             
-            viewController.with(store: store,
-                                props: { _, _ in .init(title: "") }
+            viewController.setPresenter(store: store,
+                                        props: { _, _ in .init(title: "") }
             )
             viewController.viewDidLoad()
             strongViewController = viewController
@@ -56,8 +56,8 @@ final class ChildStorePresenterRefCycleTests: XCTestCase {
             
             let viewController = StubViewController()
             
-            viewController.with(store: store,
-                                props: { _, _ in .init(title: "") }
+            viewController.setPresenter(store: store,
+                                        props: { _, _ in .init(title: "") }
             )
             viewController.viewDidLoad()
             weakViewController = viewController
