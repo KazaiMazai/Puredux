@@ -83,7 +83,7 @@ extension StoreNode where LocalState == State {
     }
 }
 
-// MARK: - Store Conformance
+// MARK: - StoreObjectProtocol Conformance
 
 extension StoreNode: StoreObjectProtocol {
     var queue: DispatchQueue {

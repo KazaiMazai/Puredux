@@ -21,6 +21,16 @@
   * [PureduxUIKit Bindings Migration Guide](#pureduxuikit-bindings-migration-guide)
 
 
+## Puredux 1.9.x - 2.0
+
+## Store breaking changes
+
+Renamed:
+
+- Store -> AnyStore 
+- StoreProtocol -> Store
+
+
 ## Getting Prepared for Puredux 2.0
 
 1. Update for the latest 1.x version
