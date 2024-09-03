@@ -171,21 +171,26 @@ struct FetchDataAction: AsyncAction {
 store.dispatch(FetchDataAction())
 
 ```
-## Application Stores Architecture
+## Hierarchical Stores Tree Architecture
 
 
-Puredux allows you to build a hierarchical store tree. 
-Actions are propagated upstream from child stores to the root store, while state updates are propagated downstream from the root store to child stores and, ultimately, to store observers.
+Puredux allows you to build a hierarchical store tree.
 
-This architecture facilitates building applications where certain parts of the state can be shared or isolated,
-and state mutations remain predictable.
+Actions are propagated upstream from child stores to the root store,
+while state updates flow downstream from the root store to child stores and, ultimately, to store observers.
 
+This architecture facilitates building applications where state can be shared or isolated, while state mutations remain predictable.
+
+The store tree hierarchy ensures that business logic is completely decoupled from the UI layer.
+This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
+
+Make your app driven by business logic, not by the view hierarchy.
 
 
 ```swift
 
 let root = StateStore<AppState, Action>(AppState()) { state, action in
-        state.reduce(action)
+    state.reduce(action)
 }
 
 let featureOne = root.with(FeatureOne()) { state, action in 
@@ -206,16 +211,19 @@ let ScreenTwo = featureTwo.with(ScreenOne()) { state, action in
 
 ```
 
+<details><summary>Will result in the following app tree structure</summary>
+<p>
 
  ```text
-            +----------------+    
-            | AppState Store |
-            +----------------+    
-                     |
-                     |
-        +------------+-------------------------+
+                   +----------------+    
+                   | AppState Store |
+                   +-------+--------+    
+                           |
+                           |  
+                           | 
+        +------------------+-------------------+
         |                                      |
-        |                                      |
+        |                                      |  
         |                                      |
         |                                      |
   +------------------+                +------------------+   
@@ -236,6 +244,9 @@ let ScreenTwo = featureTwo.with(ScreenOne()) { state, action in
                            | UI |                    | UI |
                            +----+                    +----+
 ```
+
+</p>
+</details>
 
 
 ## Performance Tuning
