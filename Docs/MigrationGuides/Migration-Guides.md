@@ -28,17 +28,34 @@ let store = StateStore(
 )
 ```
 
-2. Store Transformation Changes:
+### Child Store Changes
 
-Before:
+```diff
+- let childStore: StateStore<(AppState, LocalState), Action> = storeFactory.childStore(
+-   initialState: LocalState(),
+-    reducer: { localState, action  in
+-        localState.reduce(action: action)
+-    }
+- )
 
-- `childStore(...)`
-- `scopeStore(...)
 
-After:
++ let childStore: StateStore<(AppState, LocalState), Action> = rootStore.with(
++       LocalState(),
++       reducer: { localState, action  in
++           localState.reduce(action: action)
++       }
++ )
+ 
+```
 
-- `with(...)`
-- `map(...)` or `flatMap(...)`
+### Scope Store Tranformation Changes
+
+```diff
+- let scopeStore = storeFactory.scopeStore { appState in appState.subState }
+
++ let scopeStore = rootStore.map { appState in appState.subState }
+
+```
 
 Follow deprecation notices documentation for more details.
 
@@ -47,7 +64,7 @@ Follow deprecation notices documentation for more details.
  Puredux 2.0 bind Stores with Views differently.
 `StoreView` is a replacement for `ViewWithStore` provided to make the migration process easier.
  
- 1. Migrate from `EnvStoreFactory` to `StateStore`
+ 1. Migrate from `StoreFactory` and `EnvStoreFactory` to `StateStore`
  2. Inject root store with `@InjectEntry`:
 
  ```swift
@@ -76,34 +93,68 @@ The Presentable API is still available, so only minor changes are needed.
 
 1. Replace deprecated methods:
 
-```swift
-// Before:
+```diff
 
-    myViewController.with(
-         store: store,
-         props: { state, store in
-             // ...
-         },
-         presentationQueue: .sharedPresentationQueue,
-         removeStateDuplicates: .keyPath(\.lastUpdated)
-     )
+-    myViewController.with(
+-         store: store,
+-         props: { state, store in
+-             // ...
+-         },
+-         presentationQueue: .sharedPresentationQueue,
+-         removeStateDuplicates: .keyPath(\.lastUpdated)
+-     )
      
-// After:
-
-    myViewController.setPresenter(
-         store: store,
-         props: { state, store in
-             // ...
-         },
-         presentationQueue: .sharedPresentationQueue,
-         removeStateDuplicates: .keyPath(\.lastUpdated)
-     )
++    myViewController.setPresenter(
++         store: store,
++        props: { state, store in
++             // ...
++         },
++         presentationQueue: .sharedPresentationQueue,
++         removeStateDuplicates: .keyPath(\.lastUpdated)
++     )
     
 ```
 
 Follow deprecation notices documentation for more details.
 
-## Puredux legacy to a single repository migration guide
+## Puredux 1.2.0 - 1.3.0 Minor breaking changes
+
+There are a few breaking changes related to the replacement of StoreObject with a StateStore.
+
+### Referenced StoreObject
+StoreObject used to be a class, StateStore is a struct.
+
+StoreObject that were weakly referenced wll require a fix.
+Since is StoreObjectnow a typealias of StateStore the compiler will point you to all the places that require a fix:
+
+```diff
+- let storeObject: StoreObject = ....
+
+- doSomethingWithStore() { [weak storeObject] in
+-     storeObject?.dispatch(...)
+- }
+
++ let stateStore: StateStore = ....
++ let store = stateStore.store()
++ doSomethingWithStore() { 
++    store.dispatch(...)
++ }
+```
+
+### StoreObject constructor
+
+The following StoreObject's constructor is no longer available. It was not needed except for the cases when you wanted to mock your StoreObject.
+
+It can be fixed by replacing StoreObject with a Store
+```diff
+- StoreObject(dispatch: { ... }, subscribe: { ... })
++ Store(dispatch: { ... }, subscribe: { ... })
+```
+
+
+
+
+## Puredux 1.2.0: From legacy multirepo to a single repository 
 
 Puredux was refactored from a set of packages to a single monorepository.
 
