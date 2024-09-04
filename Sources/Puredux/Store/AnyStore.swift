@@ -13,8 +13,8 @@ typealias Subscribe<State> = (_ observer: Observer<State>) -> Void
  
 public struct AnyStore<State, Action>: Store {
     let dispatchHandler: Dispatch<Action>
-    let subscribeHandler: Subscribe<State>
-    let getStoreObject: () -> AnyStoreObject<State, Action>?
+    let subscriptionHandler: Subscribe<State>
+    let storeObject: () -> AnyStoreObject<State, Action>?
     
     public func eraseToAnyStore() -> AnyStore<State, Action> { self }
 }
@@ -26,7 +26,7 @@ public extension AnyStore {
     }
 
     func subscribe(observer: Observer<State>) {
-        subscribeHandler(observer)
+        subscriptionHandler(observer)
     }
 }
 
@@ -36,16 +36,16 @@ extension AnyStore {
          storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
 
         dispatchHandler = { dispatcher($0) }
-        subscribeHandler = { subscribe($0) }
-        getStoreObject = storeObject
+        subscriptionHandler = { subscribe($0) }
+        self.storeObject = storeObject
     }
 
     func weakStore() -> AnyStore<State, Action> {
-        let storeObject = getStoreObject()
+        let storeObjectInstance = storeObject()
         return AnyStore<State, Action>(
             dispatcher: dispatchHandler,
-            subscribe: subscribeHandler,
-            storeObject: { [weak storeObject] in storeObject }
+            subscribe: subscriptionHandler,
+            storeObject: { [weak storeObjectInstance] in storeObjectInstance }
         )
     }
 }
@@ -84,7 +84,7 @@ public extension AnyStore {
                 })
             },
             storeObject: { eraseToAnyStore()
-                .getStoreObject()?
+                .storeObject()?
                 .map(transform)
             }
         )
@@ -112,7 +112,7 @@ public extension AnyStore {
                 })
             },
             storeObject: { eraseToAnyStore()
-                .getStoreObject()?
+                .storeObject()?
                 .map(transform)
             }
         )

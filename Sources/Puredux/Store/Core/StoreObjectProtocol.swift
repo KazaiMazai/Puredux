@@ -33,18 +33,18 @@ protocol SyncStore<State, Action> {
     func syncDispatch(_  action: Action)
 }
 
-extension StoreObjectProtocol {
-    func weakRefStore() -> AnyStore<State, Action> {
-        AnyStore(dispatcher: { [weak self] in self?.dispatch($0) },
-                 subscribe: { [weak self] in self?.subscribe(observer: $0) },
-                 storeObject: { [weak self] in self.map { AnyStoreObject($0) } }
-        )
-    }
-
-    func stateStore() -> StateStore<State, Action> {
-        StateStore<State, Action>(storeObject: self)
-    }
-}
+//extension StoreObjectProtocol {
+//    func weakRefStore() -> AnyStore<State, Action> {
+//        AnyStore(dispatcher: { [weak self] in self?.dispatch($0) },
+//                 subscribe: { [weak self] in self?.subscribe(observer: $0) },
+//                 storeObject: { [weak self] in self.map { AnyStoreObject($0) } }
+//        )
+//    }
+//
+//    func stateStore() -> StateStore<State, Action> {
+//        StateStore<State, Action>(storeObject: self)
+//    }
+//}
 
 extension StoreObjectProtocol {
     func createChildStore<LocalState, ResultState>(

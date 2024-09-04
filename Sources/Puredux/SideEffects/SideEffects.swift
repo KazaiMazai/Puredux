@@ -67,7 +67,7 @@ extension Store {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            weakStore.storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
 
                 let allEffects = state[keyPath: keyPath]
@@ -91,7 +91,7 @@ extension Store {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            weakStore.storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
 
                 let effect = state[keyPath: keyPath]
@@ -116,7 +116,7 @@ extension Store {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            weakStore.storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
@@ -139,7 +139,7 @@ extension Store {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            weakStore.storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
@@ -163,7 +163,7 @@ extension Store {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            weakStore.storeObject(),
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, weakStore.dispatch)
