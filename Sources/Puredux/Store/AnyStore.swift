@@ -14,9 +14,10 @@ typealias Subscribe<State> = (_ observer: Observer<State>) -> Void
 public struct AnyStore<State, Action>: Store {
     let dispatchHandler: Dispatch<Action>
     let subscriptionHandler: Subscribe<State>
-    let storeObject: () -> AnyStoreObject<State, Action>?
+    let referencedStore: ReferencedStore<State, Action>
     
     public func eraseToAnyStore() -> AnyStore<State, Action> { self }
+   
 }
 
 public extension AnyStore {
@@ -33,19 +34,22 @@ public extension AnyStore {
 extension AnyStore {
     init(dispatcher: @escaping Dispatch<Action>,
          subscribe: @escaping Subscribe<State> ,
-         storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
+         referenced storeObject: ReferencedStore<State, Action>) {
 
         dispatchHandler = { dispatcher($0) }
         subscriptionHandler = { subscribe($0) }
-        self.storeObject = storeObject
+        referencedStore = storeObject
+    }
+    
+    func referencedStoreObject() -> AnyStoreObject<State, Action>? {
+        referencedStore.storeObject()
     }
 
     func toWeakStore() -> AnyStore<State, Action> {
-        let storeObjectInstance = storeObject()
-        return AnyStore<State, Action>(
+        AnyStore<State, Action>(
             dispatcher: dispatchHandler,
             subscribe: subscriptionHandler,
-            storeObject: { [weak storeObjectInstance] in storeObjectInstance }
+            referenced: referencedStore.toWeak()
         )
     }
 }
@@ -74,16 +78,15 @@ public extension AnyStore {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
     func map<T>(_ transform: @escaping (State) -> T) -> AnyStore<T, Action> {
-        let weakStore = toWeakStore()
-        return AnyStore<T, Action>(
-            dispatcher: weakStore.dispatchHandler,
+        AnyStore<T, Action>(
+            dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
-                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { storeObject()?.map(transform) }
+            referenced: referencedStore.map(transform)
         )
     }
 
@@ -99,16 +102,15 @@ public extension AnyStore {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> AnyStore<T?, Action> {
-        let weakStore = toWeakStore()
-        return AnyStore<T?, Action>(
-            dispatcher: weakStore.dispatchHandler,
+        AnyStore<T?, Action>(
+            dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
-                weakStore.subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
                     let localState = transform(state)
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { storeObject()?.map(transform) }
+            referenced: referencedStore.map(transform)
         )
     }
 }
@@ -294,3 +296,45 @@ public extension AnyStore {
 //        instance.map(action: transform)
 //    }
 // }
+
+
+enum ReferencedStore<S, A> {
+    case strong(AnyStoreObject<S, A>)
+    case weak(() -> AnyStoreObject<S, A>?)
+    
+    init(weak storeObject: AnyStoreObject<S, A>) {
+        self = .weak { [weak storeObject] in storeObject }
+    }
+    
+    init(strong storeObject: AnyStoreObject<S, A>) {
+        self = .strong(storeObject)
+    }
+    
+    func map<T>(_ transform: @escaping (S) -> T) -> ReferencedStore<T, A> {
+        switch self {
+        case .strong(let storeObject):
+            return .strong(storeObject.map(transform))
+        case .weak(let storeObjectClosure):
+            let storeObject = storeObjectClosure()?.map(transform)
+            return .weak({[weak storeObject] in storeObject })
+        }
+    }
+    
+    func toWeak() -> ReferencedStore<S, A> {
+        switch self {
+        case .strong(let storeObject):
+            return .weak { [weak storeObject] in storeObject }
+        case .weak:
+            return self
+        }
+    }
+    
+    func storeObject() -> AnyStoreObject<S, A>? {
+        switch self {
+        case .strong(let storeObject):
+            return storeObject
+        case .weak(let storeObjectClosure):
+            return storeObjectClosure()
+        }
+    }
+}

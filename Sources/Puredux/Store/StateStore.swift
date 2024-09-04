@@ -125,7 +125,7 @@ extension StateStore: Store {
         AnyStore<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
             subscribe: { [weak storeObject] in storeObject?.subscribe(observer: $0) },
-            storeObject: { [storeObject] in storeObject }
+            referenced: ReferencedStore(strong: storeObject)
         )
     }
 }
