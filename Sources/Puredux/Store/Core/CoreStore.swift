@@ -35,14 +35,6 @@ final class CoreStore<State, Action> {
     }
 }
 
-extension CoreStore {
-    func weakRefStore() -> AnyStore<State, Action> {
-        AnyStore(dispatcher: { [weak self] in self?.dispatch($0) },
-                 subscribe: { [weak self] in self?.subscribe(observer: $0) },
-                 storeObject: ReferencedStore(weak: AnyStoreObject(self)))
-    }
-}
-
 // MARK: - StoreObjectProtocol Conformance
 
 extension CoreStore: StoreObjectProtocol {

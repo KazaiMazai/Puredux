@@ -41,12 +41,12 @@ public protocol Store<State, Action> {
     func subscribe(observer: Observer<State>)
 }
 
-internal extension Store {
+extension Store {
     func weakStore() -> any Store<State, Action> {
-        eraseToAnyStore().toWeakStore()
+        eraseToAnyStore().weak()
     }
     
-    var storeObject: (any StoreObjectProtocol)? {
+    func storeObject() -> (any StoreObjectProtocol)? {
         eraseToAnyStore().referencedStoreObject()
     }
 }

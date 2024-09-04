@@ -214,9 +214,7 @@ extension StateStore {
 // MARK: - Basic Transformations
 
 extension StateStore {
-
     func map<T>(_ transformation: @escaping (State) -> T) -> StateStore<T, Action> {
-
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
@@ -227,7 +225,6 @@ extension StateStore {
     }
 
     func flatMap<T>(_ transformation: @escaping (State) -> T?) -> StateStore<T?, Action> {
-
         StateStore<T?, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),

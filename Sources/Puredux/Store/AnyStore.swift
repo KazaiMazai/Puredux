@@ -10,7 +10,9 @@ import Foundation
 public typealias Dispatch<Action> = (_ action: Action) -> Void
 
 typealias Subscribe<State> = (_ observer: Observer<State>) -> Void
- 
+
+typealias ReferencedStore<State, Action> = ReferencedObject<AnyStoreObject<State, Action>>
+
 public struct AnyStore<State, Action>: Store {
     let dispatchHandler: Dispatch<Action>
     let subscriptionHandler: Subscribe<State>
@@ -42,14 +44,14 @@ extension AnyStore {
     }
     
     func referencedStoreObject() -> AnyStoreObject<State, Action>? {
-        referencedStore.storeObject()
+        referencedStore.object()
     }
 
-    func toWeakStore() -> AnyStore<State, Action> {
+    func weak() -> AnyStore<State, Action> {
         AnyStore<State, Action>(
             dispatcher: dispatchHandler,
             subscribe: subscriptionHandler,
-            referenced: referencedStore.weakReferencedStore()
+            referenced: referencedStore.weak()
         )
     }
 }
@@ -86,7 +88,7 @@ public extension AnyStore {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            referenced: referencedStore.map(transform)
+            referenced: referencedStore.map { $0.map(transform) }
         )
     }
 
@@ -110,7 +112,7 @@ public extension AnyStore {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            referenced: referencedStore.map(transform)
+            referenced: referencedStore.map { $0.map(transform) }
         )
     }
 }
@@ -297,44 +299,44 @@ public extension AnyStore {
 //    }
 // }
 
-
-enum ReferencedStore<S, A> {
-    case strong(AnyStoreObject<S, A>)
-    case weak(() -> AnyStoreObject<S, A>?)
-    
-    init(weak storeObject: AnyStoreObject<S, A>) {
-        self = .weak { [weak storeObject] in storeObject }
-    }
-    
-    init(strong storeObject: AnyStoreObject<S, A>) {
-        self = .strong(storeObject)
-    }
-    
-    func map<T>(_ transform: @escaping (S) -> T) -> ReferencedStore<T, A> {
-        switch self {
-        case .strong(let storeObject):
-            return .strong(storeObject.map(transform))
-        case .weak(let storeObjectClosure):
-            let storeObject = storeObjectClosure()?.map(transform)
-            return .weak { [weak storeObject] in storeObject }
-        }
-    }
-    
-    func weakReferencedStore() -> ReferencedStore<S, A> {
-        switch self {
-        case .strong(let storeObject):
-            return .weak { [weak storeObject] in storeObject }
-        case .weak:
-            return self
-        }
-    }
-    
-    func storeObject() -> AnyStoreObject<S, A>? {
-        switch self {
-        case .strong(let storeObject):
-            return storeObject
-        case .weak(let storeObjectClosure):
-            return storeObjectClosure()
-        }
-    }
-}
+//
+//enum ReferencedStore<S, A> {
+//    case strong(AnyStoreObject<S, A>)
+//    case weak(() -> AnyStoreObject<S, A>?)
+//    
+//    init(weak storeObject: AnyStoreObject<S, A>) {
+//        self = .weak { [weak storeObject] in storeObject }
+//    }
+//    
+//    init(strong storeObject: AnyStoreObject<S, A>) {
+//        self = .strong(storeObject)
+//    }
+//    
+//    func map<T>(_ transform: @escaping (S) -> T) -> ReferencedStore<T, A> {
+//        switch self {
+//        case .strong(let storeObject):
+//            return .strong(storeObject.map(transform))
+//        case .weak(let storeObjectClosure):
+//            let storeObject = storeObjectClosure()?.map(transform)
+//            return .weak { [weak storeObject] in storeObject }
+//        }
+//    }
+//    
+//    func weakReferencedStore() -> ReferencedStore<S, A> {
+//        switch self {
+//        case .strong(let storeObject):
+//            return .weak { [weak storeObject] in storeObject }
+//        case .weak:
+//            return self
+//        }
+//    }
+//    
+//    func storeObject() -> AnyStoreObject<S, A>? {
+//        switch self {
+//        case .strong(let storeObject):
+//            return storeObject
+//        case .weak(let storeObjectClosure):
+//            return storeObjectClosure()
+//        }
+//    }
+//}

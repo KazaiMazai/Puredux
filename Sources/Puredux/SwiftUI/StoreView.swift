@@ -90,7 +90,7 @@ public extension StoreView {
     init(store: any Store<ViewState, Action>,
          props: @escaping (ViewState, AnyStore<ViewState, Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.eraseToAnyStore()
+        self.store = store
         self.props = props
         self.content = content
     }
@@ -106,7 +106,7 @@ public extension StoreView {
     init(_ store: any Store<ViewState, Action>,
          props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.eraseToAnyStore()
+        self.store = store
         self.props = { state, store in props(state, store.dispatch) }
         self.content = content
     }
