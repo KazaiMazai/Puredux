@@ -11,7 +11,7 @@ import XCTest
 final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
 
     func test_WhenWeakRefStore_ThenWeakRefToRootCreated() {
-        var store: AnyStore<ReferenceTypeState, Action>?
+        var store: (any Store<ReferenceTypeState, Action>)?
 
         assertDeallocated {
             let object = ReferenceTypeState()

@@ -40,7 +40,7 @@ extension AnyStore {
         self.storeObject = storeObject
     }
 
-    func mapToWeakStore() -> AnyStore<State, Action> {
+    func toWeakStore() -> AnyStore<State, Action> {
         let storeObjectInstance = storeObject()
         return AnyStore<State, Action>(
             dispatcher: dispatchHandler,
@@ -74,7 +74,7 @@ public extension AnyStore {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
     func map<T>(_ transform: @escaping (State) -> T) -> AnyStore<T, Action> {
-        let weakStore = weakStore()
+        let weakStore = toWeakStore()
         return AnyStore<T, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
@@ -99,7 +99,7 @@ public extension AnyStore {
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @escaping (State) -> T?) -> AnyStore<T?, Action> {
-        let weakStore = weakStore()
+        let weakStore = toWeakStore()
         return AnyStore<T?, Action>(
             dispatcher: weakStore.dispatchHandler,
             subscribe: { localStateObserver in
