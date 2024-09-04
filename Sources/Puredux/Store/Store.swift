@@ -43,7 +43,7 @@ public protocol Store<State, Action> {
 
 extension Store {
     func weakStore() -> AnyStore<State, Action> {
-        eraseToAnyStore().weakStore()
+        eraseToAnyStore().mapToWeakStore()
     }
 }
 

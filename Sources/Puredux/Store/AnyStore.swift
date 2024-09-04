@@ -40,7 +40,7 @@ extension AnyStore {
         self.storeObject = storeObject
     }
 
-    func weakStore() -> AnyStore<State, Action> {
+    func mapToWeakStore() -> AnyStore<State, Action> {
         let storeObjectInstance = storeObject()
         return AnyStore<State, Action>(
             dispatcher: dispatchHandler,
@@ -83,10 +83,7 @@ public extension AnyStore {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { eraseToAnyStore()
-                .storeObject()?
-                .map(transform)
-            }
+            storeObject: { storeObject()?.map(transform) }
         )
     }
 
@@ -111,10 +108,7 @@ public extension AnyStore {
                     localStateObserver.send(localState, complete: complete)
                 })
             },
-            storeObject: { eraseToAnyStore()
-                .storeObject()?
-                .map(transform)
-            }
+            storeObject: { storeObject()?.map(transform) }
         )
     }
 }

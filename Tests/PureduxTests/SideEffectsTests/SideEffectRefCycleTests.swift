@@ -144,4 +144,23 @@ final class SideEffectRefCycleTests: XCTestCase {
             return object as AnyObject
         }
     }
+    
+    func test_WhenErasedStoreIsNotReferenced_TheStateIsDeallocated() {
+        assertDeallocated {
+            let object = ReferenceTypeState()
+
+            let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
+                .with(true) { state, _ in state.toggle() }
+                .eraseToAnyStore()
+                .map { (state: $0.0, boolValue: $0.1)}
+                .effect(toggle: \.boolValue) { _, dispatch in
+
+                    Effect {
+                        dispatch(10)
+                    }
+                }
+
+            return object as AnyObject
+        }
+    }
 }
