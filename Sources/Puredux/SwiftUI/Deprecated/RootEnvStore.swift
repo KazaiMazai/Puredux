@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-
+@available(*, deprecated, message: "Will be removed in 2.0. Use StateStore instead")
 public final class RootEnvStore<AppState, Action>: ObservableObject {
     private let rootStore: RootStore<AppState, Action>
     private let stateSubject: PassthroughSubject<AppState, Never>
@@ -25,7 +25,7 @@ public final class RootEnvStore<AppState, Action>: ObservableObject {
     ///     `RootEnvStore` and `PublishingStore` are SwiftUI-friendly counterparts for Puredux's RootStore and Store.
     ///     RootEnvStore is what we have on top. PublishingStore are lightweight proxies that we are to connect our views to.
     ///
-    @available(*, deprecated, message: "Will be removed in 2.0. Use StoreFactory with EnvStoreFactory instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use StateStore instead")
     public init(rootStore: RootStore<AppState, Action>) {
         self.rootStore = rootStore
         self.stateSubject = PassthroughSubject<AppState, Never>()
@@ -47,7 +47,7 @@ public extension RootEnvStore {
     ///     **Important to note:** Proxy store only keeps weak reference to the internal root store,
     ///     ensuring that reference cycles will not be created.
     ///
-    @available(*, deprecated, message: "Will be removed in 2.0. Use EnvStoreFactory's rootStore instead")
+    @available(*, deprecated, message: "Will be removed in 2.0. Use StateStore's store instead")
     func store() -> PublishingStore<AppState, Action> {
 
         PublishingStore(
