@@ -46,7 +46,7 @@ internal extension Store {
         eraseToAnyStore().toWeakStore()
     }
     
-    var objectStore: (any StoreObjectProtocol)? {
+    var storeObject: (any StoreObjectProtocol)? {
         eraseToAnyStore().referencedStoreObject()
     }
 }

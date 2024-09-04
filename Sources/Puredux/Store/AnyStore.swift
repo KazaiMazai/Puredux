@@ -49,7 +49,7 @@ extension AnyStore {
         AnyStore<State, Action>(
             dispatcher: dispatchHandler,
             subscribe: subscriptionHandler,
-            referenced: referencedStore.toWeak()
+            referenced: referencedStore.weakReferencedStore()
         )
     }
 }
@@ -316,11 +316,11 @@ enum ReferencedStore<S, A> {
             return .strong(storeObject.map(transform))
         case .weak(let storeObjectClosure):
             let storeObject = storeObjectClosure()?.map(transform)
-            return .weak({[weak storeObject] in storeObject })
+            return .weak { [weak storeObject] in storeObject }
         }
     }
     
-    func toWeak() -> ReferencedStore<S, A> {
+    func weakReferencedStore() -> ReferencedStore<S, A> {
         switch self {
         case .strong(let storeObject):
             return .weak { [weak storeObject] in storeObject }
