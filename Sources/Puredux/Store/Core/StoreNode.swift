@@ -13,7 +13,7 @@ typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, Sta
 
 final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreObjectProtocol,
                                                                     ParentStore.Action == Action {
-
+    
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 

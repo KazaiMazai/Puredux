@@ -46,6 +46,10 @@ extension Store {
         eraseToAnyStore().weak()
     }
     
+    func eraseToAnyWeakStore() -> any Store<State, Action> {
+        eraseToAnyStore().weak()
+    }
+    
     func storeObject() -> (any StoreObjectProtocol)? {
         eraseToAnyStore().referencedStoreObject()
     }
