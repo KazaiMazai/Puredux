@@ -25,11 +25,21 @@
 
 ## Store breaking changes
 
-Renamed:
+`Store<State, Action>`  was renamed to `AnyStoreStore<State, Action>`
 
-- Store -> AnyStore 
-- StoreProtocol -> Store
+```diff
+- Store<State, Action> 
++ AnyStore<State, Action>
 
+```
+
+`StoreProtocol<State, Action>`  was renamed to `Store<State, Action>`
+ 
+```diff
+- any StoreProtocol<State, Action> 
++ any Store<State, Action>
+
+```
 
 ## Getting Prepared for Puredux 2.0
 
