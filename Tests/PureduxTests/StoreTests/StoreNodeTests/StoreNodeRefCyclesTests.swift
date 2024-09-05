@@ -11,47 +11,38 @@ import XCTest
 final class StoreNodeRootStoreRefCyclesTests: XCTestCase {
 
     func test_WhenWeakRefStore_ThenWeakRefToRootCreated() {
-        var store: Store<TestState, Action>?
+        var store: (any Store<ReferenceTypeState, Action>)?
 
         assertDeallocated {
-            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
-                initialState: TestState(currentIndex: 1)) { state, action  in
+            let object = ReferenceTypeState()
+            let rootStore = StateStore<ReferenceTypeState, Action>(object) { _,_ in }
 
-                    state.reduce(action: action)
-                }
-
-            store = rootStore.weakRefStore()
-            return rootStore as AnyObject
+            store = rootStore.weakStore()
+            return object as AnyObject
         }
     }
 
     func test_WhenStoreExists_ThenStrongRefToRootCreated() {
-        var store: StateStore<TestState, Action>?
+        var store: AnyStore<ReferenceTypeState, Action>?
 
         assertNotDeallocated {
-            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
-                initialState: TestState(currentIndex: 1)) { state, action  in
+            let object = ReferenceTypeState()
+            let rootStore = StateStore<ReferenceTypeState, Action>(object) { _,_ in }
 
-                    state.reduce(action: action)
-                }
-
-            store = rootStore.stateStore()
-            return rootStore as AnyObject
+            store = rootStore.eraseToAnyStore()
+            return object as AnyObject
         }
     }
 
     func test_WhenStoreRemoved_ThenRootStoreIsReleased() {
         assertDeallocated {
-            var store: StateStore<TestState, Action>?
-            let rootStore = RootStoreNode<TestState, Action>.initRootStore(
-                initialState: TestState(currentIndex: 1)) { state, action  in
+            var store: AnyStore<ReferenceTypeState, Action>?
+            let object = ReferenceTypeState()
+            let rootStore = StateStore<ReferenceTypeState, Action>(object) { _,_ in }
 
-                    state.reduce(action: action)
-                }
-
-            store = rootStore.stateStore()
+            store = rootStore.eraseToAnyStore()
             store = nil
-            return rootStore as AnyObject
+            return object as AnyObject
         }
     }
 }

@@ -8,7 +8,7 @@
 import Dispatch
 import Foundation
 
-public typealias Dispatch<Action> = (_ action: Action) -> Void
+
 public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> Void
 
 typealias StoreID = UUID
@@ -35,15 +35,7 @@ final class CoreStore<State, Action> {
     }
 }
 
-extension CoreStore {
-    func weakRefStore() -> Store<State, Action> {
-        Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) },
-              storeObject: { [weak self] in self.map { AnyStoreObject($0) } })
-    }
-}
-
-// MARK: - StoreProtocol Conformance
+// MARK: - StoreObjectProtocol Conformance
 
 extension CoreStore: StoreObjectProtocol {
     // MARK: - DispatchQueue

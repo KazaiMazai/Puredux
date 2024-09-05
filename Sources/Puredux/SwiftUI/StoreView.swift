@@ -21,8 +21,8 @@ import SwiftUI
  
 */
 public struct StoreView<ViewState, Action, Props, Content: View>: View {
-    private let store: any StoreProtocol<ViewState, Action>
-    private let props: (_ state: ViewState, _ store: Store<ViewState, Action>) -> Props
+    private let store: any Store<ViewState, Action>
+    private let props: (_ state: ViewState, _ store: AnyStore<ViewState, Action>) -> Props
     private let content: (_ props: Props) -> Content
     private(set) var removeStateDuplicates: Equating<ViewState>?
     private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
@@ -80,47 +80,47 @@ public extension StoreView {
 
 public extension StoreView {
     /**
-     Initializes a `StoreView` with a store that conforms to `StoreProtocol`, and provides closures for deriving properties and content.
+     Initializes a `StoreView` with a store that conforms to `Store`, and provides closures for deriving properties and content.
      
      - Parameters:
-       - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`. The store is converted to a `Store` using `getStore()`.
+       - store: An instance of `Store` that conforms to `ViewState` and `Action`. The store is converted to a `Store` using `getStore()`.
        - props: A closure that takes the current state and store, and returns the properties for the content view.
        - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
-    init(store: any StoreProtocol<ViewState, Action>,
-         props: @escaping (ViewState, Store<ViewState, Action>) -> Props,
+    init(store: any Store<ViewState, Action>,
+         props: @escaping (ViewState, AnyStore<ViewState, Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.instance
+        self.store = store
         self.props = props
         self.content = content
     }
 
     /**
-     Initializes a `StoreView` with a store that conforms to `StoreProtocol`, and provides closures for deriving properties and content, where the store dispatch function is directly accessible.
+     Initializes a `StoreView` with a store that conforms to `Store`, and provides closures for deriving properties and content, where the store dispatch function is directly accessible.
          
      - Parameters:
-        - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`. The store is converted to a `Store` using `getStore()`.
+        - store: An instance of `Store` that conforms to `ViewState` and `Action`. The store is converted to a `Store` using `getStore()`.
         - props: A closure that takes the current state and a dispatch function, and returns the properties for the content view.
         - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
-    init(_ store: any StoreProtocol<ViewState, Action>,
+    init(_ store: any Store<ViewState, Action>,
          props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
          content: @escaping (Props) -> Content) {
-        self.store = store.instance
+        self.store = store
         self.props = { state, store in props(state, store.dispatch) }
         self.content = content
     }
 }
 
-public extension StoreView where Props == (ViewState, Store<ViewState, Action>) {
+public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action>) {
     /**
-     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, Store<ViewState, Action>)`.
+     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, AnyStore<ViewState, Action>)`.
      
     - Parameters:
-        - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`.
+        - store: An instance of `Store` that conforms to `ViewState` and `Action`.
         - content: A closure that takes a tuple containing the current state and the store, and returns the SwiftUI view to display.
     */
-    init(store: any StoreProtocol<ViewState, Action>,
+    init(store: any Store<ViewState, Action>,
          content: @escaping (Props) -> Content) {
         self.store = store
         self.props = { state, store in (state, store) }
@@ -128,15 +128,15 @@ public extension StoreView where Props == (ViewState, Store<ViewState, Action>) 
     }
 }
 
-public extension StoreView where Props == (ViewState, Store<ViewState, Action>) {
+public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action>) {
     /**
-     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, Store<ViewState, Action>)`, with a content closure that uses a dispatch function.
+     Initializes a `StoreView` where `Props` is a tuple of `(ViewState, AnyStore<ViewState, Action>)`, with a content closure that uses a dispatch function.
          
     - Parameters:
-        - store: An instance of `StoreProtocol` that conforms to `ViewState` and `Action`.
+        - store: An instance of `Store` that conforms to `ViewState` and `Action`.
         - content: A closure that takes the current state and a dispatch function, and returns the SwiftUI view to display.
     */
-    init(_ store: any StoreProtocol<ViewState, Action>,
+    init(_ store: any Store<ViewState, Action>,
          content: @escaping (ViewState, @escaping Dispatch<Action>) -> Content) {
         self.store = store
         self.props = { state, store in (state, store) }

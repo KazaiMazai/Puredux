@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
+protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStore {
     associatedtype Action
     associatedtype State
 
@@ -22,7 +22,7 @@ protocol StoreObjectProtocol<State, Action>: AnyObject & SyncStoreProtocol {
     func subscribe(observer: Observer<State>)
 }
 
-protocol SyncStoreProtocol<State, Action> {
+protocol SyncStore<State, Action> {
     associatedtype Action
     associatedtype State
 
@@ -31,19 +31,6 @@ protocol SyncStoreProtocol<State, Action> {
     func syncSubscribe(observer: Observer<State>, receiveCurrentState: Bool)
 
     func syncDispatch(_  action: Action)
-}
-
-extension StoreObjectProtocol {
-    func weakRefStore() -> Store<State, Action> {
-        Store(dispatcher: { [weak self] in self?.dispatch($0) },
-              subscribe: { [weak self] in self?.subscribe(observer: $0) },
-              storeObject: { [weak self] in self.map { AnyStoreObject($0) } }
-        )
-    }
-
-    func stateStore() -> StateStore<State, Action> {
-        StateStore<State, Action>(storeObject: self)
-    }
 }
 
 extension StoreObjectProtocol {

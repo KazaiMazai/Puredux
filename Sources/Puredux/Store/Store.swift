@@ -1,73 +1,57 @@
 //
 //  File.swift
+//  
 //
-//
-//  Created by Sergey Kazakov on 02.12.2021.
+//  Created by Sergey Kazakov on 29/08/2024.
 //
 
 import Foundation
 
-public extension Store {
+/**
+ A protocol that defines the core requirements for a store in a state management system.
 
-    /// Closure that handles Store's dispatching Actions
-    ///
-    typealias Dispatch = (_ action: Action) -> Void
+ `Store` is a generic protocol that outlines the essential operations for a store that manages application state and handles actions.
 
-    /// Closure that takes Observer as a parameter and handles Store's subscribtions
-    ///
-    typealias Subscribe = (_ observer: Observer<State>) -> Void
-}
+ - Associated Types:
+    - `State`: The type representing the state managed by the store. This type encapsulates all the information about the current state of the application.
+    - `Action`: The type representing the actions that can be dispatched to the store to trigger state changes. Actions define the possible changes that can occur in the state.
 
-public struct Store<State, Action> {
-    let dispatchHandler: Dispatch
-    let subscribeHandler: Subscribe
-    let getStoreObject: () -> AnyStoreObject<State, Action>?
-}
+ - Requirements:
+    - `eraseToAnyStore()`: A function that returns an `AnyStore` instance. This method provides a type-erased store, which hides the concrete implementation details while exposing the store's functionality.
+    - `dispatch(_:)`: A method for dispatching an action to the store. This triggers a state change based on the logic defined for the particular action.
+    - `subscribe(observer:)`: A method for subscribing an observer to state changes. This allows external entities to react to state updates.
 
-public extension Store {
-    func dispatch(_ action: Action) {
-        dispatchHandler(action)
-        executeAsyncAction(action)
-    }
+ - Usage:
+    The `Store` protocol serves as an abstraction layer for different store implementations in a state management system. Types conforming to this protocol must specify the `State` and `Action` associated types and provide concrete implementations of the `eraseToAnyStore()`, `dispatch(_:)`, and `subscribe(observer:)` methods.
+*/
+public protocol Store<State, Action> {
+    /** The type representing the state managed by the store. */
+    associatedtype State
 
-    func subscribe(observer: Observer<State>) {
-        subscribeHandler(observer)
-    }
-}
+    /** The type representing the actions that can be performed on the store.  */
+    associatedtype Action
 
-extension Store: StoreProtocol {
-    public typealias State = State
-    public typealias Action = Action
+    /**
+     A func that returns a `Store` object that matches the specified `State` and `Action` types.
+     */
+    func eraseToAnyStore() -> AnyStore<State, Action>
 
-    public var instance: Store<State, Action> { self }
-}
+    func dispatch(_ action: Action)
 
-extension Store {
-    init(dispatcher: @escaping Dispatch,
-         subscribe: @escaping Subscribe,
-         storeObject: @escaping () -> AnyStoreObject<State, Action>?) {
-
-        dispatchHandler = { dispatcher($0) }
-        subscribeHandler = { subscribe($0) }
-        getStoreObject = storeObject
-    }
-
-    func weakStore() -> Store<State, Action> {
-        let storeObject = getStoreObject()
-        return Store<State, Action>(
-            dispatcher: dispatchHandler,
-            subscribe: subscribeHandler,
-            storeObject: { [weak storeObject] in storeObject }
-        )
-    }
+    func subscribe(observer: Observer<State>)
 }
 
 extension Store {
-    func executeAsyncAction(_ action: Action) {
-        guard let action = action as? (any AsyncAction) else {
-            return
-        }
-
-        action.execute(self.dispatchHandler)
+    func weakStore() -> any Store<State, Action> {
+        eraseToAnyStore().weak()
+    }
+    
+    func eraseToAnyWeakStore() -> any Store<State, Action> {
+        eraseToAnyStore().weak()
+    }
+    
+    func storeObject() -> (any StoreObjectProtocol)? {
+        eraseToAnyStore().referencedStoreObject()
     }
 }
+

@@ -90,20 +90,38 @@ final class SideEffectRefCycleWithCancellableTests: XCTestCase {
 
 final class SideEffectRefCycleTests: XCTestCase {
 
-    func test_WhenAccidentalRefToStoreEffect_ThenStateIsNotDeallocated() {
+    func test_WhenAccidentalRefToStore_ThenStateIsNotDeallocated() {
         assertNotDeallocated {
             let object = ReferenceTypeState()
             let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
                 .with(true) { _, _ in }
-                .map { (state: $0.0, boolValue: $0.1)}
-
+                .map { (state: $0.0, boolValue: $0.1) }
+                
             store.effect(toggle: \.boolValue) { _, _ in
-
                 Effect {
-                    store.dispatch(10) // reference to the store in effect
+                    store.dispatch(10) // reference to the store
                 }
             }
 
+            return object as AnyObject
+        }
+    }
+    
+    func test_WhenAccidentalRefToAnyStore_ThenStateIsNotDeallocated() {
+        assertNotDeallocated {
+            let object = ReferenceTypeState()
+
+            let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
+                .with(true) { state, _ in state.toggle() }
+                .eraseToAnyStore()
+                .map { (state: $0.0, boolValue: $0.1)}
+                
+ 
+            store.effect(toggle: \.boolValue) { _, _ in
+                Effect {
+                    store.dispatch(10) // reference to the store
+                }
+            }
             return object as AnyObject
         }
     }

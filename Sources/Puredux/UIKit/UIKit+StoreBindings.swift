@@ -30,7 +30,7 @@ public extension UIStateObserver {
      This method integrates a `Store` with a `UIView` or `UIViewController` by observing state changes and deriving properties through the `props` closure. The view or view controller will update whenever the state changes, and it can utilize the provided store to perform further actions or access additional information.
 
      - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
         - props: A closure that takes the current state and the `Store` itself, and returns a `Props` instance. This `Props` instance is used to update the view or view controller or trigger side effects. The `props` closure allows for deriving view-specific properties from the state and store.
         - presentationQueue: A `DispatchQueue` specifying where props evaluation should occur. The default value is `.sharedPresentationQueue`.  Must be a **serial queue**.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view or view controller should be updated. If `nil`, all state changes will trigger an update.
@@ -44,7 +44,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -71,8 +71,8 @@ public extension UIStateObserver {
      }
      ```
      */
-    func subscribe<State, Action, Props>(store: any StoreProtocol<State, Action>,
-                                         props: @escaping (State, Store<State, Action>) -> Props,
+    func subscribe<State, Action, Props>(store: any Store<State, Action>,
+                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
@@ -84,7 +84,7 @@ public extension UIStateObserver {
             removeStateDuplicates: equating,
             on: presentationQueue) { state, _ in
                 Effect {
-                    let props = props(state, store.instance)
+                    let props = props(state, store.eraseToAnyStore())
                     guard presentationQueue == DispatchQueue.main else {
                         DispatchQueue.main.async { observe(props) }
                         return
@@ -100,7 +100,7 @@ public extension UIStateObserver {
      This method integrates a `Store` with a `UIView` or `UIViewController` by observing state changes and deriving properties through the `props` closure. The view or view controller will update whenever the state changes, and it can use the dispatch function provided by the store to perform actions.
 
      - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
         - props: A closure that takes the current state and the store's dispatch function, and returns a `Props` instance. This `Props` instance is used to update the view or view controller or trigger side effects. The `props` closure allows for deriving view-specific properties from the state and store.
         - presentationQueue: A `DispatchQueue` specifying where props evaluation should occur. The default value is `.sharedPresentationQueue`.  Must be a **serial queue**.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view or view controller should be updated. If `nil`, all state changes will trigger an update.
@@ -115,7 +115,7 @@ public extension UIStateObserver {
      ```swift
      class MyViewController: UIViewController {
                 
-         let store = Store<AppState, Action>()
+         let store = AnyStore<AppState, Action>()
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -142,7 +142,7 @@ public extension UIStateObserver {
      }
      ```
     */
-    func subscribe<State, Action, Props>(_ store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action, Props>(_ store: any Store<State, Action>,
                                          props: @escaping (State, @escaping Dispatch<Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
@@ -165,7 +165,7 @@ public extension UIStateObserver {
      This method integrates a `Store` with a `UIView` or `UIViewController` by observing state changes. The view or view controller will update whenever the state changes, using the provided `observe` closure.
 
      - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view or view controller will observe.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view or view controller will observe.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view or view controller should be updated. If `nil`, all state changes will trigger an update.
         - debounceFor: A `TimeInterval` that specifies the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This helps reduce the frequency of updates and improve performance by preventing redundant view updates. The default value is `.uiDebounce`.
         - observe: A closure that is called whenever the state changes. This closure is invoked with the updated state and is used to update the view or view controller or perform side effects based on the new state.
@@ -177,7 +177,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -199,7 +199,7 @@ public extension UIStateObserver {
      }
     ```
     */
-    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State) -> Void) {
@@ -220,7 +220,7 @@ public extension UIStateObserver {
      This method integrates a `Store` with a `UIView` or `UIViewController` by observing state changes and allowing the view or view controller to react to these changes while having access to the store's dispatch function. This setup is useful for directly updating the UI and dispatching actions in response to state changes.
 
      - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view or view controller should be updated. If `nil`, all state changes will trigger an update.
         - debounceFor: A `TimeInterval` specifying the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This helps reduce the frequency of updates and improve performance by preventing redundant view updates. The default value is `.uiDebounce`.
         - observe: A closure that is called whenever the state changes. This closure is invoked with the updated state and the store's dispatch function. It is used to update the view or view controller or perform side effects based on the new state and provides the dispatch function to dispatch actions if needed.
@@ -232,7 +232,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -254,7 +254,7 @@ public extension UIStateObserver {
      }
     ```
     */
-    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval  = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) {
@@ -273,7 +273,7 @@ public extension UIStateObserver {
      This method integrates a `Store` with a `UIView` or `UIViewController` by observing state changes. The view or view controller will update whenever the state changes, and it can also use the provided store for additional interactions.
 
      - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view or view controller will observe and provides functions for dispatching actions.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view or view controller should be updated. If `nil`, all state changes will trigger an update.
         - debounceFor: A `TimeInterval` specifying the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This helps reduce the frequency of updates and improve performance by preventing redundant view updates. The default value is `.uiDebounce`.
         - observe: A closure that is called whenever the state changes. This closure is invoked with the updated state and the store itself. It is used to update the view or view controller or perform side effects based on the new state, and provides direct access to the store for additional interactions.
@@ -285,7 +285,7 @@ public extension UIStateObserver {
      
      ```swift
      class MyViewController: UIViewController {
-         let store = Store<AppState, Action>
+         let store = AnyStore<AppState, Action>
          
          override func viewDidLoad() {
              super.viewDidLoad()
@@ -301,16 +301,16 @@ public extension UIStateObserver {
              )
          }
          
-         private func updateUI(with state: AppState, store: Store<AppState, Action>) {
+         private func updateUI(with state: AppState, store: AnyStore<AppState, Action>) {
              // Update UI elements based on the new state
          }
      }
     ```
     */
-    func subscribe<State, Action>(store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, Store<State, Action>) -> Void) {
+                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) {
 
         subscribe(
             store: store,

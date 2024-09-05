@@ -8,12 +8,12 @@
 import Dispatch
 import Foundation
 
-extension StoreProtocol {
+extension Store {
     typealias CreateForEachEffect = (State, Effect.State) -> Effect
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
-extension StoreProtocol {
+extension Store {
 
     @discardableResult
     func effect(on queue: DispatchQueue = .main,
@@ -54,7 +54,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
     @discardableResult
     func forEachEffect<Effects>(_ keyPath: KeyPath<State, Effects>,
                                 on queue: DispatchQueue = .main,
@@ -67,7 +67,7 @@ extension StoreProtocol {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
 
                 let allEffects = state[keyPath: keyPath]
@@ -91,7 +91,7 @@ extension StoreProtocol {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
 
                 let effect = state[keyPath: keyPath]
@@ -116,7 +116,7 @@ extension StoreProtocol {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
@@ -139,7 +139,7 @@ extension StoreProtocol {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            storeObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
@@ -163,7 +163,7 @@ extension StoreProtocol {
         let weakStore = weakStore()
 
         subscribe(observer: Observer(
-            weakStore.getStoreObject(),
+            storeObject(),
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, weakStore.dispatch)
@@ -177,7 +177,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
 
     @discardableResult
     func effect(_ cancellable: AnyCancellableEffect,
@@ -214,7 +214,7 @@ extension StoreProtocol {
     }
 }
 
-extension StoreProtocol {
+extension Store {
     @discardableResult
     func forEachEffect<Effects>(_ cancellable: AnyCancellableEffect,
                                 _ keyPath: KeyPath<State, Effects>,

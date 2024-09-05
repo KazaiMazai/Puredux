@@ -21,6 +21,26 @@
   * [PureduxUIKit Bindings Migration Guide](#pureduxuikit-bindings-migration-guide)
 
 
+## Puredux 1.9.x - 2.0
+
+## Store breaking changes
+
+`Store<State, Action>`  was renamed to `AnyStoreStore<State, Action>`
+
+```diff
+- Store<State, Action> 
++ AnyStore<State, Action>
+
+```
+
+`StoreProtocol<State, Action>`  was renamed to `Store<State, Action>`
+ 
+```diff
+- any StoreProtocol<State, Action> 
++ any Store<State, Action>
+
+```
+
 ## Getting Prepared for Puredux 2.0
 
 1. Update for the latest 1.x version

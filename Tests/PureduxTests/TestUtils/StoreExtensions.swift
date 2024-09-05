@@ -9,7 +9,7 @@ import Foundation
 import Dispatch
 @testable import Puredux
 
-extension Store {
+extension AnyStore {
     func dispatch(_ action: Action, after delay: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             dispatch(action)

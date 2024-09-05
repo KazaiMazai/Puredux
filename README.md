@@ -455,7 +455,7 @@ https://github.com/KazaiMazai/Puredux
 
 ## Documentation
 
-- [Documentation v.1.9.0](https://swiftpackageindex.com/KazaiMazai/Puredux/1.9.0/documentation/puredux)
+- [Documentation v1.9.x](https://swiftpackageindex.com/KazaiMazai/Puredux/1.9.2/documentation/puredux)
 - [Archive](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Archive)
 - [Migration Guides](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Migration-Guides.md)
 

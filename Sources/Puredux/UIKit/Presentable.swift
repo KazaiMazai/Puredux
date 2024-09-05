@@ -91,8 +91,8 @@ public extension Presentable {
 
      ```
     */
-    func setPresenter<State, Action>(store: any StoreProtocol<State, Action>,
-                                     props: @escaping (State, Store<State, Action>) -> Self.Props,
+    func setPresenter<State, Action>(store: any Store<State, Action>,
+                                     props: @escaping (State, AnyStore<State, Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
                                      debounceFor timeInterval: TimeInterval = .uiDebounce) {
@@ -119,7 +119,7 @@ public extension Presentable {
         - presentationQueue: The dispatch queue on which the props will be evaluated on. Defaults to `DispatchQueue.sharedPresentationQueue`. Must be **Serial DispatchQueue**
         - equating: An optional `Equating` that determines whether the state has changed to avoid redundant updates. Defaults to `nil`.
     */
-    func setPresenter<State, Action>(_ store: any StoreProtocol<State, Action>,
+    func setPresenter<State, Action>(_ store: any Store<State, Action>,
                                      props: @escaping (State, Dispatch<Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,

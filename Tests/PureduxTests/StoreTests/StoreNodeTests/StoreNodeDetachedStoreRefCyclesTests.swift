@@ -10,60 +10,55 @@ import XCTest
 
 @available(iOS 16.0.0, *)
 final class StoreNodeChildStoreRefCyclesTests: XCTestCase {
+    typealias StateComposition = (TestState, ReferenceTypeState)
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
     typealias ChildStore = any StoreObjectProtocol<StateComposition, Action>
 
-    let rootStore = RootStoreNode<TestState, Action>.initRootStore(
-        initialState: TestState(currentIndex: 1),
+    let rootStore = StateStore<TestState, Action>(
+        TestState(currentIndex: 1),
         reducer: { state, action in state.reduce(action: action) }
     )
 
     func test_WhenStore_ThenWeakRefToChildStoreCreated() {
-        var store: Store<StateComposition, Action>?
+        var store: (any Store<StateComposition, Action>)?
 
         assertDeallocated {
-            let strongChildStore = self.rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+            let object = ReferenceTypeState()
+            let childStore = self.rootStore.with(
+                object,
+                reducer: { state, action  in  }
             )
 
-            store = strongChildStore.weakRefStore()
-            return strongChildStore as AnyObject
+            store = childStore.weakStore()
+            return object as AnyObject
         }
     }
 
     func test_WhenStoreObject_ThenStrongRefToChildStoreCreated() {
         var referencedStore: StateStore<StateComposition, Action>?
         assertNotDeallocated {
-            let strongChildStore = self.rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+            let object = ReferenceTypeState()
+            let childStore = self.rootStore.with(
+                object,
+                reducer: { state, action in  }
             )
 
-            referencedStore = strongChildStore.stateStore()
-            return strongChildStore as AnyObject
+            referencedStore = childStore
+            return object as AnyObject
         }
     }
 
     func test_WhenStoreObjectReleased_ThenChildStoreIsReleased() {
         assertDeallocated {
             var referencedStore: StateStore<StateComposition, Action>?
-            let strongChildStore = self.rootStore.createChildStore(
-                initialState: ChildTestState(currentIndex: 0),
-                stateMapping: { state, childState in
-                    StateComposition(state: state, childState: childState)
-                },
-                reducer: { state, action  in  state.reduce(action: action) }
+            let object = ReferenceTypeState()
+            let childStore = self.rootStore.with(
+                object,
+                reducer: { state, action  in  }
             )
 
-            referencedStore = strongChildStore.stateStore()
-            return strongChildStore as AnyObject
+            referencedStore = childStore
+            return object as AnyObject
         }
     }
 }

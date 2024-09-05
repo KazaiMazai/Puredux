@@ -12,8 +12,8 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     typealias ParentStore = StoreNode<VoidStore<Action>, TestState, TestState, Action>
 
     let timeout: TimeInterval = 3
-    let rootStore = RootStoreNode<TestState, Action>.initRootStore(
-        initialState: TestState(currentIndex: 0),
+    let rootStore = StateStore<TestState, Action>(
+        TestState(currentIndex: 0),
         reducer: { state, action  in state.reduce(action: action) }
     )
 
@@ -21,20 +21,18 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
         assertNotDeallocated {
             let object = ReferenceTypeState()
-            let store = self.rootStore.createChildStore(
-                initialState: object,
-                stateMapping: { _, childState in childState },
+            let store = self.rootStore.with(
+                object,
                 reducer: { state, action  in  state.reduce(action) }
-            )
+            ).map { $1 }
 
-            let referencedStore = store.stateStore()
-
+            
             let observer = Observer<ReferenceTypeState> { _, complete in
-                referencedStore.dispatch(UpdateIndex(index: 1))
+                store.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
 
-            referencedStore.subscribe(observer: observer)
+            store.subscribe(observer: observer)
             return object as AnyObject
         }
     }
@@ -42,20 +40,17 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     func test_WhenStrongRefToStoreAndObserverDead_ThenStoreIsReleased() {
         assertDeallocated {
             let object = ReferenceTypeState()
-            let store = self.rootStore.createChildStore(
-                initialState: object,
-                stateMapping: { _, childState in childState },
+            let store = self.rootStore.with(
+                object,
                 reducer: { state, action in state.reduce(action) }
-            )
-
-            let referencedStore = store.stateStore()
+            ).map { $1 }
 
             let observer = Observer<ReferenceTypeState> { _, complete in
-                referencedStore.dispatch(UpdateIndex(index: 1))
+                store.dispatch(UpdateIndex(index: 1))
                 complete(.dead)
             }
 
-            referencedStore.subscribe(observer: observer)
+            store.subscribe(observer: observer)
             return object as AnyObject
         }
     }
@@ -63,16 +58,15 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
     func test_WhenWeakStoreAndObserverLive_ThenStoreIsReleased() {
         assertDeallocated {
             let object = ReferenceTypeState()
-            let store = self.rootStore.createChildStore(
-                initialState: object,
-                stateMapping: { _, childState in childState },
+            let store = self.rootStore.with(
+                object,
                 reducer: { state, action  in  state.reduce(action) }
-            )
+            ).map { $1 }
 
-            let weakRefStore = store.weakRefStore()
+            let weakStore = store.weakStore()
 
             let observer = Observer<ReferenceTypeState> { _, complete in
-                weakRefStore.dispatch(UpdateIndex(index: 1))
+                weakStore.dispatch(UpdateIndex(index: 1))
                 complete(.active)
             }
 

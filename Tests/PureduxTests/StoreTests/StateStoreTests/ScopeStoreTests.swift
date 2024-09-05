@@ -244,7 +244,7 @@ final class ScopedStoreOptionalStateTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let store: Store<Int?, Action> = stateStore.flatMap { _  in nil }
+        let store: StateStore<Int?, Action> = stateStore.flatMap { _  in nil }
 
         let observer = Observer<Int?> { _, complete in
             complete(.active)

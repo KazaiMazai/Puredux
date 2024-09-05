@@ -14,7 +14,7 @@ public extension View {
     This method is used to create a connection between a `Store` and a `View` by subscribing the view to changes in the store. The view will be able to react to changes in the state and update itself based on the provided `props` and `observe` closure.
 
     - Parameters:
-       - store: A `StoreProtocol` instance that holds the state and dispatches actions.
+       - store: A `Store` instance that holds the state and dispatches actions.
        - props: A closure that maps the store's `State` and the `Store` itself to a `Props` instance. This `Props` instance will be passed to the `observe` closure whenever the state changes.
        - presentationQueue: A `DispatchQueue` that determines the queue on which props will be evaluated. Defaults to `.sharedPresentationQueue`.
        - removeStateDuplicates: An optional `Equating` that determines if duplicate states should be filtered out to avoid unnecessary updates. This is used to compare the current state with the previous one to decide if the view needs to be updated.
@@ -28,7 +28,7 @@ public extension View {
 
     ```swift
     struct MyView: View {
-        let store: Store<AppState, Action>
+        let store: AnyStore<AppState, Action>
 
         @State var viewState: ViewState? = nil
 
@@ -49,8 +49,8 @@ public extension View {
       }
     ```
     */
-    func subscribe<State, Action, Props>(store: any StoreProtocol<State, Action>,
-                                         props: @escaping (State, Store<State, Action>) -> Props,
+    func subscribe<State, Action, Props>(store: any Store<State, Action>,
+                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
@@ -73,7 +73,7 @@ public extension View {
     This method integrates a `Store` with a `View` by subscribing to state changes. It allows the view to update based on the current state of the store, using a mapping function to derive properties and a closure to handle those properties.
 
     - Parameters:
-       - store: A `StoreProtocol` instance managing the application's state and dispatching actions.
+       - store: A `Store` instance managing the application's state and dispatching actions.
        - props: A closure that converts the `State` and a `Dispatch` function into a `Props` instance. The `Dispatch` function is used to dispatch actions to the store. This `Props` object is used in the `observe` closure to update the view.
        - presentationQueue: A `DispatchQueue` specifying where view updates should occur. The default value is `.sharedPresentationQueue`.
        - removeStateDuplicates: An optional `Equating` that determines if duplicate states should be filtered to prevent redundant updates. This helps to avoid unnecessary view updates by comparing the current state with the previous state.
@@ -83,7 +83,7 @@ public extension View {
     - Returns:
        A `View` that subscribes to the specified `Store`. This view will automatically update in response to state changes, and the `observe` closure will be called with the updated `Props`.
      */
-     func subscribe<State, Action, Props>(_ store: any StoreProtocol<State, Action>,
+     func subscribe<State, Action, Props>(_ store: any Store<State, Action>,
                                           props: @escaping (State, @escaping Dispatch<Action>) -> Props,
                                           presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                           removeStateDuplicates equating: Equating<State>? = nil,
@@ -107,7 +107,7 @@ public extension View {
     This method binds a `View` to a `Store` by subscribing it to state changes. It allows the view to update whenever the state in the store changes by directly observing the state.
 
     - Parameters:
-       - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view will observe.
+       - store: A `Store` instance that manages the application's state and actions. It holds the state that the view will observe.
        - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, it compares the current state with the previous state to decide if the view should be updated. If `nil`, all state changes trigger an update.
        - debounceFor: A `TimeInterval` that specifies the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This reduces the frequency of updates and can improve performance by preventing unnecessary view updates. The default value is `.uiDebounce`.
        - observe: A closure that takes the current state and performs actions whenever the state changes. This closure is invoked whenever the state updates and is used to update the view or perform side effects based on the new state.
@@ -118,7 +118,7 @@ public extension View {
     Usage Example:
     ```swift
     struct MyView: View {
-        let store: Store<ViewState, Action>
+        let store: AnyStore<ViewState, Action>
         
         @State var viewState: ViewState?
     
@@ -136,7 +136,7 @@ public extension View {
     }
     ```
     */
-    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State) -> Void) -> some View {
@@ -156,7 +156,7 @@ public extension View {
     This method binds a `View` to a `Store` by subscribing it to state changes. The view will update whenever the state in the store changes, and it can also dispatch actions using the provided `Dispatch` function.
 
     - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. It holds the state that the view will observe and the dispatch function for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. It holds the state that the view will observe and the dispatch function for dispatching actions.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view should be updated. If `nil`, all state changes trigger an update.
         - debounceFor: A `TimeInterval` that specifies the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This helps to reduce the frequency of updates and improve performance by preventing redundant view updates. The default value is `.uiDebounce`.
         - observe: A closure that takes the current state and a `Dispatch` function, performing actions whenever the state changes. This closure is invoked on each state update and is used to update the view or perform side effects based on the new state. The `Dispatch` function allows for actions to be dispatched in response to state changes.
@@ -168,7 +168,7 @@ public extension View {
      
     ```swift
     struct ContentView: View {
-       let store = Store<AppState, Action>()
+       let store = AnyStore<AppState, Action>()
        
        @State var viewState: ViewState?
     
@@ -186,7 +186,7 @@ public extension View {
     }
     ```
     */
-    func subscribe<State, Action>(_ store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
                                   observe: @escaping (State, Dispatch<Action>) -> Void) -> some View {
@@ -207,7 +207,7 @@ public extension View {
     This method binds a `View` to a `Store` by subscribing it to state changes. The view will update whenever the state in the store changes, and it can use the provided store to perform further actions or access its properties.
 
     - Parameters:
-        - store: A `StoreProtocol` instance that manages the application's state and actions. The store holds the state that the view will observe and provides functions for dispatching actions.
+        - store: A `Store` instance that manages the application's state and actions. The store holds the state that the view will observe and provides functions for dispatching actions.
         - removeStateDuplicates: An optional `Equating` used to determine if duplicate states should be filtered out to avoid unnecessary updates. If provided, this closure compares the current state with the previous state to decide if the view should be updated. If `nil`, all state changes will trigger an update.
         - debounceFor: A `TimeInterval` that specifies the debounce duration for state changes. If multiple state changes occur within this interval, only the last change will trigger an update. This helps reduce the frequency of updates and improves performance by preventing redundant view updates. The default value is `.uiDebounce`.
         - observe: A closure that takes the current state and the `Store` itself, performing actions whenever the state changes. This closure is invoked on each state update and is used to update the view or perform side effects based on the new state. It provides access to the store for additional interactions.
@@ -219,7 +219,7 @@ public extension View {
      
     ```swift
     struct ContentView: View {
-        let store = Store<AppState, Action>()
+        let store = AnyStore<AppState, Action>()
         
         @State var viewState: ViewState?
         
@@ -237,10 +237,10 @@ public extension View {
     }
     ```
     */
-    func subscribe<State, Action>(store: any StoreProtocol<State, Action>,
+    func subscribe<State, Action>(store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, Store<State, Action>) -> Void) -> some View {
+                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) -> some View {
 
         withObserver { observer in
             observer.subscribe(
