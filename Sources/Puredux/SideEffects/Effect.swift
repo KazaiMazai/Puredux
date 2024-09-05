@@ -38,7 +38,7 @@ public extension Effect {
      /**
       A static instance of `Effect` that postpones any operation.
       
-      `Effect.postpone` represents a procrastination mechanism. 
+      `Effect.postpone` represents literally a procrastination mechanism for side effects.
       
       It is used when an effect should be executed based on its state and component logic, but an additional condition necessitates postponing the execution. 
       The effect is not canceled; it is simply delayed until a more appropriate time.
@@ -50,7 +50,7 @@ public extension Effect {
       Usage example:
       
       ```swift
-      store.effect(toggle: \.shouldFireTheNetworkRequest) { appState, dispatch in
+      store.effect(toggle: \.shouldFireNetworkRequest) { appState, dispatch in
           guard appState.hasFreshAccessToken else {
               return .postpone
           }
