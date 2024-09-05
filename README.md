@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
-  <img src="https://github.com/KazaiMazai/Puredux/blob/main/Docs/Resources/Logo.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/Resources/Logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/Resources/Logo.svg">
+  <img src="https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/Resources/Logo.svg">
 </picture>
 
 
@@ -256,8 +256,16 @@ store.dispatch(FetchDataAction())
 
 ```
 
+## Performance
 
-## Performance Tuning
+Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
+
+- Reducers background execution: Offloads reducer logic to background threads to improve overall app performance.
+- State updates deduplication: Minimizes redundant state updates, reducing unnecessary re-renders and improving processing efficiency.
+- Granular UI updates: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
+- UI updates debouncing: Prevents excessive UI updates by intelligently controlling the frequency of updates.
+- Two-step UI updates with background task offloading: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
+
 
 ### Quality of Service
 
@@ -455,9 +463,10 @@ https://github.com/KazaiMazai/Puredux
 
 ## Documentation
 
+- [Documentation](https://swiftpackageindex.com/KazaiMazai/Puredux/main/documentation/puredux)
 - [Documentation v1.9.x](https://swiftpackageindex.com/KazaiMazai/Puredux/1.9.2/documentation/puredux)
-- [Archive](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Archive)
-- [Migration Guides](https://github.com/KazaiMazai/Puredux/blob/main/Docs/Migration-Guides.md)
+- [Documentation Archive](https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/Archive)
+- [Migration Guides](https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/MigrationGuides.md)
 
 ## Licensing
 

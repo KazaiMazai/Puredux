@@ -1,4 +1,5 @@
- 
+# Documentation v1.x 
+
 ## Basics
 
 - State is a type describing the whole application state or a part of it
