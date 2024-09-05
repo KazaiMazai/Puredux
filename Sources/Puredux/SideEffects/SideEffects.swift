@@ -13,7 +13,7 @@ public extension Store {
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
-extension Store {
+public extension Store {
     /**
      Adds an effect to the store, which is triggered based on the Effect state.
   
