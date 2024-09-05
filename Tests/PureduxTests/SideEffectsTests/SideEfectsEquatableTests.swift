@@ -19,7 +19,7 @@ final class SideEfectsEquatableTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
 
-        store.onChangeEffect(observer, on: .main) { _, _ in
+        store.effectOnChange(observer, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -39,7 +39,7 @@ final class SideEfectsEquatableTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.onChangeEffect(observer, on: .main) { _, _ in
+        store.effectOnChange(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -58,7 +58,7 @@ final class SideEfectsEquatableTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.onChangeEffect(observer, on: .main) { _, _ in
+        store.effectOnChange(observer, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -78,7 +78,7 @@ final class SideEfectsEquatableTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
-        store.onChangeEffect(observer, on: .main) { _, _ in
+        store.effectOnChange(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
             return .skip
         }

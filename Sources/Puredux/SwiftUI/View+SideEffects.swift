@@ -11,20 +11,22 @@ extension View {
     typealias CreateForEachEffect<T> = (T, Effect.State) -> Effect
     typealias CreateEffect<T> = (T) -> Effect
 
-    func forEachEffect<ViewState, Action, Effects>(
+    func effect<ViewState, Action, Effects>(
         _ store: AnyStore<ViewState, Action>,
-        _ keyPath: KeyPath<ViewState, Effects>,
+        collection keyPath: KeyPath<ViewState, Effects>,
         on queue: DispatchQueue = .main,
         create: @escaping CreateForEachEffect<ViewState>) -> some View
 
-    where Effects: Collection & Hashable, Effects.Element == Effect.State {
+    where 
+    Effects: Collection & Hashable,
+    Effects.Element == Effect.State {
 
         withObserver { observer in
-            store.forEachEffect(
+            store.effect(
                 observer.cancellable,
-                keyPath,
+                collection: keyPath,
                 on: queue,
-                create: create
+                create: { state, effectState, _ in create(state, effectState) }
             )
         }
     }

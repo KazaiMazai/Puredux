@@ -28,7 +28,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -57,7 +57,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -86,7 +86,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 6
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -117,7 +117,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 6
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -146,7 +146,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -176,7 +176,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -205,7 +205,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -234,7 +234,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 4
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -263,7 +263,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 2
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_,_ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -294,7 +294,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
 
-        store.forEachEffect(observer, on: .main) { _, _ in
+        store.effectCollection(observer, on: .main) { _,_, _ in
             Effect {
                 asyncExpectation.fulfill()
             }

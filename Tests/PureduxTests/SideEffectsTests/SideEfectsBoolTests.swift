@@ -19,7 +19,7 @@ final class SideEfectsBoolTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
 
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -39,7 +39,7 @@ final class SideEfectsBoolTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
 
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -59,7 +59,7 @@ final class SideEfectsBoolTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
@@ -81,7 +81,7 @@ final class SideEfectsBoolTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.expectedFulfillmentCount = 3
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -101,7 +101,7 @@ final class SideEfectsBoolTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect creation executed")
         asyncExpectation.isInverted = true
 
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             asyncExpectation.fulfill()
             return .skip
         }
@@ -121,7 +121,7 @@ final class SideEfectsBoolTests: XCTestCase {
         let asyncExpectation = expectation(description: "Effect executed")
         asyncExpectation.isInverted = true
 
-        store.toggleEffect(cancellable, on: .main) { _, _ in
+        store.effectToggle(cancellable, on: .main) { _, _ in
             Effect {
                 asyncExpectation.fulfill()
             }
