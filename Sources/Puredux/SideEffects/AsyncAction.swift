@@ -30,3 +30,10 @@ extension AsyncAction {
         }
     }
 }
+
+
+protocol AsyncActionsExecutor {
+    associatedtype Action
+    
+    func executeAsyncAction(_ action: Action) 
+}
