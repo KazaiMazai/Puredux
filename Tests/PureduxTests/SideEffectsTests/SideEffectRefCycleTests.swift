@@ -133,7 +133,7 @@ final class SideEffectRefCycleTests: XCTestCase {
             let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
                 .with(true) { _, _ in }
                 .map { (state: $0.0, boolValue: $0.1)}
-                .effect(toggle: \.boolValue) { _, dispatch in
+                .effect(toggle: \.boolValue) { state, dispatch in
 
                     Effect {
                         dispatch(10)
