@@ -9,7 +9,7 @@ import Dispatch
 import Foundation
 
 extension Store {
-    typealias CreateForEachEffect = (State, Effect.State) -> Effect
+    typealias CreateForEachEffect = (State, Effect.State, @escaping Dispatch<Action>) -> Effect
     typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
@@ -72,7 +72,7 @@ extension Store {
 
                 let allEffects = state[keyPath: keyPath]
                 effectOperator.run(allEffects, on: queue) { effectState in
-                    create(state, effectState)
+                    create(state, effectState, weakStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
@@ -220,17 +220,20 @@ extension Store {
                                 _ keyPath: KeyPath<State, Effects>,
                                 on queue: DispatchQueue = .main,
                                 create: @escaping CreateForEachEffect) -> Self
-    where Effects: Collection & Hashable, Effects.Element == Effect.State {
+    where 
+    Effects: Collection & Hashable,
+    Effects.Element == Effect.State {
 
         let effectOperator = EffectOperator()
-
+        let weakStore = weakStore()
+        
         subscribe(observer: Observer(
             cancellable.observer,
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
 
                 let allEffects = state[keyPath: keyPath]
                 effectOperator.run(allEffects, on: queue) { effectState in
-                    create(state, effectState)
+                    create(state, effectState, weakStore.dispatch)
                 }
                 complete(.active)
                 return effectOperator.isSynced ? state : prevState
