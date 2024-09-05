@@ -10,10 +10,10 @@ import Foundation
 
 extension Store {
     typealias CreateForEachEffect = (State, Effect.State, @escaping Dispatch<Action>) -> Effect
-    typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
+    public typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
-extension Store {
+public extension Store {
     
     @discardableResult
     func effect(on queue: DispatchQueue = .main,
@@ -40,46 +40,7 @@ extension Store {
     }
 }
 
-extension Store {
-    @discardableResult
-    func effectCollection(on queue: DispatchQueue = .main,
-                          create: @escaping CreateForEachEffect) -> Self
-    
-    where 
-    State: Collection & Hashable,
-    State.Element == Effect.State {
-        
-        effect(collection: \.self, on: queue, create: create)
-    }
-}
-
-extension Store {
-    @discardableResult
-    func effect<Effects>(collection keyPath: KeyPath<State, Effects>,
-                         on queue: DispatchQueue = .main,
-                         create: @escaping CreateForEachEffect) -> Self
-    where
-    Effects: Collection & Hashable,
-    Effects.Element == Effect.State {
-        
-        let effectOperator = EffectOperator()
-        let weakStore = weakStore()
-        
-        subscribe(observer: Observer(
-            storeObject(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
-                
-                let allEffects = state[keyPath: keyPath]
-                effectOperator.run(allEffects, on: queue) { effectState in
-                    create(state, effectState, weakStore.dispatch)
-                }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
-            }
-        )
-        
-        return self
-    }
+public extension Store {
     
     @discardableResult
     func effect(_ keyPath: KeyPath<State, Effect.State>,
@@ -152,6 +113,52 @@ extension Store {
         return self
     }
     
+}
+
+extension Store {
+    @discardableResult
+    func effectCollection(on queue: DispatchQueue = .main,
+                          create: @escaping CreateForEachEffect) -> Self
+    
+    where 
+    State: Collection & Hashable,
+    State.Element == Effect.State {
+        
+        effect(collection: \.self, on: queue, create: create)
+    }
+}
+
+extension Store {
+    @discardableResult
+    func effect<Effects>(collection keyPath: KeyPath<State, Effects>,
+                         on queue: DispatchQueue = .main,
+                         create: @escaping CreateForEachEffect) -> Self
+    where
+Effects: Collection & Hashable,
+    Effects.Element == Effect.State {
+        
+        let effectOperator = EffectOperator()
+        let weakStore = weakStore()
+        
+        subscribe(observer: Observer(
+            storeObject(),
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+                
+                let allEffects = state[keyPath: keyPath]
+                effectOperator.run(allEffects, on: queue) { effectState in
+                    create(state, effectState, weakStore.dispatch)
+                }
+                complete(.active)
+                return effectOperator.isSynced ? state : prevState
+            }
+        )
+        
+        return self
+    }
+}
+
+
+extension Store {
     @discardableResult
     func effect(withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
