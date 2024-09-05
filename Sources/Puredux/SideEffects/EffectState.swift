@@ -30,19 +30,7 @@ public extension Effect.State {
     }
 }
 
-public extension Effect.State {
-    enum Status: Int {
-        case idle
-        case inProgress
-        case success
-        case failure
-        case cancelled
-    }
-    
-    var status: Status {
-        state.status
-    }
-}
+// MARK: - State Extensions
 
 public extension Effect.State {
     var isInProgress: Bool {
@@ -76,8 +64,9 @@ public extension Effect.State {
     var delay: TimeInterval? {
         state.currentAttempt?.delay
     }
-    
 }
+
+// MARK: - State Mutations
 
 public extension Effect.State {
 
@@ -114,6 +103,22 @@ public extension Effect.State {
     }
 }
 
+// MARK: - Status
+
+public extension Effect.State {
+    enum Status: Int {
+        case idle
+        case inProgress
+        case success
+        case failure
+        case cancelled
+    }
+    
+    var status: Status {
+        state.status
+    }
+}
+
 extension Effect.State.Status {
     var isInProgress: Bool {
         self == .inProgress
@@ -136,6 +141,7 @@ extension Effect.State.Status {
     }
 }
 
+// MARK: - Internals
 
 extension Effect.State {
     enum InternalState: Codable, Equatable, Hashable {
@@ -276,7 +282,7 @@ extension Effect.State.InternalState {
 
     func nextAttemptOrFailWith(_ error: Error) -> Effect.State.InternalState {
         guard let attempt = currentAttempt,
-              let next = attempt.nextAttempt()
+              let next = attempt.nextAttemptWithDelay()
         else {
             return .failure(Failure(error))
         }
@@ -296,10 +302,14 @@ extension Effect.State.InternalState {
         private(set) var delay: TimeInterval
 
         var hasMoreAttempts: Bool {
-            attempt < (maxAttempts - 1)
+            attempt < lastAttempt
+        }
+        
+        private var lastAttempt: Int {
+            maxAttempts - 1
         }
 
-        func nextAttempt() -> Attempt? {
+        func nextAttemptWithDelay() -> Attempt? {
             guard hasMoreAttempts else {
                 return nil
             }
