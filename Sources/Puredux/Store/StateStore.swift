@@ -199,7 +199,9 @@ public extension StateStore {
     }
 }
 
-extension StateStore {
+//MARK: - AsyncActionsExecutor
+
+extension StateStore: AsyncActionsExecutor {
     func executeAsyncAction(_ action: Action) {
         guard let action = action as? (any AsyncAction) else {
             return
