@@ -13,8 +13,18 @@ extension Store {
     public typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
 }
 
-public extension Store {
-    
+extension Store {
+    /**
+     Adds an effect to the store, which is triggered based on the Effect state.
+  
+      - Parameters:
+         - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+         - create: A closure that creates the `Effect` to be executed.
+      
+      - Returns: The `Store` instance with the added effect.
+     
+      - Note: This method is used when the `State` of the store is of type `Effect.State`. This method subscribes to changes in the state and runs the provided effect controlled entirely by the effect state.
+    */
     @discardableResult
     func effect(on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self
@@ -23,14 +33,37 @@ public extension Store {
         effect(\.self, on: queue, create: create)
     }
     
+    /**
+     Adds an effect to the store that is executed whenever the state changes.
+     
+     - Parameters:
+        - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+        - create: A closure that creates the `Effect` to be executed.
+     
+     - Returns: The `Store` instance with the added effect.
+     
+     - Note: This method subscribes to changes in the state and runs the provided effect every time the state changes.
+     Previously scheduled executions are cancelled in case they haven't started yet.
+    */
     @discardableResult
     func effectOnChange(on queue: DispatchQueue = .main,
                         create: @escaping CreateEffect) -> Self
     where State: Equatable {
     
-    effect(onChange: \.self, on: queue, create: create)
-}
+        effect(onChange: \.self, on: queue, create: create)
+    }
     
+    /**
+     Adds an effect to the store that is triggered when the boolean state is`true`
+     
+     - Parameters:
+        - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+        - create: A closure that creates the `Effect` to be executed.
+     
+     - Returns: The `Store` instance with the added effect.
+     
+     - Note: This method is used when the `State` of the store is of type `Bool`. This method subscribes to changes in the boolean state and runs the provided effect when the state changes from `false` to `true`.
+    */
     @discardableResult
     func effectToggle(on queue: DispatchQueue = .main,
                       create: @escaping CreateEffect) -> Self
@@ -41,7 +74,28 @@ public extension Store {
 }
 
 public extension Store {
-    
+    /**
+     Adds an effect to the store that is executed based on the `Effect.State` that can be found on the  specified key path.
+     
+     - Parameters:
+        - keyPath: A key path to the `Effect.State` within the store's state.
+        - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+        - create: A closure that creates the `Effect` to be executed.
+     
+     - Returns: The `Store` instance with the added effect.
+     
+     - Note: This method subscribes to changes in the state at the given key path and runs the provided effect controlled entirely by the effect state.
+     
+     Usage example:
+     
+     ```swift
+     store.effect(\.workExecutionState, on: .global(qos: .background)) { appState, dispatch in
+        Effect {
+            // Do some heavy lifting here
+            // dispatch(...) the result action when finished
+        }
+    }
+    */
     @discardableResult
     func effect(_ keyPath: KeyPath<State, Effect.State>,
                 on queue: DispatchQueue = .main,
@@ -66,6 +120,33 @@ public extension Store {
         return self
     }
     
+    /**
+     Adds an effect to the store that is triggered whenever the value for the specified key path changes.
+     
+     - Parameters:
+        - keyPath: A key path to the `Equatable` type within the store's state.
+        - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+        - create: A closure that creates the `Effect` to be executed.
+     
+     - Returns: The `Store` instance with the added effect.
+     
+     - Note: This method subscribes to changes in the state at the given key path and runs the provided effect every time the state changes.
+     Previously scheduled executions are cancelled in case they haven't started yet.
+     
+     Usage example:
+     
+     ```swift
+     store.effect(onChange: \.currentTrackId) { appState, dispatch in
+        Effect {
+            guard let currentTrackId else {
+                Player.shared.stop()
+                return
+            }
+            Player.shared.play(appState.currentTrackId)
+        }
+    }
+    ```
+    */
     @discardableResult
     func effect<T>(onChange keyPath: KeyPath<State, T>,
                    on queue: DispatchQueue = .main,
@@ -90,6 +171,29 @@ public extension Store {
         return self
     }
     
+    /**
+     Adds an effect to the store that is executed when the boolean value on the specified key path changes to `true`
+     
+     - Parameters:
+        - keyPath: A key path to a `Bool` value within the store's state.
+        - queue: The `DispatchQueue` on which the effect should be executed. Defaults to the main queue.
+        - create: A closure that creates the `Effect` to be executed.
+     
+     - Returns: The `Store` instance with the added effect.
+     
+     - Note: This method subscribes to changes in the boolean state at the given key path and runs the provided effect when the boolean value changes from `false` to `true`.
+     
+     Usage example:
+     
+     ```swift
+     store.effect(toggle: \.expectsToFireRequest) { appState, dispatch in
+        Effect {
+            // fire network request
+            // dispatch(...) request result action when finished
+        }
+     }
+    ```
+    */
     @discardableResult
     func effect(toggle keyPath: KeyPath<State, Bool>,
                 on queue: DispatchQueue = .main,
@@ -112,7 +216,6 @@ public extension Store {
         
         return self
     }
-    
 }
 
 extension Store {
@@ -134,7 +237,7 @@ extension Store {
                          on queue: DispatchQueue = .main,
                          create: @escaping CreateForEachEffect) -> Self
     where
-Effects: Collection & Hashable,
+    Effects: Collection & Hashable,
     Effects.Element == Effect.State {
         
         let effectOperator = EffectOperator()

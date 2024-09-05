@@ -119,7 +119,7 @@ final class CancellableSideEffectsCollectionTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 6
         store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -148,7 +148,7 @@ final class CancellableSideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -178,7 +178,7 @@ final class CancellableSideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -207,7 +207,7 @@ final class CancellableSideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(observer, on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -416,7 +416,7 @@ final class SideEffectsCollectionTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 6
         store.effectCollection(on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -445,7 +445,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -475,7 +475,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -504,7 +504,7 @@ final class SideEffectsCollectionTests: XCTestCase {
 
         store.effectCollection(on: .main) { _,_,_ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)

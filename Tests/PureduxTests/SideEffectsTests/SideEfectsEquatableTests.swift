@@ -41,7 +41,7 @@ final class CancellableSideEfectsEquatableTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         store.effectOnChange(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(1)
@@ -80,7 +80,7 @@ final class CancellableSideEfectsEquatableTests: XCTestCase {
         asyncExpectation.isInverted = true
         store.effectOnChange(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(0)
@@ -124,7 +124,7 @@ final class SideEfectsEquatableTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         store.effectOnChange(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(1)
@@ -163,7 +163,7 @@ final class SideEfectsEquatableTests: XCTestCase {
         asyncExpectation.isInverted = true
         store.effectOnChange(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(0)

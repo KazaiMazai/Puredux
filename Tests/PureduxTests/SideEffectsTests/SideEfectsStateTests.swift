@@ -85,7 +85,7 @@ final class CancellableSideEfectsStateTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         store.effect(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -106,7 +106,7 @@ final class CancellableSideEfectsStateTests: XCTestCase {
 
         store.effect(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -127,7 +127,7 @@ final class CancellableSideEfectsStateTests: XCTestCase {
 
         store.effect(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -148,7 +148,7 @@ final class CancellableSideEfectsStateTests: XCTestCase {
 
         store.effect(observer, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -335,7 +335,7 @@ final class SideEfectsStateTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         store.effect(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -356,7 +356,7 @@ final class SideEfectsStateTests: XCTestCase {
 
         store.effect(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -377,7 +377,7 @@ final class SideEfectsStateTests: XCTestCase {
 
         store.effect(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -398,7 +398,7 @@ final class SideEfectsStateTests: XCTestCase {
 
         store.effect(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)

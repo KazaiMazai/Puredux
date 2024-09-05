@@ -83,7 +83,7 @@ final class CancellableSideEfectsBoolTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         store.effectToggle(cancellable, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -103,7 +103,7 @@ final class CancellableSideEfectsBoolTests: XCTestCase {
 
         store.effectToggle(cancellable, on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
@@ -216,7 +216,7 @@ final class SideEfectsBoolTests: XCTestCase {
         }
         .effectToggle(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(true)
@@ -237,7 +237,7 @@ final class SideEfectsBoolTests: XCTestCase {
         }
         .effectToggle(on: .main) { _, _ in
             asyncExpectation.fulfill()
-            return .skip
+            return .postpone
         }
 
         store.dispatch(false)
