@@ -56,6 +56,8 @@ extension AnyStore {
     }
 }
 
+//MARK: - AsyncActionsExecutor
+
 extension AnyStore {
     func executeAsyncAction(_ action: Action) {
         guard let action = action as? (any AsyncAction) else {
