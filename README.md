@@ -26,7 +26,7 @@ streamline state management with a focus on unidirectional data flow and separat
 - [Hierarchical Stores Tree Architecture](#hierarchical-stores-tree-architecture)
 - [Side Effects](#side-effects)
   * [Async Actions](#async-actions)
-- [Performance Tuning](#performance-tuning)
+- [Performance](#performance)
   * [Quality of Service](#quality-of-service)
   * [Deduplicated State Updates](#deduplicated-state-updates)
   * [UI Updates Debouncing](#ui-updates-debouncing)
@@ -260,19 +260,20 @@ store.dispatch(FetchDataAction())
 
 Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
 
-- **Reducers background execution**: Offloads reducer logic to background threads to improve overall app performance.
+- **Reducers background execution**: Offloads reducer execution to background queue to improve overall app performance.
 - **State updates deduplication**: Minimizes redundant state updates, reducing unnecessary re-renders and improving processing efficiency.
-- **Granular UI updates**: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
 - **UI updates debouncing**: Prevents excessive UI updates by intelligently controlling the frequency of updates.
 - **Two-step UI updates with background task offloading**: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
+- **Granular UI updates**: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
 
-### Quality of Service
+### Reducers Background Execution
 
 Puredux is designed in a way that allows you to implement state and reducers without any dependencies.
 
 This is done intentionally to offload all store work to the background without worrying much about data races, access synchronization, and so on, leaving the main thread exclusively for the UI.
 
-When creating the root store, you can choose the quality of service for the queue it will operate on.
+So yes. Reducers are executed in bacckground. When creating the root store, you can choose 
+the quality of service for the queue it will operate on. It will define the whole store tree hierarchy.
 
 ```swift
  let store = StateStore(
@@ -447,6 +448,10 @@ struct MyView: View {
 ```
 </p>
 </details>
+
+### Granular UI Updates
+
+Puredux provides a full control over UI updates. Any SwiftUI `View`, `UIViewController` or a `UIView` or can be individually subscribed to the `Store` with state deduplication, debouncing and 2-step UI updates with background offloading.
 
 ## Installation
 
