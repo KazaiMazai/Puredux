@@ -4,11 +4,11 @@
 
 Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
 
-- Reducers background execution: Offloads reducer logic to background threads to improve overall app performance.
-- State updates deduplication: Minimizes redundant state updates, reducing unnecessary re-renders and improving processing efficiency.
-- Granular UI updates: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
-- UI updates debouncing: Prevents excessive UI updates by intelligently controlling the frequency of updates.
-- Two-step UI updates with background task offloading: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
+- **Reducers background execution**: Offloads reducer logic to background threads to improve overall app performance.
+- **State updates deduplication**: Minimizes redundant state updates, reducing unnecessary re-renders and improving processing efficiency.
+- **Granular UI updates**: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
+- **UI updates debouncing**: Prevents excessive UI updates by intelligently controlling the frequency of updates.
+- **Two-step UI updates with background task offloading**: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
 
 
 ## Quality of Service
@@ -129,7 +129,7 @@ struct MyView: View {
 </p>
 </details>
 
-## Extra Presentational Layer 
+## Two-step UI Updates with Background Offloading
 
 A very common use case involves converting raw model data into a more presentable format, 
 which may include mapping `AttributedStrings`, using `DateFormatter`, and more. These operations can be resource-intensive.
