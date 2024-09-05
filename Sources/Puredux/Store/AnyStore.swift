@@ -17,12 +17,11 @@ public struct AnyStore<State, Action>: Store {
     let dispatchHandler: Dispatch<Action>
     let subscriptionHandler: Subscribe<State>
     let referencedStore: ReferencedStore<State, Action>
-    
-    public func eraseToAnyStore() -> AnyStore<State, Action> { self }
-   
 }
 
 public extension AnyStore {
+    func eraseToAnyStore() -> AnyStore<State, Action> { self }
+    
     func dispatch(_ action: Action) {
         dispatchHandler(action)
         executeAsyncAction(action)
@@ -30,41 +29,6 @@ public extension AnyStore {
 
     func subscribe(observer: Observer<State>) {
         subscriptionHandler(observer)
-    }
-}
-
-extension AnyStore {
-    init(dispatcher: @escaping Dispatch<Action>,
-         subscribe: @escaping Subscribe<State> ,
-         referenced storeObject: ReferencedStore<State, Action>) {
-
-        dispatchHandler = { dispatcher($0) }
-        subscriptionHandler = { subscribe($0) }
-        referencedStore = storeObject
-    }
-    
-    func referencedStoreObject() -> AnyStoreObject<State, Action>? {
-        referencedStore.object()
-    }
-
-    func weak() -> AnyStore<State, Action> {
-        AnyStore<State, Action>(
-            dispatcher: dispatchHandler,
-            subscribe: subscriptionHandler,
-            referenced: referencedStore.weak()
-        )
-    }
-}
-
-//MARK: - AsyncActionsExecutor
-
-extension AnyStore {
-    func executeAsyncAction(_ action: Action) {
-        guard let action = action as? (any AsyncAction) else {
-            return
-        }
-
-        action.execute(self.dispatchHandler)
     }
 }
 
@@ -282,63 +246,59 @@ public extension AnyStore {
 
 // MARK: - Actions Transformations
 
-//
-// extension Store {
-//    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
-//        let store = instance
-//        let weakStore = weakStore()
-//        return AnyStore<State, A>(
-//            dispatcher: { action in weakStore.dispatch(transform(action)) },
-//            subscribe: weakStore.subscribeHandler,
-//            storeObject: store.getStoreObject
-//        )
-//    }
-// }
-//
-// extension StateStore {
-//    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
-//        instance.map(action: transform)
-//    }
-// }
+/*
+ extension Store {
+    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
+        let store = instance
+        let weakStore = weakStore()
+        return AnyStore<State, A>(
+            dispatcher: { action in weakStore.dispatch(transform(action)) },
+            subscribe: weakStore.subscribeHandler,
+            storeObject: store.getStoreObject
+        )
+    }
+ }
 
-//
-//enum ReferencedStore<S, A> {
-//    case strong(AnyStoreObject<S, A>)
-//    case weak(() -> AnyStoreObject<S, A>?)
-//    
-//    init(weak storeObject: AnyStoreObject<S, A>) {
-//        self = .weak { [weak storeObject] in storeObject }
-//    }
-//    
-//    init(strong storeObject: AnyStoreObject<S, A>) {
-//        self = .strong(storeObject)
-//    }
-//    
-//    func map<T>(_ transform: @escaping (S) -> T) -> ReferencedStore<T, A> {
-//        switch self {
-//        case .strong(let storeObject):
-//            return .strong(storeObject.map(transform))
-//        case .weak(let storeObjectClosure):
-//            let storeObject = storeObjectClosure()?.map(transform)
-//            return .weak { [weak storeObject] in storeObject }
-//        }
-//    }
-//    
-//    func weakReferencedStore() -> ReferencedStore<S, A> {
-//        switch self {
-//        case .strong(let storeObject):
-//            return .weak { [weak storeObject] in storeObject }
-//        case .weak:
-//            return self
-//        }
-//    }
-//    
-//    func storeObject() -> AnyStoreObject<S, A>? {
-//        switch self {
-//        case .strong(let storeObject):
-//            return storeObject
-//        case .weak(let storeObjectClosure):
-//            return storeObjectClosure()
-//        }
-//    }
-//}
+ extension StateStore {
+    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
+        instance.map(action: transform)
+    }
+ }
+*/
+
+//MARK: - Internal
+
+extension AnyStore {
+    init(dispatcher: @escaping Dispatch<Action>,
+         subscribe: @escaping Subscribe<State> ,
+         referenced storeObject: ReferencedStore<State, Action>) {
+
+        dispatchHandler = { dispatcher($0) }
+        subscriptionHandler = { subscribe($0) }
+        referencedStore = storeObject
+    }
+    
+    func referencedStoreObject() -> AnyStoreObject<State, Action>? {
+        referencedStore.object()
+    }
+
+    func weak() -> AnyStore<State, Action> {
+        AnyStore<State, Action>(
+            dispatcher: dispatchHandler,
+            subscribe: subscriptionHandler,
+            referenced: referencedStore.weak()
+        )
+    }
+}
+
+//MARK: - AsyncActionsExecutor
+
+extension AnyStore {
+    func executeAsyncAction(_ action: Action) {
+        guard let action = action as? (any AsyncAction) else {
+            return
+        }
+
+        action.execute(self.dispatchHandler)
+    }
+}
