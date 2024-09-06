@@ -40,7 +40,7 @@ final class ChildStoreTests: XCTestCase {
 
         var receivedState: StateComposition?
 
-        let observer = Observer<StateComposition> { state, complete in
+        let observer = Observer<StateComposition> { state in
             receivedState = state
             asyncExpectation.fulfill()
             return .active
@@ -65,7 +65,7 @@ final class ChildStoreTests: XCTestCase {
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 2
 
-        let observer = Observer<StateComposition> { receivedState, complete in
+        let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
             lastReceivedState = receivedState
             return .active
@@ -87,7 +87,7 @@ final class ChildStoreTests: XCTestCase {
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 3
 
-        let observer = Observer<StateComposition> { receivedState, complete in
+        let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState)
             return .active
@@ -114,7 +114,7 @@ final class ChildStoreTests: XCTestCase {
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 4
 
-        let observer = Observer<StateComposition> { receivedState, complete in
+        let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
             lastReceivedState = receivedState
             return .active
@@ -134,7 +134,7 @@ final class ChildStoreTests: XCTestCase {
         var lastReceivedState: StateComposition?
         let unsubscriptionProcessedExpectation = expectation(description: "Unsubscription processed for sure")
 
-        let observer = Observer<StateComposition> { state, complete in
+        let observer = Observer<StateComposition> { state in
 
             lastReceivedState = state
            
@@ -186,7 +186,7 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
 
         var receivedState: (root: TestState, local: ChildTestState)?
 
-        let observer = Observer<(TestState, ChildTestState)> { state, complete in
+        let observer = Observer<(TestState, ChildTestState)> { state in
             receivedState = state
             asyncExpectation.fulfill()
             return .active

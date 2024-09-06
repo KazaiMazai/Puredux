@@ -69,7 +69,7 @@ final class StateStoreTests: XCTestCase {
 
         var receivedStateIndex: Int?
 
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             receivedStateIndex = receivedState.currentIndex
             asyncExpectation.fulfill()
             return .active
