@@ -91,12 +91,11 @@ extension CoreStore: StoreObjectProtocol {
 private extension CoreStore {
 
     func send(_ state: State, to observer: Observer<State>) {
-        observer.send(state) { [weak self] status in
-            guard status == .dead else {
-                return
-            }
-
-            self?.syncUnsubscribe(observer: observer)
+        let status = observer.send(state)
+        guard status == .dead else {
+            return
         }
+
+        syncUnsubscribe(observer: observer)
     }
 }

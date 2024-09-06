@@ -42,8 +42,8 @@ final class ChildStoreTests: XCTestCase {
 
         let observer = Observer<StateComposition> { state, complete in
             receivedState = state
-            complete(.active)
             asyncExpectation.fulfill()
+            return .active
         }
 
         childStore.subscribe(observer: observer)
@@ -68,7 +68,7 @@ final class ChildStoreTests: XCTestCase {
         let observer = Observer<StateComposition> { receivedState, complete in
             asyncExpectation.fulfill()
             lastReceivedState = receivedState
-            complete(.active)
+            return .active
         }
 
         childStore.subscribe(observer: observer)
@@ -90,7 +90,7 @@ final class ChildStoreTests: XCTestCase {
         let observer = Observer<StateComposition> { receivedState, complete in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState)
-            complete(.active)
+            return .active
         }
 
         childStore.subscribe(observer: observer)
@@ -117,7 +117,7 @@ final class ChildStoreTests: XCTestCase {
         let observer = Observer<StateComposition> { receivedState, complete in
             asyncExpectation.fulfill()
             lastReceivedState = receivedState
-            complete(.active)
+            return .active
         }
 
         childStore.subscribe(observer: observer)
@@ -137,11 +137,11 @@ final class ChildStoreTests: XCTestCase {
         let observer = Observer<StateComposition> { state, complete in
 
             lastReceivedState = state
-            complete(.dead)
-
+           
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 unsubscriptionProcessedExpectation.fulfill()
             }
+            return .dead
         }
 
         childStore.subscribe(observer: observer)
@@ -188,8 +188,8 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
 
         let observer = Observer<(TestState, ChildTestState)> { state, complete in
             receivedState = state
-            complete(.active)
             asyncExpectation.fulfill()
+            return .active
         }
 
         childStore.subscribe(observer: observer)

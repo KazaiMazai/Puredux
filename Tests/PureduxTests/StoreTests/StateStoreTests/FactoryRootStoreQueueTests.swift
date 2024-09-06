@@ -27,10 +27,9 @@ final class FactoryStateStoreQueueTests: XCTestCase {
         }
 
         let observer = Observer<TestState> { _, complete in
-            complete(.active)
-
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
+            return .active
         }
 
         store.subscribe(observer: observer)

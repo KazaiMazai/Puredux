@@ -29,7 +29,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
             
             let observer = Observer<ReferenceTypeState> { _, complete in
                 store.dispatch(UpdateIndex(index: 1))
-                complete(.active)
+                return .active
             }
 
             store.subscribe(observer: observer)
@@ -47,7 +47,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 store.dispatch(UpdateIndex(index: 1))
-                complete(.dead)
+                return .dead
             }
 
             store.subscribe(observer: observer)
@@ -67,7 +67,7 @@ final class StoreNodeChildStoreObserverRefCycleTests: XCTestCase {
 
             let observer = Observer<ReferenceTypeState> { _, complete in
                 weakStore.dispatch(UpdateIndex(index: 1))
-                complete(.active)
+                return .active
             }
 
             store.subscribe(observer: observer)

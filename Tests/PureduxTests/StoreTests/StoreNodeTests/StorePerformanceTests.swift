@@ -20,9 +20,10 @@ final class StorePerformanceTests: XCTestCase {
 
             let expectation = expectation(description: "finished")
 
-            store.subscribe(observer: Observer { (state, _, _) in
-                guard state.first == 10000 else { return }
+            store.subscribe(observer: Observer { (state, _) in
+                guard state.first == 10000 else { return .active}
                 expectation.fulfill()
+                return .dead
             })
 
             Array(repeating: 1, count: 10000).forEach {
@@ -48,13 +49,14 @@ final class StorePerformanceTests: XCTestCase {
             let expectation = expectation(description: "finished")
             expectation.assertForOverFulfill = false
 
-            store.subscribe(observer: Observer { (state, _, _) in
+            store.subscribe(observer: Observer { (state,_) in
                 guard state.1.first == 10000,
                       state.0.first == 10000
                 else {
-                    return
+                    return .active
                 }
                 expectation.fulfill()
+                return .dead
             })
 
             Array(repeating: 1, count: 10000).forEach {
@@ -84,14 +86,15 @@ final class StorePerformanceTests: XCTestCase {
             let expectation = expectation(description: "finished")
             expectation.assertForOverFulfill = false
 
-            childTwo.subscribe(observer: Observer { (state, _, _) in
+            childTwo.subscribe(observer: Observer { (state,_) in
                 guard state.0.0.first == 10000,
                       state.0.1.first == 10000,
                       state.1.first == 10000
                 else {
-                    return
+                    return .active
                 }
                 expectation.fulfill()
+                return .dead
             })
 
             Array(repeating: 1, count: 10000).forEach {
@@ -125,16 +128,17 @@ final class StorePerformanceTests: XCTestCase {
             let expectation = expectation(description: "finished")
             expectation.assertForOverFulfill = false
 
-            childThree.subscribe(observer: Observer { (state, _, _) in
+            childThree.subscribe(observer: Observer { (state,_) in
                 guard state.0.0.0.first == 10000,
                       state.0.0.1.first == 10000,
                       state.0.1.first == 10000,
                       state.1.first == 10000
                 else {
-                    return
+                    return .active
                 }
 
                 expectation.fulfill()
+                return .dead
             })
 
             Array(repeating: 1, count: 10000).forEach {

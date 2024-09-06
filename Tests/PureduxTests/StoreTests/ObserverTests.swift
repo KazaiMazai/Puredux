@@ -16,13 +16,13 @@ final class ObserverTests: XCTestCase {
 
         let asyncExpectation = expectation(description: "Observer handler")
 
-        let observer = Observer<Int> { state, complete in
+        let observer = Observer<Int> { state in
             asyncExpectation.fulfill()
             XCTAssertEqual(state, extectedState)
-            complete(.active)
+            return .active
         }
 
-        observer.send(extectedState) { _  in }
+        let _ = observer.send(extectedState) 
 
         waitForExpectations(timeout: timeout)
     }
@@ -30,19 +30,13 @@ final class ObserverTests: XCTestCase {
     func test_WhenSendToObserver_ThenObserverStatusReceived() {
         let state = 100
         let extectedStatus = ObserverStatus.active
-
-        let asyncExpectation = expectation(description: "Observer status handler")
-
-        let observer = Observer<Int> { _, complete in
-            complete(extectedStatus)
+ 
+        let observer = Observer<Int> { _ in
+            return extectedStatus
         }
 
-        observer.send(state) { receivedStatus  in
-            asyncExpectation.fulfill()
-            XCTAssertEqual(extectedStatus, receivedStatus)
-        }
-
-        waitForExpectations(timeout: timeout)
+        let receivedStatus = observer.send(state)
+        XCTAssertEqual(extectedStatus, receivedStatus)
     }
 
     func test_WhenObserverObjectDeallocated_ThenObserverDies() {
@@ -50,16 +44,17 @@ final class ObserverTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 2
         var someClass: ReferenceTypeObserver? = ReferenceTypeObserver()
 
-        let observer = Observer<Int>(someClass!) { _, complete in
+        let observer = Observer<Int>(someClass!) { _ in
             asyncExpectation.fulfill()
-            complete(.active)
+            return .active
         }
 
-        observer.send(100) { _  in }
-        observer.send(200) { _  in }
+        let _ = observer.send(100)
+        let _ = observer.send(200)
         someClass = nil
 
-        observer.send(200) { status in XCTAssertEqual(status, .dead)}
+        let status = observer.send(200)
+        XCTAssertEqual(status, .dead)
 
         waitForExpectations(timeout: timeout)
     }
@@ -69,13 +64,14 @@ final class ObserverTests: XCTestCase {
 
         let someClass = ReferenceTypeObserver()
 
-        let observer = Observer<Int>(someClass) { _, complete in
+        let observer = Observer<Int>(someClass) { _ in
             asyncExpectation.fulfill()
-            complete(.active)
+            return .active
         }
 
-        observer.send(100) { status in XCTAssertEqual(status, .active) }
-
+        let status = observer.send(100)
+        XCTAssertEqual(status, .active)
+        
         waitForExpectations(timeout: timeout)
     }
 
@@ -84,14 +80,14 @@ final class ObserverTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 1
         let someClass = ReferenceTypeObserver()
 
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _, complete in
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _ in
             asyncExpectation.fulfill()
-            complete(.active)
+            return .active
         }
 
-        observer.send(300) { _ in }
-        observer.send(300) { _ in }
-        observer.send(300) { _ in }
+        let _ = observer.send(300)
+        let _ = observer.send(300)
+        let _ = observer.send(300)
 
         waitForExpectations(timeout: timeout)
     }
@@ -101,14 +97,14 @@ final class ObserverTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 1
         let someClass = ReferenceTypeObserver()
 
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _, complete in
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .alwaysEqual) { _ in
             asyncExpectation.fulfill()
-            complete(.active)
+            return .active
         }
 
-        observer.send(1) { _ in }
-        observer.send(2) { _ in }
-        observer.send(3) { _ in }
+        let _ = observer.send(1)
+        let _ = observer.send(2)
+        let _ = observer.send(3)
 
         waitForExpectations(timeout: timeout)
     }
@@ -118,14 +114,14 @@ final class ObserverTests: XCTestCase {
         asyncExpectation.expectedFulfillmentCount = 3
         let someClass = ReferenceTypeObserver()
 
-        let observer = Observer<Int>(someClass, removeStateDuplicates: .asEquatable) { _, complete in
+        let observer = Observer<Int>(someClass, removeStateDuplicates: .asEquatable) { _ in
             asyncExpectation.fulfill()
-            complete(.active)
+            return .active
         }
 
-        observer.send(1) { _ in }
-        observer.send(2) { _ in }
-        observer.send(3) { _ in }
+        let _ = observer.send(1)
+        let _ = observer.send(2)
+        let _ = observer.send(3)
 
         waitForExpectations(timeout: timeout)
     }

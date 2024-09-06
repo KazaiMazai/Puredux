@@ -72,8 +72,8 @@ final class FactoryStateStoreTests: XCTestCase {
 
         let observer = Observer<TestState> { receivedState, complete in
             receivedStateIndex = receivedState.currentIndex
-            complete(.active)
             asyncExpectation.fulfill()
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -102,7 +102,7 @@ final class FactoryStateStoreTests: XCTestCase {
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -131,7 +131,7 @@ final class FactoryStateStoreTests: XCTestCase {
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -162,7 +162,7 @@ final class FactoryStateStoreTests: XCTestCase {
         let observer = Observer<TestState> { receivedState, complete in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -190,7 +190,7 @@ final class FactoryStateStoreTests: XCTestCase {
 
         let observer = Observer<TestState> { receivedState, complete in
             expectations[receivedState.currentIndex].fulfill()
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -222,7 +222,7 @@ final class FactoryStateStoreTests: XCTestCase {
         let observer = Observer<TestState> { receivedState, complete in
 
             observerLastReceivedStateIndex = receivedState.currentIndex
-            complete(.dead)
+            return .dead
         }
 
         store.subscribe(observer: observer)

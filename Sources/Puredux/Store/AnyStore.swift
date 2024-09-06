@@ -49,9 +49,9 @@ public extension AnyStore {
         AnyStore<T, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state in
                     let localState = transform(state)
-                    localStateObserver.send(localState, complete: complete)
+                    return localStateObserver.send(localState)
                 })
             },
             referenced: referencedStore.map { $0.map(transform) }
@@ -73,9 +73,9 @@ public extension AnyStore {
         AnyStore<T?, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
-                subscribe(observer: Observer<State>(id: localStateObserver.id) { state, complete in
+                subscribe(observer: Observer<State>(id: localStateObserver.id) { state in
                     let localState = transform(state)
-                    localStateObserver.send(localState, complete: complete)
+                    return localStateObserver.send(localState)
                 })
             },
             referenced: referencedStore.map { $0.map(transform) }

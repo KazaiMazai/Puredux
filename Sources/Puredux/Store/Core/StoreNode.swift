@@ -40,24 +40,22 @@ final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore:
     }
 
     private lazy var parentObserver: Observer<ParentStore.State> = {
-        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] parentState, complete in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] parentState,_  in
             guard let self else {
-                complete(.dead)
-                return
+                return (.dead, parentState)
             }
             self.observe(parentState)
-            complete(.active)
+            return (.active, parentState)
         }
     }()
 
     private lazy var localObserver: Observer<LocalState> = {
-        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] _, complete in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] localState,_ in
             guard let self else {
-                complete(.dead)
-                return
+                return (.dead, localState)
             }
 
-            complete(.active)
+            return (.active, localState)
         }
     }()
 }
@@ -149,12 +147,11 @@ private extension StoreNode {
     }
 
     func send(_ state: State, to observer: Observer<State>) {
-        observer.send(state) { [weak self] status in
-            guard status == .dead else {
-                return
-            }
-
-            self?.syncUnsubscribe(observer: observer)
+        let status = observer.send(state) 
+        guard status == .dead else {
+            return
         }
+
+        syncUnsubscribe(observer: observer)
     }
 }
