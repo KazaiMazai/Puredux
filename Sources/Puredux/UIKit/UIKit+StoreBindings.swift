@@ -20,7 +20,7 @@ extension UIView: UIStateObserver { }
 public protocol UIStateObserver: AnyObject { }
 
 extension UIStateObserver {
-    var cancellable: AnyCancellableEffect { AnyCancellableEffect(self) }
+    var cancellable: CancellableObserver { CancellableObserver(self) }
 }
 
 public extension UIStateObserver {

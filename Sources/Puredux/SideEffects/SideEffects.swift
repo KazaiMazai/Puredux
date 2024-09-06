@@ -317,9 +317,8 @@ extension Store {
 }
 
 extension Store {
-    
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self where State == Effect.State {
         
@@ -327,7 +326,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectCollection(_ cancellable: AnyCancellableEffect,
+    func effectCollection(_ cancellable: CancellableObserver,
                           on queue: DispatchQueue = .main,
                           create: @escaping CreateEffectForState) -> Self
     
@@ -339,7 +338,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectOnChange(_ cancellable: AnyCancellableEffect,
+    func effectOnChange(_ cancellable: CancellableObserver,
                         on queue: DispatchQueue = .main,
                         create: @escaping CreateEffect) -> Self 
     where State: Equatable {
@@ -348,7 +347,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectToggle(_ cancellable: AnyCancellableEffect,
+    func effectToggle(_ cancellable: CancellableObserver,
                       on queue: DispatchQueue = .main,
                       create: @escaping CreateEffect) -> Self where State == Bool {
         
@@ -358,7 +357,7 @@ extension Store {
 
 extension Store {
     @discardableResult
-    func effect<Effects>(_ cancellable: AnyCancellableEffect,
+    func effect<Effects>(_ cancellable: CancellableObserver,
                          collection keyPath: KeyPath<State, Effects>,
                          on queue: DispatchQueue = .main,
                          create: @escaping CreateEffectForState) -> Self
@@ -386,7 +385,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 _ keyPath: KeyPath<State, Effect.State>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
@@ -410,7 +409,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect<T>(_ cancellable: AnyCancellableEffect,
+    func effect<T>(_ cancellable: CancellableObserver,
                    onChange keyPath: KeyPath<State, T>,
                    on queue: DispatchQueue = .main,
                    create: @escaping CreateEffect) -> Self where T: Equatable {
@@ -433,7 +432,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 toggle keyPath: KeyPath<State, Bool>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
@@ -456,7 +455,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,

@@ -12,7 +12,7 @@ import XCTest
 
 final class CancellableSideEffectsCollectionTests: XCTestCase {
     let timeout: TimeInterval = 3.0
-    let observer = AnyCancellableEffect()
+    let observer = CancellableObserver()
 
     func test_WhenStateIsRun_EffectExecuted() {
         let store = StateStore<[Effect.State], Bool>(

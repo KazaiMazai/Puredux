@@ -7,20 +7,20 @@
 
 import Foundation
 
-class AnyCancellableEffect {
-    class EffectStateObserver { }
+class CancellableObserver {
+    private class AnyStateObserver { }
 
-    var observer: AnyObject = EffectStateObserver()
+    var observer: AnyObject = AnyStateObserver()
 
     init(_ observer: AnyObject) {
         self.observer = observer
     }
 
     init() {
-        self.observer = EffectStateObserver()
+        self.observer = AnyStateObserver()
     }
 
     func cancel() {
-        observer = EffectStateObserver()
+        observer = AnyStateObserver()
     }
 }
