@@ -1,5 +1,7 @@
 # Performance
 
+Discover ways to enhance the performance of features developed with Puredux.
+
 ## Overview
 
 Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
@@ -10,12 +12,21 @@ Puredux offers a robust strategy for addressing the performance challenges commo
 - **UI updates debouncing**: Prevents excessive UI updates by intelligently controlling the frequency of updates.
 - **Two-step UI updates with background task offloading**: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
 
+As your application and its features expand, you may encounter performance issues, such as reducers taking longer to execute or SwiftUI view
+bodies refreshing more frequently than anticipated. This article highlights several common challenges when building features in Puredux and provides solutions to address them.
 
-## Quality of Service
+## Reducers Execution
 
 Puredux is designed in a way that allows you to implement state and reducers without any dependencies.
 
-This is done intentionally to offload all store work to the background without worrying much about data races, access synchronization, and so on, leaving the main thread exclusively for the UI.
+This is done intentionally to be able to offload all stores reducers' work to the background without worrying much about data races, access
+synchronization with dependencies.
+
+As the result reducers operate in background leaving the main thread exclusively for the UI.
+
+
+## QoS Tuning
+
 
 When creating the root store, you can choose the quality of service for the queue it will operate on.
 
@@ -27,7 +38,7 @@ When creating the root store, you can choose the quality of service for the queu
  )
 ```
 
-## Deduplicated State Updates
+## State Changes Deduplication
 
 Puredux supports state change deduplication to enable granular UI updates based on changes to specific parts of the state.
 

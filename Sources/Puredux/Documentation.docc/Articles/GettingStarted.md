@@ -1,5 +1,6 @@
 # Getting Started
 
+
 ## Installation
 
 ### Swift Package Manager
@@ -47,10 +48,8 @@ extension Injected {
 }
 ```
 
-## UI Bindings
+## SwiftUI Bindings
 
-
-### SwiftUI 
 
 ```swift
 
@@ -84,7 +83,7 @@ struct ContentView: View  {
 
 ```
 
-### UIKit
+## UIKit Binginds
  
 ```swift
 
