@@ -1,6 +1,6 @@
 # Migrating to 1.3.0 
 
-There are a few breaking changes related to the replacement of StoreObject with a StateStore.
+A few breaking changes related to the replacement of StoreObject with a StateStore.
 
 ## Referenced StoreObject
 StoreObject used to be a class, StateStore is a struct.

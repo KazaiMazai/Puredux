@@ -1,6 +1,8 @@
 # Migrating to 2.0
  
-## Getting Prepared
+There are big changes taking place.
+
+## Getting Ready for 2.0
 
 1. Update for the latest 1.x version
 2. Follow deprecation notices to get prepared for smooth migration
@@ -36,7 +38,7 @@ Now there is no need in Action Interceptor any more, built-in `AsyncActions` pro
 - protocol AsyncAppAction: Action {
 -     func execute(completeHandler: @escaping (AppAction) -> Void)
 - }
-+ protocol AsyncAppAction: AsyncAction & AppAction {}
++ protocol AsyncAppAction: AsyncAction & Action {}
 
 - let storeFactory = StoreFactory<AppState, Action>(
 -     initialState: initialState, 
@@ -152,7 +154,7 @@ At this point, all the deprecations mentioned above will be removed.
 
 Still, there will be a few things to be updated.
 
-### Store and StoreProtocol Changes
+### Store and StoreProtocol Breaking Changes
 
 `Store<State, Action>`  was renamed to `AnyStoreStore<State, Action>`
 
@@ -168,4 +170,25 @@ Still, there will be a few things to be updated.
 - any StoreProtocol<State, Action> 
 + any Store<State, Action>
 
+```
+
+### Observer Changes
+
+There were breaking changes in the `Observer<T>` API. 
+Due to store internals changes, observer doesn't need to have a callback closure and now returns its status in a sync manner 
+
+ 
+
+Due to store internals changes, observer doesn't need to have a callback closure and now returns its status in a sync manner 
+
+```diff
+-let observer = Observer { state, completeHandler in
+-    // handle new state
+-    return completeHandler(.active)
+-}
+
++let observer = Observer { state in
++    // handle new state
++    return .active
++}
 ```
