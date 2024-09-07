@@ -5,7 +5,6 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ## Overview
 
-
 - **Unidirectional MVI Architecture**: Supports a unidirectional data flow to ensure predictable state management and consistency.
 - **SwiftUI and UIKit Compatibility**: Works seamlessly with both SwiftUI and UIKit, offering bindings for easy integration.
 - **Single Store/Multiple Stores Design**: Supports both single and multiple store setups for flexible state management of apps of any size and complexity.

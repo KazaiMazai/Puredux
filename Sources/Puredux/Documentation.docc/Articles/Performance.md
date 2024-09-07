@@ -147,6 +147,8 @@ which may include mapping `AttributedStrings`, using `DateFormatter`, and more. 
 
 Puredux allows you to add a presentational layer in the state change processing pipeline between the store and the UI. This enables you to offload these computations to a background queue, keeping the UI responsive.
 
+### SwiftUI View Example
+
 ```swift
 struct MyView: View {
     @State var store: StoreOf(\.root).with(ViewState()) { state, action in 
@@ -172,8 +174,7 @@ struct MyView: View {
 }
 ```
 
-<details><summary>Click to expand UIViewController example</summary>
-<p>
+### UIViewController Example
 
  ```swift
  class MyViewController: ViewController  {
@@ -201,5 +202,4 @@ struct MyView: View {
      }
 }
 ```
-</p>
-</details>
+
