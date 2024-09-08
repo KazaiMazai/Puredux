@@ -67,11 +67,61 @@ store.dispatch(FetchDataAction())
 
 State-driven Side Effects offer more advanced capabilities for handling asynchronous operations. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and synchronization with the UI or other parts of the application. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
  
+ **Step 1: Add effect state to the state**
+ 
  ```swift
- store.effect(\.workExecutionState, on: .global(qos: .background)) { appState, dispatch in
-    Effect {
-        // Do some heavy lifting here
-        // dispatch(...) the result action when finished
+struct AppState {
+    private(set) var theJob: Effect.State = .idle()
+}
+```
+
+**Step 2: Add related actions**
+ 
+ ```swift 
+enum Action {
+    case jobSuccess(Something)
+    case startJob
+    case cancelJob
+    case jobFailure(Error)
+}
+ 
+```
+
+ **Step 3: Handle actions in the reducer**
+ 
+```swift
+extension AppState {
+    mutating func reduce(_ action: Action) {
+        switch action {
+        case .jobSuccess:
+            theJob.succeed()
+        case .startJob:
+            theJob.run()
+        case .cancelJob:
+            theJob.cancel()
+        case .jobFailure(let error):
+            theJob.retryOrFailWith(error)
+        }
     }
 }
+ ```
+ 
+**Step 4: Add SideEffect to the store:**
+ 
+```swift
+let store = StateStore<AppState, Action>(AppState()) { state, action in 
+    state.reduce(action) 
+}
+.effect(\.theJob, on: .main) { appState, dispatch in
+    Effect {
+        do {
+            let result = try await apiService.fetch()
+            dispatch(.jobSuccess(result))
+        } catch {
+            dispatch(.jobFailure(error))
+        }
+    }
+}
+
+store.dispatch(.startJob)
 ```
