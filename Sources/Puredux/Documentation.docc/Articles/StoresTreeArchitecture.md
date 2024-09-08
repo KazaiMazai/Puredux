@@ -39,7 +39,7 @@ let featureOne = root.with(FeatureOne()) { appState, action in
 }
 ```
 
-**tep 2: Feature Two**
+**Step 3: Feature Two**
 
 ```swift
 
@@ -66,9 +66,14 @@ let screenTwo = featureTwo.with(ScreenTwo()) { state, action in
 }
 
 ```
-## Tree Hierarchy
 
-We can connect the tree above to the UI we will end up with the following hierarchy:
+At this point, we've built an app structure consisting of a shared state, two independent features, and added two screen states to the second feature. We've also connected side effects to them, integrating everything together.
+
+Puredix essentially allows us to build a fully functioning app and control it by dispatching actions—all without the need for an actual UI or even a single mock.
+
+This is a powerful Puredix feature, enabling the testing of interactions between different modules and components of an application to ensure they work correctly at almost any scope: the whole app, a specific feature, or even an individual screen.
+
+For the real app, we would also connect the UI to stores, transforming it into an app with the following architecture:
 
 
 ```text
@@ -100,4 +105,14 @@ We can connect the tree above to the UI we will end up with the following hierar
                           | UI |  | Side Effects |    | UI |
                           +----+  +--------------+    +----+
 ```
-*/
+
+
+## Stores Interactions Within the Tree
+
+Stores interact with each other within the tree structure according to the following key rules:
+
+- **Actions propagate upstream**: When an action is dispatched from a child store, it travels upward through the tree, reaching each parent store's reducer until the root. This ensures that changes originating in any part of the app are handled consistently, enabling coordinated state management across the entire application.
+
+- **State updates propagate downstream**: Once the root store processes the action and updates the state, the new state is propagated downward through the tree, reaching all child stores. This ensures consistent state updates throughout the app, with changes eventually reaching all observers.
+
+This flow ensures that actions taken at any point in the app are seamlessly reflected across the entire state tree, providing a robust and scalable architecture for managing complex app behavior.
