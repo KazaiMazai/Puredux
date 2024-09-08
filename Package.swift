@@ -35,7 +35,11 @@ let package = Package(
             dependencies: [
                 "PureduxMacros",
                 "PureduxMacrosPlugin"
-            ]),
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+       ),
 
         .testTarget(
             name: "PureduxTests",
