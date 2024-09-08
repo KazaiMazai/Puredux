@@ -13,7 +13,7 @@ Make your app driven by business logic, not by the view hierarchy.
 
 ## Bulding the Hierarchy
 
-### Step 1: Root Store 
+**Step 1: Root Store**
 
 ```swift
 let root = StateStore<AppState, Action>(AppState()) { state, action in 
@@ -26,7 +26,7 @@ let root = StateStore<AppState, Action>(AppState()) { state, action in
 }
 ```
 
-### Step 2: Feature One 
+**Step 2: Feature One**
 
 ```swift
 let featureOne = root.with(FeatureOne()) { appState, action in 
@@ -39,7 +39,7 @@ let featureOne = root.with(FeatureOne()) { appState, action in
 }
 ```
 
-### Step 2: Feature Two
+**tep 2: Feature Two**
 
 ```swift
 
