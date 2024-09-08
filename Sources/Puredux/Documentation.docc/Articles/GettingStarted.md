@@ -65,7 +65,8 @@ At its core, Puredux follows a predictable state management pattern that consist
 
 Let's break down a typical store setup using Puredux.
 
-### 1. Define the Action Protocol:
+**1. Define the Action Protocol**:
+
 Actions in Puredux follow a protocol that ensures they can be handled uniformly.
 
 ```swift
@@ -74,7 +75,7 @@ protocol Action {
 }
 ```
 
-### 2. Define the AppState:
+**2. Define the AppState**:
 
 The application’s state can be represented by a struct, which will store the data relevant to your app. 
 The reduce method defines how the state will change in response to an action.
@@ -89,7 +90,8 @@ struct AppState {
     }
 }
 ```
-### 3. Define the Store and Inject it:
+**3. Define the Store and Inject it**:
+
 Using the root AppState, we create a store that integrates actions and the state. 
 
 The store’s role is to manage actions and apply the reducer function whenever an action is dispatched.

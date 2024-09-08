@@ -23,6 +23,17 @@ There are big changes taking place.
 
 ```
 
+### Store's store() method was removed
+
+Store method was deprecated previouisly.
+The closest thing to the removed `store()` method is `eraseToAnyStore()`. 
+
+```diff
+let store = StateStore(...)
+
+- store.store()
++ store.eraseToAnyStore()
+
 ### Observer Changes
 
 There were breaking changes in the `Observer<T>` API. 
@@ -30,13 +41,13 @@ Due to store internals changes, observer doesn't need to have a callback closure
 
 
 ```diff
--let observer = Observer { state, completeHandler in
+- let observer = Observer { state, completeHandler in
 -    // handle new state
 -    return completeHandler(.active)
--}
+- }
 
-+let observer = Observer { state in
++ let observer = Observer { state in
 +    // handle new state
 +    return .active
-+}
++ } 
 ```
