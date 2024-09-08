@@ -1,4 +1,4 @@
-# Migrating 1.2.x
+# Migrating to 1.2.x
 
 Puredux was refactored from a set of packages to a single monorepository.
 
@@ -23,33 +23,20 @@ https://github.com/KazaiMazai/Puredux
 Remove the individual repositories:
 
 ```
-- https://github.com/KazaiMazai/PureduxUIKit
- 
-- https://github.com/KazaiMazai/PureduxSwiftUI
-  
-- https://github.com/KazaiMazai/PureduxStore
+1. https://github.com/KazaiMazai/PureduxUIKit
+2. https://github.com/KazaiMazai/PureduxSwiftUI
+3. https://github.com/KazaiMazai/PureduxStore
 ```
 
 ## Fix Imports
 
-Find and relace all the occurences of:
+Find and replace all the occurences:
 
-```swift
-import PureduxSwiftUI
-```
+```diff
+- import PureduxSwiftUI
+- import PureduxUIKit
+- import PireduxStore
 
-```
-import PureduxUIKit
-```
-
-```
-import PireduxStore
-
-```
-
-on 
-
-```swift
-import Puredux
++ import Puredux
 
 ```

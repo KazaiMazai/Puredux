@@ -1,11 +1,15 @@
-# Migrating to 2.0
- 
-## Getting Prepared
+# Migrating to 1.9.x 
 
-1. Update for the latest 1.x version
-2. Follow deprecation notices to get prepared for smooth migration
+Getting Ready for 2.0. 
 
-Here is an overview of what to be changed:
+## Overview
+
+There are no breaking changes, but a big number of deprecations that will be needed to fix before migrating to 2.0
+Generally, updating to the latest 1.9.x and following deprecation notices might go smoothly enough. 
+
+Here are the details of the changes.
+
+## Store Changes
 
 ### StoreFactory Changes
 
@@ -36,7 +40,7 @@ Now there is no need in Action Interceptor any more, built-in `AsyncActions` pro
 - protocol AsyncAppAction: Action {
 -     func execute(completeHandler: @escaping (AppAction) -> Void)
 - }
-+ protocol AsyncAppAction: AsyncAction & AppAction {}
++ protocol AsyncAppAction: AsyncAction & Action {}
 
 - let storeFactory = StoreFactory<AppState, Action>(
 -     initialState: initialState, 
@@ -90,6 +94,8 @@ Now there is no need in Action Interceptor any more, built-in `AsyncActions` pro
 
 Follow deprecation notices documentation for more details.
 
+## UI Related Changes
+
 ### SwiftUI Bindings Changes
 
  Puredux 2.0 bind Stores with Views differently.
@@ -118,7 +124,7 @@ Follow deprecation notices documentation for more details.
 
 Follow deprecation notices documentation for more details.
 
-## UIKit Bindings changes
+### UIKit Bindings changes
 
 The Presentable API is still available, so only minor changes are needed.
 
@@ -144,28 +150,4 @@ The Presentable API is still available, so only minor changes are needed.
 +         removeStateDuplicates: .keyPath(\.lastUpdated)
 +     )
     
-```
-
-## Update to 2.0.x Package Version
-
-At this point, all the deprecations mentioned above will be removed.
-
-Still, there will be a few things to be updated.
-
-### Store and StoreProtocol Changes
-
-`Store<State, Action>`  was renamed to `AnyStoreStore<State, Action>`
-
-```diff
-- Store<State, Action> 
-+ AnyStore<State, Action>
-
-```
-
-`StoreProtocol<State, Action>`  was renamed to `Store<State, Action>`
- 
-```diff
-- any StoreProtocol<State, Action> 
-+ any Store<State, Action>
-
 ```

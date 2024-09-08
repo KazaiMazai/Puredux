@@ -1,8 +1,10 @@
-# Migrating to 1.3.0 
+# Migrating to 1.3.x
 
-There are a few breaking changes related to the replacement of StoreObject with a StateStore.
+A few breaking changes related to the replacement of StoreObject with a StateStore.
 
-## Referenced StoreObject
+## Store Changes
+
+### Referenced StoreObject
 StoreObject used to be a class, StateStore is a struct.
 
 StoreObject that were weakly referenced wll require a fix.
@@ -22,7 +24,7 @@ Since is StoreObjectnow a typealias of StateStore the compiler will point you to
 + }
 ```
 
-## StoreObject constructor
+### StoreObject constructor
 
 The following StoreObject's constructor is no longer available. It was not needed except for the cases when you wanted to mock your StoreObject.
 

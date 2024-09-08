@@ -260,20 +260,29 @@ store.dispatch(FetchDataAction())
 
 Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
 
-- **Reducers background execution**: Offloads reducer execution to background queue to improve overall app performance.
+- **Reducers background execution**: Offloads reducer logic to background threads to improve overall app performance.
 - **State updates deduplication**: Minimizes redundant state updates, reducing unnecessary re-renders and improving processing efficiency.
+- **Granular UI updates**: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
 - **UI updates debouncing**: Prevents excessive UI updates by intelligently controlling the frequency of updates.
 - **Two-step UI updates with background task offloading**: Heavy computational tasks are handled in the background, with UI updates executed in a structured two-step process to ensure smooth, lag-free interactions.
-- **Granular UI updates**: Ensures only the necessary parts of the UI are updated, enhancing responsiveness.
 
-### Reducers Background Execution
+As your application and its features expand, you may encounter performance issues, such as reducers taking longer to execute or SwiftUI view
+bodies refreshing more frequently than anticipated. This article highlights several common challenges when building features in Puredux and provides solutions to address them.
+
+### Reducers Execution
 
 Puredux is designed in a way that allows you to implement state and reducers without any dependencies.
 
-This is done intentionally to offload all store work to the background without worrying much about data races, access synchronization, and so on, leaving the main thread exclusively for the UI.
+This is done intentionally to be able to offload all stores reducers' work to the background without worrying much about data races, access
+synchronization with dependencies.
 
-So yes. Reducers are executed in bacckground. When creating the root store, you can choose 
-the quality of service for the queue it will operate on. It will define the whole store tree hierarchy.
+As the result reducers operate in background leaving the main thread exclusively for the UI.
+
+
+### QoS Tuning
+
+
+When creating the root store, you can choose the quality of service for the queue it will operate on.
 
 ```swift
  let store = StateStore(

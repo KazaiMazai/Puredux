@@ -1,9 +1,9 @@
-# Puredux
-
-## Overview
+# ``Puredux``
 
 Puredux is an architecture framework for SwiftUI and UIKit designed to
 streamline state management with a focus on unidirectional data flow and separation of concerns.
+
+## Overview
 
 - **Unidirectional MVI Architecture**: Supports a unidirectional data flow to ensure predictable state management and consistency.
 - **SwiftUI and UIKit Compatibility**: Works seamlessly with both SwiftUI and UIKit, offering bindings for easy integration.
@@ -15,7 +15,15 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ### Essentials
 
+- <doc:GettingStarted>
 - <doc:StoresTreeArchitecture>
 - <doc:SideEffects>
 - <doc:Performance>
 
+### Migration guides
+
+- <doc:MigrationGuides>
+
+### Migration guides
+
+- <doc:Archive>
