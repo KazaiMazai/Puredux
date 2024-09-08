@@ -7,7 +7,8 @@
 
 import Foundation
 
-protocol StoreObjectProtocol<State, Action>: AnyObject, SyncStore, Sendable {
+protocol StoreObjectProtocol<State, Action>: AnyObject, SyncStore, Sendable where Action: Sendable,
+                                                                                  State: Sendable {
     associatedtype Action
     associatedtype State
 
@@ -36,8 +37,12 @@ protocol SyncStore<State, Action> {
 extension StoreObjectProtocol {
     func createChildStore<LocalState, ResultState>(
         initialState: LocalState,
-        stateMapping: @escaping (Self.State, LocalState) -> ResultState,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action> {
+        stateMapping: @Sendable @escaping (Self.State, LocalState) -> ResultState,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action>
+    
+    where
+    LocalState: Sendable,
+    ResultState: Sendable {
 
             StoreNode<Self, LocalState, ResultState, Action>(
                 initialState: initialState,
@@ -49,8 +54,12 @@ extension StoreObjectProtocol {
 
     func createChildStore<T, LocalState>(
         initialState: LocalState,
-        transform: @escaping (State) -> T,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<(T, LocalState), Action> {
+        transform: @Sendable @escaping (State) -> T,
+        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<(T, LocalState), Action>
+        
+    where
+    LocalState: Sendable,
+    T: Sendable {
 
             StoreNode(
                 initialState: initialState,
@@ -60,7 +69,7 @@ extension StoreObjectProtocol {
             )
         }
 
-    func map<T>(transform: @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
+    func map<T: Sendable>(transform: @Sendable @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
             StoreNode(
                 initialState: Void(),
                 stateMapping: { state, _ in transform(state) },

@@ -15,6 +15,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: Sendable
     where
     LocalState: Sendable,
     State: Sendable,
+    Action: Sendable,
     ParentStore: StoreObjectProtocol,
     ParentStore.Action == Action {
     
@@ -26,7 +27,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: Sendable
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
-         stateMapping:@Sendable @escaping (ParentStore.State, LocalState) -> State,
+         stateMapping: @Sendable @escaping (ParentStore.State, LocalState) -> State,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
 

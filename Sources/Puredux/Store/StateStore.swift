@@ -53,7 +53,9 @@ public typealias Reducer<State, Action> = (inout State, Action) -> Void
     - State: The type of the state managed by the store.
     - Action: The type of actions that can be dispatched to the store.
  */
-public struct StateStore<State, Action> {
+public struct StateStore<State, Action> where State: Sendable,
+                                              Action: Sendable {
+    
     let storeObject: AnyStoreObject<State, Action>
 
     /**
