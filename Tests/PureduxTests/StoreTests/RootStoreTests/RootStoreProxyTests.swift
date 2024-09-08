@@ -50,10 +50,10 @@ final class StateStoreProxyTests: XCTestCase {
 
         var receivedStateIndex: Int?
 
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
             receivedStateIndex = receivedState
-            complete(.active)
             asyncExpectation.fulfill()
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -81,10 +81,10 @@ final class StateStoreProxyTests: XCTestCase {
         let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -112,10 +112,10 @@ final class StateStoreProxyTests: XCTestCase {
         let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -145,10 +145,10 @@ final class StateStoreProxyTests: XCTestCase {
         let store = stateStore.map { $0.currentIndex }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -176,10 +176,9 @@ final class StateStoreProxyTests: XCTestCase {
 
         let store = stateStore.map { $0.currentIndex }
 
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
             expectations[receivedState].fulfill()
-
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -211,10 +210,10 @@ final class StateStoreProxyTests: XCTestCase {
         let store = stateStore.map { $0.currentIndex }
 
         var observerLastReceivedStateIndex: Int?
-        let observer = Observer<Int> { receivedState, complete in
+        let observer = Observer<Int> { receivedState in
 
             observerLastReceivedStateIndex = receivedState
-            complete(.dead)
+            return .dead
         }
 
         store.subscribe(observer: observer)

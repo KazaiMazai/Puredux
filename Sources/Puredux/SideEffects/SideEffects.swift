@@ -64,13 +64,13 @@ public extension Store {
         
         subscribe(observer: Observer(
             storeObject(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let effect = state[keyPath: keyPath]
                 effectOperator.run(effect, on: queue) { _ in
                     create(state, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+                
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -136,13 +136,13 @@ public extension Store {
         
         subscribe(observer: Observer(
             storeObject(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
                     create(state, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+               
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -201,13 +201,13 @@ public extension Store {
         
         subscribe(observer: Observer(
             storeObject(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
                     create(state, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+               
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -276,14 +276,13 @@ public extension Store {
         
         subscribe(observer: Observer(
             storeObject(),
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
-                
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let allEffects = state[keyPath: keyPath]
                 effectOperator.run(allEffects, on: queue) { effectState in
                     create(state, effectState, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+               
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -304,12 +303,12 @@ extension Store {
         
         subscribe(observer: Observer(
             storeObject(),
-            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+               
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -318,9 +317,8 @@ extension Store {
 }
 
 extension Store {
-    
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self where State == Effect.State {
         
@@ -328,7 +326,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectCollection(_ cancellable: AnyCancellableEffect,
+    func effectCollection(_ cancellable: CancellableObserver,
                           on queue: DispatchQueue = .main,
                           create: @escaping CreateEffectForState) -> Self
     
@@ -340,7 +338,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectOnChange(_ cancellable: AnyCancellableEffect,
+    func effectOnChange(_ cancellable: CancellableObserver,
                         on queue: DispatchQueue = .main,
                         create: @escaping CreateEffect) -> Self 
     where State: Equatable {
@@ -349,7 +347,7 @@ extension Store {
     }
     
     @discardableResult
-    func effectToggle(_ cancellable: AnyCancellableEffect,
+    func effectToggle(_ cancellable: CancellableObserver,
                       on queue: DispatchQueue = .main,
                       create: @escaping CreateEffect) -> Self where State == Bool {
         
@@ -359,7 +357,7 @@ extension Store {
 
 extension Store {
     @discardableResult
-    func effect<Effects>(_ cancellable: AnyCancellableEffect,
+    func effect<Effects>(_ cancellable: CancellableObserver,
                          collection keyPath: KeyPath<State, Effects>,
                          on queue: DispatchQueue = .main,
                          create: @escaping CreateEffectForState) -> Self
@@ -372,14 +370,14 @@ extension Store {
         
         subscribe(observer: Observer(
             cancellable.observer,
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 
                 let allEffects = state[keyPath: keyPath]
                 effectOperator.run(allEffects, on: queue) { effectState in
                     create(state, effectState, weakStore.dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+               
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -387,7 +385,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 _ keyPath: KeyPath<State, Effect.State>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
@@ -396,14 +394,14 @@ extension Store {
         
         subscribe(observer: Observer(
             cancellable.observer,
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 
                 let effect = state[keyPath: keyPath]
                 effectOperator.run(effect, on: queue) { _ in
                     create(state, dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+                
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -411,7 +409,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect<T>(_ cancellable: AnyCancellableEffect,
+    func effect<T>(_ cancellable: CancellableObserver,
                    onChange keyPath: KeyPath<State, T>,
                    on queue: DispatchQueue = .main,
                    create: @escaping CreateEffect) -> Self where T: Equatable {
@@ -420,13 +418,13 @@ extension Store {
         
         subscribe(observer: Observer(
             cancellable.observer,
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
                     create(state, dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+                
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -434,7 +432,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 toggle keyPath: KeyPath<State, Bool>,
                 on queue: DispatchQueue = .main,
                 create: @escaping CreateEffect) -> Self {
@@ -443,13 +441,13 @@ extension Store {
         
         subscribe(observer: Observer(
             cancellable.observer,
-            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
                     create(state, dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+                
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         
@@ -457,7 +455,7 @@ extension Store {
     }
     
     @discardableResult
-    func effect(_ cancellable: AnyCancellableEffect,
+    func effect(_ cancellable: CancellableObserver,
                 withDelay timeInterval: TimeInterval,
                 removeStateDuplicates: Equating<State>?,
                 on queue: DispatchQueue = .main,
@@ -467,12 +465,12 @@ extension Store {
         
         subscribe(observer: Observer(
             cancellable.observer,
-            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState, complete in
+            removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, dispatch)
                 }
-                complete(.active)
-                return effectOperator.isSynced ? state : prevState
+                
+                return (.active, effectOperator.isSynced ? state : prevState)
             }
         )
         

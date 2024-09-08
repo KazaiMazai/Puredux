@@ -14,40 +14,31 @@ public enum ObserverStatus {
 }
 
 public extension Observer {
-    ///     Closure that handles  Observer's status
-    ///     - Parameter  status: observer status to handle
-    ///
-    typealias StatusHandler = (_ status: ObserverStatus) -> Void
 
-    ///     Observer's main closure that handle State changes and calls complete handler
-    ///        - Parameter state: newly observed State
-    ///        - Parameter complete: complete handler that Observer calls when the work is done
-    ///
-    typealias StateHandler = (_ state: State, _ complete: @escaping  StatusHandler) -> Void
-
-    ///     Observer's main closure that handle State changes and calls complete handler
-    ///        - Parameter state: newly observed State
-    ///        - Parameter prev: previous State
-    ///        - Parameter complete: complete handler that Observer calls when the work is done
-    typealias StatesHandler = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> Void
+    /**     
+     Observer's main closure that handle State changes and calls complete handler
+        - Parameter state: newly observed State
+        - Parameter complete: complete handler that Observer calls when the work is done
+    */
+    typealias StateHandler = (_ state: State) -> ObserverStatus
 }
 
-/// Observer can be subscribed to Store to handle state updates
-///
+/** Observer can be subscribed to Store to handle state updates */
 public struct Observer<State>: Hashable {
-    typealias ObserverHandler = (_ state: State, _ prev: State?, _ complete: @escaping  StatusHandler) -> State?
+    typealias LastStatesHandler = (_ state: State, _ prev: State?) -> ObserverStatus
+    typealias ObserverHandler = (_ state: State, _ prev: State?) -> (ObserverStatus, State?)
 
     let id: UUID
 
     private let statesObserver: ObserverHandler
-    private let keepsCurrentState: Bool
+    private let keepPrevState: Bool
     private let prevState: Referenced<State?> = Referenced(nil)
 
     init(id: UUID = UUID(),
-         keepsCurrentState: Bool,
+         keepPrevState: Bool,
          observe: @escaping ObserverHandler) {
         self.id = id
-        self.keepsCurrentState = keepsCurrentState
+        self.keepPrevState = keepPrevState
         self.statesObserver = observe
     }
 
@@ -55,42 +46,16 @@ public struct Observer<State>: Hashable {
         prevState.value
     }
 
-    func send(_ state: State, complete: @escaping StatusHandler) {
-        guard keepsCurrentState else {
-            _ = statesObserver(state, nil, complete)
-            prevState.value = nil
-            return
+    func send(_ state: State) -> ObserverStatus {
+        guard keepPrevState else {
+            let (status, _) = statesObserver(state, nil)
+            return status
         }
 
         let prev = prevState.value
-        prevState.value = statesObserver(state, prev, complete)
-    }
-}
-
-public extension Observer {
-    ///     Initializes a new store Observer
-    ///
-    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
-    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
-    ///
-    ///     - Returns: Observer
-    ///
-    ///     Observer handles new states, sent by the Store.
-    ///
-    init(observe: @escaping StateHandler) {
-        self.init(id: UUID(), observe: observe)
-    }
-    ///     Initializes a new store Observer
-    ///
-    ///     - Parameter observe:Is a closure that receive state and StatusHandler as parameters.
-    ///     When Observer decides to unsubscribe from store it passes .dead status parameter to status handler.
-    ///
-    ///     - Returns: Observer
-    ///
-    ///     Observer handles new states, sent by the Store.
-    ///
-    init(observe: @escaping StatesHandler) {
-        self.init(id: UUID(), observe: observe)
+        let (status, state) = statesObserver(state, prev)
+        prevState.value = state
+        return status
     }
 }
 
@@ -104,34 +69,33 @@ public extension Observer {
     }
 }
 
-extension Observer {
-    init(id: UUID, observe: @escaping StateHandler) {
-        self.init(id: id, keepsCurrentState: false) { state, _, complete in
-            observe(state, complete)
-            return state
-        }
-    }
+public extension Observer {
+    /**
+     Initializes a new `Observer` instance.
 
-    init(id: UUID, observe: @escaping StatesHandler) {
-        self.init(id: id, keepsCurrentState: false) { state, prevState, complete in
-            observe(state, prevState, complete)
-            return state
+     - Parameters:
+        - id: A unique identifier for the observer. Defaults to a new UUID if not provided.
+        - observe: A closure of type `StateHandler` that is invoked when the observer is notified of a state change.
+
+     The `Observer` is initialized with the given `id` and an `observe` closure. The `keepPrevState` parameter is set to `false`, and the `observe` closure is called with the current state and the previous state (which is ignored).
+     */
+    init(id: UUID = UUID(), observe: @escaping StateHandler) {
+        self.init(id: id, keepPrevState: false) { state,_ in
+            (observe(state), state)
         }
     }
 }
 
-// MARK: - Deduplicating Observers
+// MARK: - Observer attached to Object's lifecycle
 
 extension Observer {
-
     init(_ observer: AnyObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping StateHandler) {
 
-        self.init(observer, id: id, removeStateDuplicates: equating) { state, _, complete in
-            observe(state, complete)
-            return state
+        self.init(observer, id: id, removeStateDuplicates: equating) { state, _ in
+            (observe(state), state)
         }
     }
 
@@ -140,40 +104,20 @@ extension Observer {
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping ObserverHandler) {
 
-        self.init(id: id, keepsCurrentState: equating != nil) { [weak observer] state, prevState, complete in
+        self.init(id: id, keepPrevState: equating != nil) { [weak observer] state, prevState in
             guard observer != nil else {
-                complete(.dead)
-                return state
+                return (.dead, state)
             }
 
             guard let equating else {
-                return observe(state, prevState, complete)
+                return observe(state, prevState)
             }
 
             guard !equating.isEqual(state, to: prevState) else {
-                complete(.active)
-                return state
+                return (.active, state)
             }
 
-            return observe(state, prevState, complete)
-        }
-    }
-
-    init(id: UUID = UUID(),
-         removeStateDuplicates equating: Equating<State>? = nil,
-         observe: @escaping ObserverHandler) {
-
-        self.init(id: id, keepsCurrentState: equating != nil) { state, prevState, complete in
-            guard let equating else {
-                return observe(state, prevState, complete)
-            }
-
-            guard !equating.isEqual(state, to: prevState) else {
-                complete(.active)
-                return state
-            }
-
-            return observe(state, prevState, complete)
+            return observe(state, prevState)
         }
     }
 }

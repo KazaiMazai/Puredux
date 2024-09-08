@@ -69,10 +69,10 @@ final class StateStoreTests: XCTestCase {
 
         var receivedStateIndex: Int?
 
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             receivedStateIndex = receivedState.currentIndex
-            complete(.active)
             asyncExpectation.fulfill()
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -98,10 +98,10 @@ final class StateStoreTests: XCTestCase {
         }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -127,10 +127,10 @@ final class StateStoreTests: XCTestCase {
         }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -158,10 +158,10 @@ final class StateStoreTests: XCTestCase {
         }
 
         var receivedStatesIndexes: [Int] = []
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
             receivedStatesIndexes.append(receivedState.currentIndex)
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -187,9 +187,9 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
             expectations[receivedState.currentIndex].fulfill()
-            complete(.active)
+            return .active
         }
 
         store.subscribe(observer: observer)
@@ -218,10 +218,10 @@ final class StateStoreTests: XCTestCase {
         }
 
         var observerLastReceivedStateIndex: Int?
-        let observer = Observer<TestState> { receivedState, complete in
+        let observer = Observer<TestState> { receivedState in
 
             observerLastReceivedStateIndex = receivedState.currentIndex
-            complete(.dead)
+            return .dead
         }
 
         store.subscribe(observer: observer)

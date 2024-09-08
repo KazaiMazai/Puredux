@@ -13,7 +13,7 @@ final class SideEffectRefCycleWithCancellableTests: XCTestCase {
 
     func test_WhenCancellableIsNotReferenced_ThenStateIsDeallocated() {
         assertDeallocated {
-            var cancellable = AnyCancellableEffect()
+            var cancellable = CancellableObserver()
 
             let object = ReferenceTypeState()
             let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
@@ -34,7 +34,7 @@ final class SideEffectRefCycleWithCancellableTests: XCTestCase {
     func test_WhenStoreIsNotReferenced_ThenStateIsDeallocated() {
         assertDeallocated {
             let object = ReferenceTypeState()
-            let cancellable = AnyCancellableEffect()
+            let cancellable = CancellableObserver()
             let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
                 .with(true) { _, _ in }
                 .map { (state: $0.0, boolValue: $0.1)}
@@ -50,7 +50,7 @@ final class SideEffectRefCycleWithCancellableTests: XCTestCase {
     }
 
     func test_WhenCancellableIsReferenced_ThenReferenceIsKept() {
-        let cancellable = AnyCancellableEffect()
+        let cancellable = CancellableObserver()
         assertNotDeallocated {
             let object = ReferenceTypeState()
             let store = StateStore<ReferenceTypeState, Int>(object) {_, _ in }
@@ -68,7 +68,7 @@ final class SideEffectRefCycleWithCancellableTests: XCTestCase {
     }
 
     func test_WhenCancellableIsReferencedButCancelled_ThenStateIsDeallocated() {
-        let cancellable = AnyCancellableEffect()
+        let cancellable = CancellableObserver()
 
         assertDeallocated {
             let object = ReferenceTypeState()
