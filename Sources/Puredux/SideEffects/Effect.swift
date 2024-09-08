@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct Effect {
-    typealias Operation = () -> Void
+public struct Effect: Sendable {
+    typealias Operation = @Sendable () -> Void
     private let perform: Operation?
 }
 
@@ -18,7 +18,7 @@ public extension Effect {
      
      - Parameter operation: A closure representing the operation to be performed.
     */
-    init(_ operation: @escaping () -> Void) {
+    init(_ operation: @Sendable @escaping () -> Void) {
         perform = operation
     }
 
@@ -29,7 +29,7 @@ public extension Effect {
   
      - Parameter operation: An asynchronous closure representing the operation to be performed.
     */
-    init(operation: @escaping () async -> Void) {
+    init(operation: @Sendable @escaping () async -> Void) {
         perform = {
             Task { await operation() }
         }
