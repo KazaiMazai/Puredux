@@ -40,7 +40,16 @@ When creating the root store, you can choose the quality of service for the queu
 
 ## State Changes Deduplication
 
-Puredux supports state change deduplication to enable granular UI updates based on changes to specific parts of the state.
+Puredux provides functionality for state change deduplication, allowing for efficient and granular updates to the user interface by focusing
+on specific parts of the state. This is particularly useful in optimizing performance and ensuring that only necessary UI components are 
+re-rendered when relevant state changes occur.
+
+> Important: State deduplication should be used with special care. While it can be an efficient performance-enhancing technique in some cases, it may introduce bugs related to UI inconsistencies in others. It's important to ensure that deduplication does not result in unintended behavior or out-of-sync UI elements.
+
+
+### SwftUI View Updates Deduplication
+
+In a SwiftUI context, you can use state change deduplication to manage and update your view's state efficiently.
 
 ```swift
 struct MyView: View {
@@ -60,9 +69,11 @@ struct MyView: View {
     }
 }
 ```
+### UIViewController Updates Deduplication
 
-<details><summary>Click to expand UIViewController example</summary>
-<p>
+For UIKit-based `UIViewControllers`, you can achieve similar results with state change deduplication, ensuring that your view controller 
+updates only when necessary.
+
 
  ```swift
  class MyViewController: ViewController  {
@@ -87,14 +98,19 @@ struct MyView: View {
 }
 ```
 
-</p>
-</details>
-
 ## UI Updates Debouncing
 
-There are situations where frequent state updates are unavoidable, but triggering the UI for each update can be too resource-intensive. 
-To handle this, Puredux provides a debouncing option. 
-With debouncing, the UI update will only be triggered after a specified time interval has elapsed between state changes.
+In scenarios where state updates occur frequently, it might be inefficient to trigger UI updates for each individual change. To address
+this, Puredux offers a debouncing option. 
+
+Debouncing ensures that UI updates are only triggered after a specified time interval has passed since the last state change, reducing the 
+frequency of updates and potentially improving performance.
+
+> Important: Picking a debounce interval that is too long can reduce computational overhead but may make the UI noticeably less responsive. Conversely, a very short interval may not sufficiently reduce computation load. The debounce interval should be selected carefully based on the specific use case to strike a balance between responsiveness and performance.
+
+### SwiftUI View Updated Debouncing
+
+In SwiftUI, you can use the debouncing feature to limit how often your view updates in response to frequent state changes.
 
 ```swift
 struct MyView: View {
@@ -114,9 +130,9 @@ struct MyView: View {
     }
 }
 ```
+### UIViewController Updates Debouncing
 
-<details><summary>Click to expand UIViewController example</summary>
-<p>
+For UIViewController views, the debouncing feature can be applied to efficiently handle frequent state updates.
 
  ```swift
  class MyViewController: ViewController  {
@@ -137,17 +153,21 @@ struct MyView: View {
      }
 }
 ```
-</p>
-</details>
+
+This approach ensures that the UI is updated less frequently, optimizing performance especially in cases where the state changes are frequent but not necessarily all of them require immediate reflection in the UI.
 
 ## Two-step UI Updates with Background Offloading
 
-A very common use case involves converting raw model data into a more presentable format, 
-which may include mapping `AttributedStrings`, using `DateFormatter`, and more. These operations can be resource-intensive.
+A common requirement is to transform raw model data into a more presentable format. This may involve operations such as mapping AttributedStrings, formatting dates with DateFormatter, and other resource-intensive computations. 
 
-Puredux allows you to add a presentational layer in the state change processing pipeline between the store and the UI. This enables you to offload these computations to a background queue, keeping the UI responsive.
+To handle this efficiently, Puredux allows you to introduce a presentational layer in the state change processing pipeline. This allows for 
+background processing of these transformations, keeping the UI responsive.
 
-### SwiftUI View Example
+> Important: While offloading computations to a background queue helps in keeping the UI responsive, it's important to evaluate whether the  overhead of hopping to a background queue is justified for your specific use case. Tune the implementation accordingly find a balance for particular use case.
+
+### Two-step SwiftUI View Updates with Background Offloading
+
+In a SwiftUI view, you can leverage Puredux's ability to handle presentation logic on a background queue:
 
 ```swift
 struct MyView: View {
@@ -174,7 +194,9 @@ struct MyView: View {
 }
 ```
 
-### UIViewController Example
+### Two-step UIViewController Updates with Background Offloading
+
+For a UIViewController, you can similarly manage background processing of presentation logic:
 
  ```swift
  class MyViewController: ViewController  {
@@ -203,3 +225,5 @@ struct MyView: View {
 }
 ```
 
+By incorporating a presentational layer in this way, you can ensure that resource-intensive computations do not block the main thread, 
+resulting in a smoother and more responsive user experience.

@@ -1,4 +1,4 @@
-# Migrating 1.2.x
+# Migrating to 1.2.x
 
 Puredux was refactored from a set of packages to a single monorepository.
 

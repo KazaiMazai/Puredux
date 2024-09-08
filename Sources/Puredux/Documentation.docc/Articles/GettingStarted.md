@@ -150,8 +150,6 @@ Puredux also supports UIKit, offering a similar approach for handling state and 
 
 ```swift
 
-// We can do the same thing almost with the same API for UIKit view controller:
-
 struct MyScreenState {
     // ...
     

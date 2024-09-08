@@ -11,6 +11,7 @@ Learn how to upgrade your application to the newest version of Puredux.
 ## Topics
 
 - <doc:Migrating-to-2.0.x>
+- <doc:Migrating-to-1.9.x>
 - <doc:Migrating-to-1.3.x>
 - <doc:Migrating-to-1.2.x>
 - <doc:Migrating-to-1.1.x>
