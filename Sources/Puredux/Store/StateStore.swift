@@ -218,7 +218,7 @@ extension StateStore: AsyncActionsExecutor {
 // MARK: - Basic Transformations
 
 extension StateStore {
-    func map<T>(_ transformation: @escaping (State) -> T) -> StateStore<T, Action> {
+    func map<T>(_ transformation: @Sendable @escaping (State) -> T) -> StateStore<T, Action> {
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
@@ -228,7 +228,7 @@ extension StateStore {
         )
     }
 
-    func flatMap<T>(_ transformation: @escaping (State) -> T?) -> StateStore<T?, Action> {
+    func flatMap<T>(_ transformation: @Sendable @escaping (State) -> T?) -> StateStore<T?, Action> {
         StateStore<T?, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
@@ -253,8 +253,8 @@ public extension StateStore {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
      - Note: This method allows you to create a store focused on a specific property of the original state using a key path, simplifying access to that property.
      */
-    func map<T>(_ keyPath: KeyPath<State, T>) -> StateStore<T, Action> {
-        map { $0[keyPath: keyPath] }
+    func map<T>(_ keyPath: @Sendable @escaping @autoclosure () -> KeyPath<State, T>) -> StateStore<T, Action> {
+        map { $0[keyPath: keyPath()] }
     }
 
     /**
@@ -268,7 +268,7 @@ public extension StateStore {
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
      - Note: This method differs from `compactMap(_:)` by preserving the `nil` values extracted by the key path, resulting in a store where the state type is optional.
     */
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> StateStore<T?, Action> {
-        flatMap { $0[keyPath: keyPath] }
+    func flatMap<T>(_ keyPath: @Sendable @escaping @autoclosure () -> KeyPath<State, T?>) -> StateStore<T?, Action> {
+        flatMap { $0[keyPath: keyPath()] }
     }
 }
