@@ -8,9 +8,6 @@
 import Dispatch
 import Foundation
 
-
-public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> Void
-
 typealias StoreID = UUID
 
 final class CoreStore<State, Action>: @unchecked Sendable where State: Sendable,
