@@ -32,7 +32,7 @@ public struct Observer<State>: Hashable, Sendable {
 
     private let statesObserver: ObserverHandler
     private let keepPrevState: Bool
-    private let prevState: Referenced<State?> = Referenced(nil)
+    private let prevState: UncheckedReference<State?> = UncheckedReference(nil)
 
     init(id: UUID = UUID(),
          keepPrevState: Bool,
@@ -89,7 +89,7 @@ public extension Observer {
 // MARK: - Observer attached to Object's lifecycle
 
 extension Observer {
-    init<T: AnyObject & Sendable>(_ observer: T?,
+    init<ObserverObject: AnyObject & Sendable>(_ observer: ObserverObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping StateHandler) {
@@ -99,7 +99,7 @@ extension Observer {
         }
     }
 
-    init<T: AnyObject & Sendable>(_ observer: T?,
+    init<ObserverObject: AnyObject & Sendable>(_ observer: ObserverObject?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping ObserverHandler) {

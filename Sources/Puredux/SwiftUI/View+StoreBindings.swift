@@ -55,8 +55,8 @@ public extension View {
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
                                          observe: @MainActor @Sendable @escaping (Props) -> Void) -> some View where State: Sendable,
-                                                                                                Action: Sendable,
-                                                                                                Props: Sendable {
+                                                                                                                     Action: Sendable,
+                                                                                                                     Props: Sendable {
         withObserver { observer in
             observer.subscribe(
                 store: store,

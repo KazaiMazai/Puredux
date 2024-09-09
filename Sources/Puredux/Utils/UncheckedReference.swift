@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Referenced<T>: @unchecked Sendable {
+final class UncheckedReference<T>: @unchecked Sendable {
     var value: T
 
     init(_ value: T) {
