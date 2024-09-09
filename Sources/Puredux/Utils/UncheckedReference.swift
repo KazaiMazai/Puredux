@@ -36,7 +36,7 @@ enum ReferencedObject<Object: AnyObject>: Sendable where Object: Sendable {
             return .weak { [weak storeObject] in storeObject }
         }
     }
-    
+     
     func weak() -> ReferencedObject<Object> {
         switch self {
         case .strong(let object):

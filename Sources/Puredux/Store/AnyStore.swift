@@ -65,6 +65,24 @@ public extension AnyStore {
             referenced: referencedStore.map { $0.map(transform) }
         )
     }
+    
+    /**
+     Maps the a new store with actions of type `A`
+
+     This function takes a transformation closure that  actions from local store to parent
+     
+     The transformation is applied to the action whenever it is dispatched.
+
+     - Parameter transform: A closure that takes the local action of type `A` and returns a parent actions of type `Action`.
+     - Returns: A new `Store` with local to global actions mapping.
+    */
+    func map<A>(actions transform: @Sendable @escaping (A) -> Action) -> AnyStore<State, A> {
+        AnyStore<State, A>(
+            dispatcher: { dispatchHandler(transform($0)) },
+            subscribe: subscriptionHandler,
+            referenced: referencedStore.map { $0.map(actions: transform) }
+        )
+    }
 
     /**
      Maps the state of the store to a new optional state of type `T`, preserving optional results.
@@ -75,7 +93,6 @@ public extension AnyStore {
 
      - Parameter transform: A closure that takes the current state of type `State` and returns an optional new state of type `T?`.
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
-     - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ transform: @Sendable @escaping (State) -> T?) -> AnyStore<T?, Action> {
         AnyStore<T?, Action>(
@@ -118,7 +135,6 @@ public extension AnyStore {
 
      - Parameter keyPath: A key path that specifies the optional property of type `T?` to extract from the current state of type `State`.
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
-     - Note: This method differs from `compactMap(_:)` by preserving the `nil` values extracted by the key path, resulting in a store where the state type is optional.
     */
     func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> AnyStore<T?, Action> {
         flatMap { $0[keyPath: keyPath] }

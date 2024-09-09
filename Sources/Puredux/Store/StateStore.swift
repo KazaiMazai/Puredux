@@ -193,7 +193,8 @@ public extension StateStore {
         StateStore<(State, T), Action>(
             storeObject: storeObject.createChildStore(
                 initialState: initialState,
-                stateMapping: { ($0, $1) },
+                stateMapping: { ($0, $1) }, 
+                actionMapping: { $0 },
                 reducer: reducer
             )
         )
@@ -217,21 +218,64 @@ extension StateStore: AsyncActionsExecutor {
 // MARK: - Basic Transformations
 
 extension StateStore {
+    /**
+     Maps the state of the store to a new state of type `T`.
+
+     This function takes a transformation closure that converts the current state
+     of the store into a new state of a different type.
+     The transformation is applied to the current state whenever it is accessed, resulting in a new `StateStore` of type `T`.
+
+     - Parameter transform: A closure that takes the current state of type `State` and returns a new state of type `T`.
+     - Returns: A new `StateStore` with the transformed state of type `T` and the same action type `Action`.
+    */
     func map<T>(_ transformation: @Sendable @escaping (State) -> T) -> StateStore<T, Action> {
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
-                stateMapping: { state, _ in transformation(state) },
+                stateMapping: { state, _ in transformation(state) }, 
+                actionMapping: { $0 },
+                reducer: {_, _ in }
+            )
+        )
+    }
+    
+    /**
+     Maps the a new store with actions of type `A`
+
+     This function takes a transformation closure that  actions from local store to parent
+     
+     The transformation is applied to the action whenever it is dispatched.
+
+     - Parameter transform: A closure that takes the local action of type `A` and returns a parent actions of type `Action`.
+     - Returns: A new `StateStore` with local to global actions mapping.
+    */
+    func map<A>(actions transformation: @Sendable @escaping (A) -> Action) -> StateStore<State, A> {
+        StateStore<State, A>(
+            storeObject: storeObject.createChildStore(
+                initialState: Void(),
+                stateMapping: { state, _ in state },
+                actionMapping: transformation,
                 reducer: {_, _ in }
             )
         )
     }
 
+    /**
+     Maps the state of the store to a new optional state of type `T`, preserving optional results.
+
+     This function applies a transformation closure that returns an optional value.
+     The result is a new store where each state can either be `nil` or of the new type `T`,
+     depending on the outcome of the transformation closure.
+
+     - Parameter transform: A closure that takes the current state of type `State` and returns an optional new state of type `T?`.
+     - Returns: A new `StateStore` with the transformed state of type `T?` (optional) and the same action type `Action`.
+    */
     func flatMap<T>(_ transformation: @Sendable @escaping (State) -> T?) -> StateStore<T?, Action> {
         StateStore<T?, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
                 stateMapping: { state, _ in transformation(state) },
+                actionMapping: { $0 },
                 reducer: {_, _ in }
             )
         )
