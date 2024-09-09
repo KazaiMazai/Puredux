@@ -35,18 +35,21 @@ protocol SyncStore<State, Action> {
 }
 
 extension StoreObjectProtocol {
-    func createChildStore<LocalState, ResultState>(
+    func createChildStore<LocalState, ResultState, LocalAction>(
         initialState: LocalState,
         stateMapping: @Sendable @escaping (Self.State, LocalState) -> ResultState,
-        reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<ResultState, Action>
+        actionMapping: @Sendable @escaping (LocalAction) -> Action,
+        reducer: @escaping Reducer<LocalState, LocalAction>) -> any StoreObjectProtocol<ResultState, LocalAction>
     
     where
     LocalState: Sendable,
-    ResultState: Sendable {
+    ResultState: Sendable,
+    LocalAction: Sendable {
 
-            StoreNode<Self, LocalState, ResultState, Action>(
+            StoreNode<Self, LocalState, ResultState, LocalAction>(
                 initialState: initialState,
-                stateMapping: stateMapping,
+                stateMapping: stateMapping, 
+                actionMapping: actionMapping,
                 parentStore: self,
                 reducer: reducer
             )
@@ -64,6 +67,7 @@ extension StoreObjectProtocol {
             StoreNode(
                 initialState: initialState,
                 stateMapping: { (transform($0), $1) },
+                actionMapping: { $0 },
                 parentStore: self,
                 reducer: reducer
             )
@@ -73,6 +77,17 @@ extension StoreObjectProtocol {
             StoreNode(
                 initialState: Void(),
                 stateMapping: { state, _ in transform(state) },
+                actionMapping: { $0 },
+                parentStore: self,
+                reducer: {_, _ in }
+            )
+        }
+    
+    func map<A: Sendable>(actionsTransform: @Sendable @escaping (A) -> Action) -> any StoreObjectProtocol<State, A> {
+            StoreNode(
+                initialState: Void(),
+                stateMapping: { state, _ in state },
+                actionMapping: actionsTransform,
                 parentStore: self,
                 reducer: {_, _ in }
             )

@@ -57,6 +57,10 @@ extension AnyStoreObject {
     func map<T>(_ transform: @Sendable @escaping (State) -> T) -> AnyStoreObject<T, Action> {
         AnyStoreObject<T, Action>(boxed.map(transform: transform))
     }
+    
+    func map<A>(actions transform: @Sendable @escaping (A) -> Action) -> AnyStoreObject<State, A> {
+        AnyStoreObject<State, A>(boxed.map(actionsTransform: transform))
+    }
 }
 
 private extension AnyStoreObject {

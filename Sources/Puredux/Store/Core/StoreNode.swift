@@ -16,24 +16,26 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
     LocalState: Sendable,
     State: Sendable,
     Action: Sendable,
-    ParentStore: StoreObjectProtocol,
-    ParentStore.Action == Action {
+    ParentStore: StoreObjectProtocol {
     
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 
     private let stateMapping: @Sendable (ParentStore.State, LocalState) -> State
+    private let actionMapping: @Sendable (Action) -> ParentStore.Action
 
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
          stateMapping: @Sendable @escaping (ParentStore.State, LocalState) -> State,
+         actionMapping: @Sendable @escaping (Action) -> ParentStore.Action,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
 
-        self.stateMapping = stateMapping
         self.parentStore = parentStore
-
+        self.actionMapping = actionMapping
+        self.stateMapping = stateMapping
+        
         localStore = CoreStore(
             queue: parentStore.queue,
             initialState: initialState,
@@ -67,14 +69,15 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
 
 // MARK: - Root Store Init
 
-extension StoreNode where LocalState == State {
+extension StoreNode where LocalState == State, ParentStore.Action == Action {
     static func initRootStore(initialState: State,
                               qos: DispatchQoS = .userInteractive,
                               reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
-            stateMapping: { _, state in return state },
+            stateMapping: { _, state in return state }, 
+            actionMapping: { $0 },
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
                 initialState: Void(),
@@ -94,7 +97,7 @@ extension StoreNode: StoreObjectProtocol {
 
     func syncDispatch(_ action: Action) {
         localStore.syncDispatch(action)
-        parentStore.syncDispatch(action)
+        parentStore.syncDispatch(actionMapping(action))
     }
 
     func dispatch(_ action: Action) {
