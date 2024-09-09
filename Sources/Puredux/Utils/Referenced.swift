@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Referenced<T> {
+final class Referenced<T>: @unchecked Sendable {
     var value: T
 
     init(_ value: T) {
@@ -15,9 +15,9 @@ final class Referenced<T> {
     }
 }
 
-enum ReferencedObject<Object: AnyObject> {
+enum ReferencedObject<Object: AnyObject>: Sendable where Object: Sendable {
     case strong(Object)
-    case weak(() -> Object?)
+    case weak(@Sendable () -> Object?)
     
     init(weak object: Object) {
         self = .weak { [weak object] in object }

@@ -8,7 +8,7 @@
 import Foundation
 import Dispatch
 
-public protocol AsyncAction {
+public protocol AsyncAction: Sendable {
     associatedtype ResultAction
     var dispatchQueue: DispatchQueue { get }
     func execute(completeHandler: @escaping (ResultAction) -> Void)

@@ -9,8 +9,8 @@ import Dispatch
 import Foundation
 
 public extension Store {
-    typealias CreateEffectForState = (State, Effect.State, @escaping Dispatch<Action>) -> Effect
-    typealias CreateEffect = (State, @escaping Dispatch<Action>) -> Effect
+    typealias CreateEffectForState = @Sendable (State, Effect.State, @escaping Dispatch<Action>) -> Effect
+    typealias CreateEffect = @Sendable (State, @escaping Dispatch<Action>) -> Effect
 }
 
 public extension Store {
@@ -63,7 +63,7 @@ public extension Store {
         let weakStore = weakStore()
         
         subscribe(observer: Observer(
-            storeObject(),
+            eraseToAnyStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let effect = state[keyPath: keyPath]
                 effectOperator.run(effect, on: queue) { _ in
@@ -135,7 +135,7 @@ public extension Store {
         let weakStore = weakStore()
         
         subscribe(observer: Observer(
-            storeObject(),
+            eraseToAnyStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let effect: Effect.State = prevState == nil ? .idle() : .running()
                 effectOperator.run(effect, on: queue) { _ in
@@ -200,7 +200,7 @@ public extension Store {
         let weakStore = weakStore()
         
         subscribe(observer: Observer(
-            storeObject(),
+            eraseToAnyStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let isRunning = state[keyPath: keyPath]
                 effectOperator.run(isRunning, on: queue) { _ in
@@ -275,7 +275,7 @@ public extension Store {
         let weakStore = weakStore()
         
         subscribe(observer: Observer(
-            storeObject(),
+            eraseToAnyStoreObject(),
             removeStateDuplicates: .keyPath(keyPath)) { [effectOperator] state, prevState in
                 let allEffects = state[keyPath: keyPath]
                 effectOperator.run(allEffects, on: queue) { effectState in
@@ -302,7 +302,7 @@ extension Store {
         let weakStore = weakStore()
         
         subscribe(observer: Observer(
-            storeObject(),
+            eraseToAnyStoreObject(),
             removeStateDuplicates: removeStateDuplicates) { [effectOperator] state, prevState in
                 effectOperator.run(.running(delay: timeInterval), on: queue) { _ in
                     create(state, weakStore.dispatch)

@@ -7,8 +7,8 @@
 
 import Foundation
 
-protocol StoreObjectProtocol<State, Action>: AnyObject, SyncStore, Sendable where Action: Sendable,
-                                                                                  State: Sendable {
+protocol StoreObjectProtocol<State, Action>: AnyObject, SyncStore where Action: Sendable,
+                                                                        State: Sendable {
     associatedtype Action
     associatedtype State
 

@@ -11,7 +11,7 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-final class StoreNode<ParentStore, LocalState, State, Action>: Sendable
+final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendable
     where
     LocalState: Sendable,
     State: Sendable,

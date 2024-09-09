@@ -39,6 +39,7 @@ Example usage:
  }
  ```
 */
+@MainActor
 @propertyWrapper
 public struct StoreOf<T> {
     private let keyPath: WritableKeyPath<Injected, T>

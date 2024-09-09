@@ -20,13 +20,13 @@ public extension Observer {
         - Parameter state: newly observed State
         - Parameter complete: complete handler that Observer calls when the work is done
     */
-    typealias StateHandler = (_ state: State) -> ObserverStatus
+    typealias StateHandler = @Sendable (_ state: State) -> ObserverStatus
 }
 
 /** Observer can be subscribed to Store to handle state updates */
-public struct Observer<State>: Hashable {
-    typealias LastStatesHandler = (_ state: State, _ prev: State?) -> ObserverStatus
-    typealias ObserverHandler = (_ state: State, _ prev: State?) -> (ObserverStatus, State?)
+public struct Observer<State>: Hashable, Sendable {
+    typealias LastStatesHandler = @Sendable (_ state: State, _ prev: State?) -> ObserverStatus
+    typealias ObserverHandler = @Sendable (_ state: State, _ prev: State?) -> (ObserverStatus, State?)
 
     let id: UUID
 
@@ -89,7 +89,7 @@ public extension Observer {
 // MARK: - Observer attached to Object's lifecycle
 
 extension Observer {
-    init(_ observer: AnyObject?,
+    init<T: AnyObject & Sendable>(_ observer: T?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping StateHandler) {
@@ -99,7 +99,7 @@ extension Observer {
         }
     }
 
-    init(_ observer: AnyObject?,
+    init<T: AnyObject & Sendable>(_ observer: T?,
          id: UUID = UUID(),
          removeStateDuplicates equating: Equating<State>? = nil,
          observe: @escaping ObserverHandler) {

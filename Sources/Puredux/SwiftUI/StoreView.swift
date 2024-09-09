@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Foundation
 /**
  A SwiftUI view that binds to a `Store` object to observe its state and dispatch actions.
 
@@ -20,9 +20,12 @@ import SwiftUI
    - Content: A view builder that generates the content for the view based on the provided `Props`.
  
 */
-public struct StoreView<ViewState, Action, Props, Content: View>: View {
+
+public struct StoreView<ViewState, Action, Props, Content: View>: View where ViewState: Sendable,
+                                                                             Action: Sendable,
+                                                                             Props: Sendable {
     private let store: any Store<ViewState, Action>
-    private let props: (_ state: ViewState, _ store: AnyStore<ViewState, Action>) -> Props
+    private let props: @Sendable (_ state: ViewState, _ store: AnyStore<ViewState, Action>) -> Props
     private let content: (_ props: Props) -> Content
     private(set) var removeStateDuplicates: Equating<ViewState>?
     private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
@@ -88,8 +91,8 @@ public extension StoreView {
        - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
     init(store: any Store<ViewState, Action>,
-         props: @escaping (ViewState, AnyStore<ViewState, Action>) -> Props,
-         content: @escaping (Props) -> Content) {
+         props: @Sendable @escaping (ViewState, AnyStore<ViewState, Action>) -> Props,
+         content: @Sendable @escaping (Props) -> Content) {
         self.store = store
         self.props = props
         self.content = content
@@ -104,8 +107,8 @@ public extension StoreView {
         - content: A closure that takes the derived properties and returns the SwiftUI view to display.
     */
     init(_ store: any Store<ViewState, Action>,
-         props: @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
-         content: @escaping (Props) -> Content) {
+         props: @Sendable @escaping (ViewState, @escaping Dispatch<Action>) -> Props,
+         @ViewBuilder content: @escaping (Props) -> Content) {
         self.store = store
         self.props = { state, store in props(state, store.dispatch) }
         self.content = content
@@ -121,7 +124,7 @@ public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action
         - content: A closure that takes a tuple containing the current state and the store, and returns the SwiftUI view to display.
     */
     init(store: any Store<ViewState, Action>,
-         content: @escaping (Props) -> Content) {
+         @ViewBuilder content: @escaping (Props) -> Content) {
         self.store = store
         self.props = { state, store in (state, store) }
         self.content = content
@@ -137,7 +140,7 @@ public extension StoreView where Props == (ViewState, AnyStore<ViewState, Action
         - content: A closure that takes the current state and a dispatch function, and returns the SwiftUI view to display.
     */
     init(_ store: any Store<ViewState, Action>,
-         content: @escaping (ViewState, @escaping Dispatch<Action>) -> Content) {
+        @ViewBuilder content: @escaping (ViewState, @escaping Dispatch<Action>) -> Content) {
         self.store = store
         self.props = { state, store in (state, store) }
         self.content = { props in content(props.0, props.1.dispatch) }

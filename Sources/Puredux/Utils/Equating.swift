@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct Equating<T> {
-    public let predicate: (T, T) -> Bool
+public struct Equating<T>: Sendable {
+    public let predicate: @Sendable (T, T) -> Bool
 
-    public init(predicate: @escaping (T, T) -> Bool) {
+    public init(predicate: @Sendable @escaping (T, T) -> Bool) {
         self.predicate = predicate
     }
 }
@@ -24,14 +24,14 @@ public extension Equating {
         Equating { _, _ in true }
     }
 
-    static func equal<Value: Equatable>(value: @escaping (T) -> Value) -> Equating<T> {
+    static func equal<Value: Equatable>(value: @Sendable @escaping (T) -> Value) -> Equating<T> {
         Equating {
             value($0) == value($1)
         }
     }
 
-    static func keyPath<Value: Equatable>(_ keyPath: KeyPath<T, Value>) -> Equating<T> {
-        .equal(value: { $0[keyPath: keyPath]})
+    static func keyPath<Value: Equatable>(_ keyPath: @Sendable @autoclosure @escaping() -> KeyPath<T, Value>) -> Equating<T> {
+        .equal(value: { $0[keyPath: keyPath()]})
     }
 }
 

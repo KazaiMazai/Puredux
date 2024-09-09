@@ -8,7 +8,7 @@
 import Dispatch
 import Foundation
 
-final class EffectOperator {
+final class EffectOperator: @unchecked Sendable {
     private(set) var executing: [Effect.State: DispatchWorkItem] = [:]
     private(set) var isSynced = true
 

@@ -24,19 +24,19 @@ import Foundation
  - Usage:
     The `Store` protocol serves as an abstraction layer for different store implementations in a state management system. Types conforming to this protocol must specify the `State` and `Action` associated types and provide concrete implementations of the `eraseToAnyStore()`, `dispatch(_:)`, and `subscribe(observer:)` methods.
 */
-public protocol Store<State, Action> {
+public protocol Store<State, Action>: Sendable {
     /** The type representing the state managed by the store. */
-    associatedtype State
+    associatedtype State: Sendable
 
     /** The type representing the actions that can be performed on the store.  */
-    associatedtype Action
+    associatedtype Action: Sendable
 
     /**
      A func that returns a `Store` object that matches the specified `State` and `Action` types.
      */
     func eraseToAnyStore() -> AnyStore<State, Action>
 
-    func dispatch(_ action: Action)
+    @Sendable func dispatch(_ action: Action)
 
     func subscribe(observer: Observer<State>)
 }
@@ -50,7 +50,7 @@ extension Store {
         eraseToAnyStore().weak()
     }
     
-    func storeObject() -> (any StoreObjectProtocol)? {
+    func eraseToAnyStoreObject() -> AnyStoreObject<State, Action>? {
         eraseToAnyStore().referencedStoreObject()
     }
 }

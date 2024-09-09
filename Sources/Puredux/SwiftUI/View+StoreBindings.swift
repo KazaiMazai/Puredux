@@ -50,11 +50,13 @@ public extension View {
     ```
     */
     func subscribe<State, Action, Props>(store: any Store<State, Action>,
-                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
+                                         props: @Sendable @escaping (State, AnyStore<State, Action>) -> Props,
                                          presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                          removeStateDuplicates equating: Equating<State>? = nil,
                                          debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                         observe: @escaping (Props) -> Void) -> some View {
+                                         observe: @escaping (Props) -> Void) -> some View where State: Sendable,
+                                                                                                Action: Sendable,
+                                                                                                Props: Sendable {
         withObserver { observer in
             observer.subscribe(
                 store: store,
@@ -84,11 +86,13 @@ public extension View {
        A `View` that subscribes to the specified `Store`. This view will automatically update in response to state changes, and the `observe` closure will be called with the updated `Props`.
      */
      func subscribe<State, Action, Props>(_ store: any Store<State, Action>,
-                                          props: @escaping (State, @escaping Dispatch<Action>) -> Props,
+                                          props: @Sendable @escaping (State, @escaping Dispatch<Action>) -> Props,
                                           presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                           removeStateDuplicates equating: Equating<State>? = nil,
                                           debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                          observe: @escaping (Props) -> Void) -> some View {
+                                          observe: @escaping (Props) -> Void) -> some View where State: Sendable,
+                                                                                                           Action: Sendable,
+                                                                                                           Props: Sendable {
          withObserver { observer in
              observer.subscribe(
                 store,
@@ -139,7 +143,8 @@ public extension View {
     func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State) -> Void) -> some View {
+                                  observe: @escaping (State) -> Void) -> some View where State: Sendable,
+                                                                                                   Action: Sendable {
         withObserver { observer in
             observer.subscribe(
                 store,
@@ -189,7 +194,8 @@ public extension View {
     func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, Dispatch<Action>) -> Void) -> some View {
+                                  observe: @escaping (State, Dispatch<Action>) -> Void) -> some View where State: Sendable,
+                                                                                                           Action: Sendable {
 
         withObserver { observer in
             observer.subscribe(
@@ -240,7 +246,8 @@ public extension View {
     func subscribe<State, Action>(store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) -> some View {
+                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) -> some View where State: Sendable,
+                                                                                                                  Action: Sendable {
 
         withObserver { observer in
             observer.subscribe(
