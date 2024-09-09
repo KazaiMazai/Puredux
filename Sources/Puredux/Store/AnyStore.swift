@@ -7,13 +7,14 @@
 
 import Foundation
 
-public typealias Dispatch<Action> = (_ action: Action) -> Void
+public typealias Dispatch<Action: Sendable> = @Sendable (_ action: Action) -> Void
 
-typealias Subscribe<State> = (_ observer: Observer<State>) -> Void
+typealias Subscribe<State> = @Sendable (_ observer: Observer<State>) -> Void
 
 typealias ReferencedStore<State, Action> = ReferencedObject<AnyStoreObject<State, Action>>
 
-public struct AnyStore<State, Action>: Store {
+public struct AnyStore<State, Action>: Store where State: Sendable,
+                                                   Action: Sendable {
     let dispatchHandler: Dispatch<Action>
     let subscriptionHandler: Subscribe<State>
     let referencedStore: ReferencedStore<State, Action>
@@ -22,7 +23,7 @@ public struct AnyStore<State, Action>: Store {
 public extension AnyStore {
     func eraseToAnyStore() -> AnyStore<State, Action> { self }
     
-    func dispatch(_ action: Action) {
+    @Sendable func dispatch(_ action: Action) {
         dispatchHandler(action)
         executeAsyncAction(action)
     }
@@ -45,7 +46,7 @@ public extension AnyStore {
      - Parameter transform: A closure that takes the current state of type `State` and returns a new state of type `T`.
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
-    func map<T>(_ transform: @escaping (State) -> T) -> AnyStore<T, Action> {
+    func map<T>(_ transform: @Sendable @escaping (State) -> T) -> AnyStore<T, Action> {
         AnyStore<T, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
@@ -69,7 +70,7 @@ public extension AnyStore {
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
      - Note: This method differs from `compactMap(_:)` in that it preserves the `nil` values returned by the transformation closure, resulting in a store where the state type is optional.
     */
-    func flatMap<T>(_ transform: @escaping (State) -> T?) -> AnyStore<T?, Action> {
+    func flatMap<T>(_ transform: @Sendable @escaping (State) -> T?) -> AnyStore<T?, Action> {
         AnyStore<T?, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in

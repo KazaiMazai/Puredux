@@ -38,10 +38,10 @@ final class ChildStoreTests: XCTestCase {
     func test_WhenSubscribed_ThenCurrentStateReceived() {
         let asyncExpectation = expectation(description: "Observer state handler")
 
-        var receivedState: StateComposition?
+        let receivedState = UncheckedReference<StateComposition?>(nil)
 
         let observer = Observer<StateComposition> { state in
-            receivedState = state
+            receivedState.value = state
             asyncExpectation.fulfill()
             return .active
         }
@@ -50,7 +50,7 @@ final class ChildStoreTests: XCTestCase {
 
         let initialState = initialState
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedState, initialState)
+            XCTAssertEqual(receivedState.value, initialState)
         }
     }
 
@@ -60,14 +60,14 @@ final class ChildStoreTests: XCTestCase {
             childState: ChildTestState(currentIndex: 2)
         )
 
-        var lastReceivedState: StateComposition?
-
+        let lastReceivedState = UncheckedReference<StateComposition?>(nil)
+        
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 2
 
         let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
-            lastReceivedState = receivedState
+            lastReceivedState.value = receivedState
             return .active
         }
 
@@ -75,13 +75,12 @@ final class ChildStoreTests: XCTestCase {
         childStore.dispatch(UpdateIndex(index: 2))
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(lastReceivedState, expectedState)
+            XCTAssertEqual(lastReceivedState.value, expectedState)
         }
     }
 
     func test_WhenSubscribedMultipleTimes_ThenInitialStateReceivedForEverySubscription() {
-        var receivedStatesIndexes: [StateComposition] = []
-
+        let receivedStatesIndexes = UncheckedReference<[StateComposition]>([])
         let expectedReceivedStates = [initialState, initialState, initialState]
 
         let asyncExpectation = expectation(description: "Observer state handler")
@@ -89,7 +88,7 @@ final class ChildStoreTests: XCTestCase {
 
         let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState)
+            receivedStatesIndexes.value.append(receivedState)
             return .active
         }
 
@@ -98,7 +97,7 @@ final class ChildStoreTests: XCTestCase {
         childStore.subscribe(observer: observer)
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedStatesIndexes, expectedReceivedStates)
+            XCTAssertEqual(receivedStatesIndexes.value, expectedReceivedStates)
         }
     }
 
@@ -109,14 +108,14 @@ final class ChildStoreTests: XCTestCase {
             childState: ChildTestState(currentIndex: expectedIndex)
         )
 
-        var lastReceivedState: StateComposition?
-
+        let lastReceivedState = UncheckedReference<StateComposition?>(nil)
+        
         let asyncExpectation = expectation(description: "Observer state handler")
         asyncExpectation.expectedFulfillmentCount = 4
 
         let observer = Observer<StateComposition> { receivedState in
             asyncExpectation.fulfill()
-            lastReceivedState = receivedState
+            lastReceivedState.value = receivedState
             return .active
         }
 
@@ -126,17 +125,18 @@ final class ChildStoreTests: XCTestCase {
         childStore.dispatch(UpdateIndex(index: expectedIndex))
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(lastReceivedState, expectedState)
+            XCTAssertEqual(lastReceivedState.value, expectedState)
         }
     }
 
     func test_WhenObserverCompletesWithDeadStatus_ThenObserverEventuallyGetUnsubscribed() {
-        var lastReceivedState: StateComposition?
+        let lastReceivedState = UncheckedReference<StateComposition?>(nil)
+        
         let unsubscriptionProcessedExpectation = expectation(description: "Unsubscription processed for sure")
 
         let observer = Observer<StateComposition> { state in
 
-            lastReceivedState = state
+            lastReceivedState.value = state
            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 unsubscriptionProcessedExpectation.fulfill()
@@ -153,7 +153,7 @@ final class ChildStoreTests: XCTestCase {
 
         let initialState = initialState
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(lastReceivedState, initialState)
+            XCTAssertEqual(lastReceivedState.value, initialState)
         }
     }
 }
@@ -183,11 +183,10 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
 
     func test_WhenSubscribed_ThenCurrentStateReceived() {
         let asyncExpectation = expectation(description: "Observer state handler")
-
-        var receivedState: (root: TestState, local: ChildTestState)?
+        let receivedState = UncheckedReference<(root: TestState, local: ChildTestState)?>(nil)
 
         let observer = Observer<(TestState, ChildTestState)> { state in
-            receivedState = state
+            receivedState.value = state
             asyncExpectation.fulfill()
             return .active
         }
@@ -197,8 +196,8 @@ final class ChildStoreWithoutStateMappingTests: XCTestCase {
         let initialState = initialState
         let initialChildState = initialChildState
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedState!.root, initialState)
-            XCTAssertEqual(receivedState!.local, initialChildState)
+            XCTAssertEqual(receivedState.value!.root, initialState)
+            XCTAssertEqual(receivedState.value!.local, initialChildState)
         }
     }
 }

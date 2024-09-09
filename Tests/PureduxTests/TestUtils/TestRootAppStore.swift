@@ -12,5 +12,4 @@ import UIKit
 
 extension Injected {
     @InjectEntry var rootStore = StateStore<Int, Int>(0) { state, action in state += action }
-
 }

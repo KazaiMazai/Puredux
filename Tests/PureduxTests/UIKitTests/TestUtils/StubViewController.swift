@@ -13,7 +13,7 @@ extension StubViewController {
     }
 }
 
-class StubViewController: Presentable {
+final class StubViewController: Presentable, @unchecked Sendable {
     var presenter: PresenterProtocol?
 
     private(set) var props: Props?

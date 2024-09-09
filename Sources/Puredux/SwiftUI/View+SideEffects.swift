@@ -8,8 +8,8 @@
 import SwiftUI
 
 extension View {
-    typealias CreateForEachEffect<T> = (T, Effect.State) -> Effect
-    typealias CreateEffect<T> = (T) -> Effect
+    typealias CreateForEachEffect<T> = @Sendable (T, Effect.State) -> Effect
+    typealias CreateEffect<T> = @Sendable (T) -> Effect
 
     func effect<ViewState, Action, Effects>(
         _ store: AnyStore<ViewState, Action>,

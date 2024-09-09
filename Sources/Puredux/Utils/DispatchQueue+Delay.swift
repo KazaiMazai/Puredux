@@ -8,7 +8,7 @@
 import Foundation
 
 public extension TimeInterval {
-    static var uiDebounce = 0.007
+    static let uiDebounce = 0.007
 }
 
 extension DispatchQueue {

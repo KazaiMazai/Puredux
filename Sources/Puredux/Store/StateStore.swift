@@ -53,7 +53,9 @@ public typealias Reducer<State, Action> = (inout State, Action) -> Void
     - State: The type of the state managed by the store.
     - Action: The type of actions that can be dispatched to the store.
  */
-public struct StateStore<State, Action> {
+public struct StateStore<State, Action>: Sendable where State: Sendable,
+                                                        Action: Sendable {
+    
     let storeObject: AnyStoreObject<State, Action>
 
     /**
@@ -61,7 +63,7 @@ public struct StateStore<State, Action> {
      
      - Parameter action: The action to be dispatched.
     */
-    public func dispatch(_ action: Action) {
+    @Sendable public func dispatch(_ action: Action) {
         storeObject.dispatch(action)
         executeAsyncAction(action)
     }
@@ -216,7 +218,7 @@ extension StateStore: AsyncActionsExecutor {
 // MARK: - Basic Transformations
 
 extension StateStore {
-    func map<T>(_ transformation: @escaping (State) -> T) -> StateStore<T, Action> {
+    func map<T>(_ transformation: @Sendable @escaping (State) -> T) -> StateStore<T, Action> {
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
@@ -226,7 +228,7 @@ extension StateStore {
         )
     }
 
-    func flatMap<T>(_ transformation: @escaping (State) -> T?) -> StateStore<T?, Action> {
+    func flatMap<T>(_ transformation: @Sendable @escaping (State) -> T?) -> StateStore<T?, Action> {
         StateStore<T?, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),

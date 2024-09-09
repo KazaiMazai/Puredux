@@ -11,18 +11,23 @@ typealias VoidStore<Action> = CoreStore<Void, Action>
 
 typealias RootStoreNode<State, Action> = StoreNode<VoidStore<Action>, State, State, Action>
 
-final class StoreNode<ParentStore, LocalState, State, Action> where ParentStore: StoreObjectProtocol,
-                                                                    ParentStore.Action == Action {
+final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendable
+    where
+    LocalState: Sendable,
+    State: Sendable,
+    Action: Sendable,
+    ParentStore: StoreObjectProtocol,
+    ParentStore.Action == Action {
     
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 
-    private let stateMapping: (ParentStore.State, LocalState) -> State
+    private let stateMapping: @Sendable (ParentStore.State, LocalState) -> State
 
     private var observers: Set<Observer<State>> = []
 
     init(initialState: LocalState,
-         stateMapping: @escaping (ParentStore.State, LocalState) -> State,
+         stateMapping: @Sendable @escaping (ParentStore.State, LocalState) -> State,
          parentStore: ParentStore,
          reducer: @escaping Reducer<LocalState, Action>) {
 

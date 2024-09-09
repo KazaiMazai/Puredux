@@ -7,7 +7,8 @@
 
 import Foundation
 
-final class AnyStoreObject<State, Action>: StoreObjectProtocol {
+final class AnyStoreObject<State, Action>: StoreObjectProtocol, Sendable where State: Sendable,
+                                                                               Action: Sendable {
 
     private let boxed: BaseBox
 
@@ -53,7 +54,7 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol {
 }
 
 extension AnyStoreObject {
-    func map<T>(_ transform: @escaping (State) -> T) -> AnyStoreObject<T, Action> {
+    func map<T>(_ transform: @Sendable @escaping (State) -> T) -> AnyStoreObject<T, Action> {
         AnyStoreObject<T, Action>(boxed.map(transform: transform))
     }
 }
@@ -105,7 +106,7 @@ private extension AnyStoreObject {
 }
 
 private extension AnyStoreObject {
-    class BaseBox: StoreObjectProtocol {
+    class BaseBox: StoreObjectProtocol, @unchecked Sendable {
         init() {
             guard type(of: self) != BaseBox.self else {
                 fatalError("Cannot initialise, must subclass")

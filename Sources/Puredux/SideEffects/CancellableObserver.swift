@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CancellableObserver {
+final class CancellableObserver {
     private class AnyStateObserver { }
 
     var observer: AnyObject = AnyStateObserver()

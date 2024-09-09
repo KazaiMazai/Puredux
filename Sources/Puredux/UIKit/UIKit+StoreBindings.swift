@@ -71,13 +71,19 @@ public extension UIStateObserver {
      }
      ```
      */
-    func subscribe<State, Action, Props>(store: any Store<State, Action>,
-                                         props: @escaping (State, AnyStore<State, Action>) -> Props,
-                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                                         removeStateDuplicates equating: Equating<State>? = nil,
-                                         debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                         observe: @escaping (Props) -> Void) {
-
+    func subscribe<State, Action, Props>(
+        store: any Store<State, Action>,
+        props: @Sendable @escaping (State, AnyStore<State, Action>) -> Props,
+        presentationQueue: DispatchQueue = .sharedPresentationQueue,
+        removeStateDuplicates equating: Equating<State>? = nil,
+        debounceFor timeInterval: TimeInterval = .uiDebounce,
+        observe: @Sendable @MainActor @escaping (Props) -> Void)
+    
+    where 
+    State: Sendable,
+    Action: Sendable,
+    Props: Sendable {
+        
         store.effect(
             cancellable,
             withDelay: timeInterval,
@@ -85,11 +91,7 @@ public extension UIStateObserver {
             on: presentationQueue) { state, _ in
                 Effect {
                     let props = props(state, store.eraseToAnyStore())
-                    guard presentationQueue == DispatchQueue.main else {
-                        DispatchQueue.main.async { observe(props) }
-                        return
-                    }
-                    observe(props)
+                    Task { @MainActor in observe(props) }
                 }
             }
     }
@@ -142,13 +144,19 @@ public extension UIStateObserver {
      }
      ```
     */
-    func subscribe<State, Action, Props>(_ store: any Store<State, Action>,
-                                         props: @escaping (State, @escaping Dispatch<Action>) -> Props,
-                                         presentationQueue: DispatchQueue = .sharedPresentationQueue,
-                                         removeStateDuplicates equating: Equating<State>? = nil,
-                                         debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                         observe: @escaping (Props) -> Void) {
-
+    func subscribe<State, Action, Props>(
+        _ store: any Store<State, Action>,
+        props: @Sendable @escaping (State, @escaping Dispatch<Action>) -> Props,
+        presentationQueue: DispatchQueue = .sharedPresentationQueue,
+        removeStateDuplicates equating: Equating<State>? = nil,
+        debounceFor timeInterval: TimeInterval = .uiDebounce,
+        observe: @MainActor @Sendable @escaping (Props) -> Void
+    )
+    where
+    State: Sendable,
+    Action: Sendable,
+    Props: Sendable 
+    {
         subscribe(
             store: store,
             props: { state, store in props(state, store.dispatch) },
@@ -202,7 +210,8 @@ public extension UIStateObserver {
     func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State) -> Void) {
+                                  observe: @MainActor @Sendable @escaping (State) -> Void) where State: Sendable,
+                                                                                      Action: Sendable {
 
         subscribe(
             store,
@@ -257,7 +266,8 @@ public extension UIStateObserver {
     func subscribe<State, Action>(_ store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval  = .uiDebounce,
-                                  observe: @escaping (State, Dispatch<Action>) -> Void) {
+                                  observe: @MainActor @Sendable @escaping (State, Dispatch<Action>) -> Void) where State: Sendable,
+                                                                                                        Action: Sendable  {
 
         subscribe(
             store: store,
@@ -310,7 +320,7 @@ public extension UIStateObserver {
     func subscribe<State, Action>(store: any Store<State, Action>,
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval = .uiDebounce,
-                                  observe: @escaping (State, AnyStore<State, Action>) -> Void) {
+                                  observe: @MainActor @Sendable  @escaping (State, AnyStore<State, Action>) -> Void) {
 
         subscribe(
             store: store,

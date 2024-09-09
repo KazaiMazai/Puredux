@@ -21,7 +21,8 @@ public protocol PresenterProtocol {
 /**
  A protocol that defines a presentable UI component that observes state changes and can update its properties accordingly.
 */
-public protocol Presentable: UIStateObserver {
+
+public protocol Presentable: UIStateObserver, Sendable {
     /**
      The type of properties that the presentable will use to update its UI.
     */
@@ -37,6 +38,7 @@ public protocol Presentable: UIStateObserver {
 
      - Parameter props: The properties to be set for the UI component.
      */
+   
     func setProps(_ props: Props)
 }
 
@@ -92,10 +94,12 @@ public extension Presentable {
      ```
     */
     func setPresenter<State, Action>(store: any Store<State, Action>,
-                                     props: @escaping (State, AnyStore<State, Action>) -> Self.Props,
+                                     props: @Sendable @escaping (State, AnyStore<State, Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
-                                     debounceFor timeInterval: TimeInterval = .uiDebounce) {
+                                     debounceFor timeInterval: TimeInterval = .uiDebounce) where State: Sendable,
+                                                                                                 Action: Sendable,
+                                                                                                 Props: Sendable {
 
         presenter = Presenter { [weak self] in
             guard let self else { return }
@@ -120,10 +124,12 @@ public extension Presentable {
         - equating: An optional `Equating` that determines whether the state has changed to avoid redundant updates. Defaults to `nil`.
     */
     func setPresenter<State, Action>(_ store: any Store<State, Action>,
-                                     props: @escaping (State, Dispatch<Action>) -> Self.Props,
+                                     props: @Sendable @escaping (State, Dispatch<Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
                                      removeStateDuplicates equating: Equating<State>? = nil,
-                                     debounceFor timeInterval: TimeInterval = .uiDebounce) {
+                                     debounceFor timeInterval: TimeInterval = .uiDebounce) where State: Sendable,
+                                                                                                 Action: Sendable,
+                                                                                                 Props: Sendable {
 
         presenter = Presenter { [weak self] in
             guard let self else { return }
@@ -139,10 +145,11 @@ public extension Presentable {
     }
 }
 
-private struct Presenter: PresenterProtocol {
-    let subscribe: () -> Void
+private struct Presenter: PresenterProtocol, Sendable {
+    let subscribe: @Sendable () -> Void
 
     func subscribeToStore() {
         subscribe()
     }
 }
+
