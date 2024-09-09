@@ -17,6 +17,11 @@ extension UIView: UIStateObserver { }
 
 #endif
 
+/**
+ A protocol that defines a UI state observer.
+
+ Types conforming to `UIStateObserver` can observe and respond to state changes in the user interface. The protocol requires conformance to `AnyObject`, meaning it can only be adopted by class types. Used  for `UIViewController` & `UIView`.
+ */
 public protocol UIStateObserver: AnyObject { }
 
 extension UIStateObserver {

@@ -26,6 +26,11 @@ public struct Injected {
     }
 }
 
+/**
+ A protocol that defines a key used for dependency injection.
+
+ Types conforming to `InjectionKey` provide a mechanism to inject dependencies into a `Injected` by associating a specific type of value (`Value`) with the key and providing default value
+ */
 public protocol InjectionKey {
     /** The associated type representing the type of the dependency injection key's value. */
     associatedtype Value
