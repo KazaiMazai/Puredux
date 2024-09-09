@@ -14,7 +14,6 @@ public enum ObserverStatus {
 }
 
 public extension Observer {
-
     /**     
      Observer's main closure that handle State changes and calls complete handler
         - Parameter state: newly observed State
