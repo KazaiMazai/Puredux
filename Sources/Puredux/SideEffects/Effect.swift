@@ -7,6 +7,12 @@
 
 import Foundation
 
+/**
+ A structure representing a side effect that can be performed asynchronously.
+
+ `Effect` is used to encapsulate side effects or operations that can be performed outside the regular Store's data flow, like network requests, database updates, or other actions that are triggered in response to some event.
+
+ */
 public struct Effect: Sendable {
     typealias Operation = @Sendable () -> Void
     private let perform: Operation?
