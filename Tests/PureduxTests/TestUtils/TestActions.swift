@@ -24,7 +24,7 @@ struct AsyncResultAction: Action & AsyncAction {
     let index: Int
     var dispatchQueue: DispatchQueue  = .main
 
-    let executionCallback: (@escaping (ResultAction) -> Void) -> Void
+    let executionCallback: @Sendable (@escaping (ResultAction) -> Void) -> Void
 
     func execute(completeHandler: @escaping (ResultAction) -> Void) {
         executionCallback(completeHandler)
@@ -49,7 +49,7 @@ struct UpdateTitle: Action {
 
 struct UpdateIndexCallBack: Action & AsyncAction {
     let index: Int
-    let executionCallback: () -> Void
+    let executionCallback: @Sendable () -> Void
 
     var dispatchQueue: DispatchQueue = .main
 
