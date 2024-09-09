@@ -21,6 +21,7 @@ public protocol PresenterProtocol {
 /**
  A protocol that defines a presentable UI component that observes state changes and can update its properties accordingly.
 */
+
 public protocol Presentable: UIStateObserver, Sendable {
     /**
      The type of properties that the presentable will use to update its UI.
@@ -37,6 +38,7 @@ public protocol Presentable: UIStateObserver, Sendable {
 
      - Parameter props: The properties to be set for the UI component.
      */
+   
     func setProps(_ props: Props)
 }
 
@@ -143,10 +145,11 @@ public extension Presentable {
     }
 }
 
-private struct Presenter: PresenterProtocol {
-    let subscribe: () -> Void
+private struct Presenter: PresenterProtocol, Sendable {
+    let subscribe: @Sendable () -> Void
 
     func subscribeToStore() {
         subscribe()
     }
 }
+
