@@ -69,7 +69,6 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
 
 extension StoreNode where LocalState == State {
     static func initRootStore(initialState: State,
-                              interceptor: @escaping (Action, @escaping Dispatch<Action>) -> Void = { _, _ in },
                               qos: DispatchQoS = .userInteractive,
                               reducer: @escaping Reducer<State, Action>) -> RootStoreNode<State, Action> {
 

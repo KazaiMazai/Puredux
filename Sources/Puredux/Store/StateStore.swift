@@ -112,7 +112,6 @@ public extension StateStore {
 
         self.init(storeObject: RootStoreNode.initRootStore(
             initialState: initialState,
-            interceptor: { _, _ in },
             qos: qos,
             reducer: reducer
         ))
