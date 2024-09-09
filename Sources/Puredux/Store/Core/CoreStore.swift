@@ -14,7 +14,7 @@ public typealias Interceptor<Action> = (Action, @escaping Dispatch<Action>) -> V
 typealias StoreID = UUID
 
 final class CoreStore<State, Action>: @unchecked Sendable where State: Sendable,
-                                                                          Action: Sendable {
+                                                                Action: Sendable {
     let id: StoreID = StoreID()
 
     private static var queueLabel: String { "com.puredux.store" }
