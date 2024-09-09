@@ -13,6 +13,13 @@ typealias Subscribe<State> = @Sendable (_ observer: Observer<State>) -> Void
 
 typealias ReferencedStore<State, Action> = ReferencedObject<AnyStoreObject<State, Action>>
 
+/**
+ A type-erased store that conforms to the `Store` protocol. `AnyStore` allows for the abstraction of a specific store's state and actions, providing a general interface to interact with any store.
+
+ - Parameters:
+    - State: The type representing the state of the store, which must conform to `Sendable`.
+    - Action: The type representing actions that can be dispatched to the store, which must conform to `Sendable`.
+*/
 public struct AnyStore<State, Action>: Store where State: Sendable,
                                                    Action: Sendable {
     let dispatchHandler: Dispatch<Action>
