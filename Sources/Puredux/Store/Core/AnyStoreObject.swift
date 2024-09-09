@@ -54,7 +54,7 @@ final class AnyStoreObject<State, Action>: StoreObjectProtocol, Sendable where S
 }
 
 extension AnyStoreObject {
-    func map<T>(_ transform: @Sendable @escaping (State) -> T) -> AnyStoreObject<T, Action> {
+    func map<T>(state transform: @Sendable @escaping (State) -> T) -> AnyStoreObject<T, Action> {
         AnyStoreObject<T, Action>(boxed.map(transform: transform))
     }
     
