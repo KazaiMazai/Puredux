@@ -30,17 +30,13 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         ),
-       .target(
+        .target(
             name: "Puredux",
             dependencies: [
                 "PureduxMacros",
                 "PureduxMacrosPlugin"
-            ],
-            swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
             ]
-       ),
-
+        ),
         .testTarget(
             name: "PureduxTests",
             dependencies: ["Puredux"]),
