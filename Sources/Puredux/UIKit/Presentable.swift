@@ -21,7 +21,7 @@ public protocol PresenterProtocol {
 /**
  A protocol that defines a presentable UI component that observes state changes and can update its properties accordingly.
 */
-public protocol Presentable: UIStateObserver {
+public protocol Presentable: UIStateObserver, Sendable {
     /**
      The type of properties that the presentable will use to update its UI.
     */
@@ -30,7 +30,6 @@ public protocol Presentable: UIStateObserver {
     /**
      The presenter associated with the presentable that owns the state and handles state subscriptions.
     */
-    @MainActor
     var presenter: PresenterProtocol? { get set }
 
     /**
@@ -38,7 +37,6 @@ public protocol Presentable: UIStateObserver {
 
      - Parameter props: The properties to be set for the UI component.
      */
-    @MainActor
     func setProps(_ props: Props)
 }
 
@@ -93,7 +91,6 @@ public extension Presentable {
 
      ```
     */
-    @MainActor
     func setPresenter<State, Action>(store: any Store<State, Action>,
                                      props: @Sendable @escaping (State, AnyStore<State, Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,
@@ -124,7 +121,6 @@ public extension Presentable {
         - presentationQueue: The dispatch queue on which the props will be evaluated on. Defaults to `DispatchQueue.sharedPresentationQueue`. Must be **Serial DispatchQueue**
         - equating: An optional `Equating` that determines whether the state has changed to avoid redundant updates. Defaults to `nil`.
     */
-    @MainActor
     func setPresenter<State, Action>(_ store: any Store<State, Action>,
                                      props: @Sendable @escaping (State, Dispatch<Action>) -> Self.Props,
                                      presentationQueue: DispatchQueue = .sharedPresentationQueue,

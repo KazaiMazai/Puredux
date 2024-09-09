@@ -67,10 +67,10 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        var receivedStateIndex: Int?
+        let receivedStateIndex = UncheckedReference<Int?>(nil)
 
         let observer = Observer<TestState> { receivedState in
-            receivedStateIndex = receivedState.currentIndex
+            receivedStateIndex.value = receivedState.currentIndex
             asyncExpectation.fulfill()
             return .active
         }
@@ -78,7 +78,7 @@ final class StateStoreTests: XCTestCase {
         store.subscribe(observer: observer)
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedStateIndex, expectedStateIndex)
+            XCTAssertEqual(receivedStateIndex.value, expectedStateIndex)
         }
     }
 
@@ -97,10 +97,11 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        var receivedStatesIndexes: [Int] = []
+        let receivedStatesIndexes = UncheckedReference<[Int]>([])
+        
         let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState.currentIndex)
+            receivedStatesIndexes.value.append(receivedState.currentIndex)
             return .active
         }
 
@@ -108,7 +109,7 @@ final class StateStoreTests: XCTestCase {
         store.dispatch(UpdateIndex(index: updatedStateIndex))
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
+            XCTAssertEqual(receivedStatesIndexes.value, expectedStateIndexValues)
         }
     }
 
@@ -126,10 +127,10 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        var receivedStatesIndexes: [Int] = []
+        let receivedStatesIndexes = UncheckedReference<[Int]>([])
         let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState.currentIndex)
+            receivedStatesIndexes.value.append(receivedState.currentIndex)
             return .active
         }
 
@@ -138,7 +139,7 @@ final class StateStoreTests: XCTestCase {
         store.subscribe(observer: observer)
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
+            XCTAssertEqual(receivedStatesIndexes.value, expectedStateIndexValues)
         }
     }
 
@@ -157,10 +158,10 @@ final class StateStoreTests: XCTestCase {
             state.reduce(action: action)
         }
 
-        var receivedStatesIndexes: [Int] = []
+        let receivedStatesIndexes = UncheckedReference<[Int]>([])
         let observer = Observer<TestState> { receivedState in
             asyncExpectation.fulfill()
-            receivedStatesIndexes.append(receivedState.currentIndex)
+            receivedStatesIndexes.value.append(receivedState.currentIndex)
             return .active
         }
 
@@ -171,7 +172,7 @@ final class StateStoreTests: XCTestCase {
         store.dispatch(UpdateIndex(index: updatedStateIndex))
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(receivedStatesIndexes, expectedStateIndexValues)
+            XCTAssertEqual(receivedStatesIndexes.value, expectedStateIndexValues)
         }
     }
 
@@ -217,10 +218,10 @@ final class StateStoreTests: XCTestCase {
             }
         }
 
-        var observerLastReceivedStateIndex: Int?
+        let observerLastReceivedStateIndex = UncheckedReference<Int?>(nil)
         let observer = Observer<TestState> { receivedState in
 
-            observerLastReceivedStateIndex = receivedState.currentIndex
+            observerLastReceivedStateIndex.value = receivedState.currentIndex
             return .dead
         }
 
@@ -231,7 +232,7 @@ final class StateStoreTests: XCTestCase {
         }
 
         waitForExpectations(timeout: timeout) { _ in
-            XCTAssertEqual(observerLastReceivedStateIndex, initialStateIndex)
+            XCTAssertEqual(observerLastReceivedStateIndex.value, initialStateIndex)
         }
     }
 }

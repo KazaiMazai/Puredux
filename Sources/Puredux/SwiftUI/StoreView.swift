@@ -20,7 +20,7 @@ import Foundation
    - Content: A view builder that generates the content for the view based on the provided `Props`.
  
 */
-@MainActor
+ 
 public struct StoreView<ViewState, Action, Props, Content: View>: View where ViewState: Sendable,
                                                                              Action: Sendable,
                                                                              Props: Sendable {
@@ -30,6 +30,7 @@ public struct StoreView<ViewState, Action, Props, Content: View>: View where Vie
     private(set) var removeStateDuplicates: Equating<ViewState>?
     private(set) var presentationQueue: DispatchQueue = .sharedPresentationQueue
 
+    
     @State private var currentProps: Props?
 
     public var body: some View {

@@ -17,7 +17,7 @@ final class StoreViewAlwaysEqualDeduplicationPropsTests: XCTestCase {
 
     @StoreOf(\.rootStore) var store
 
-    @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
+    func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation)  {
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
