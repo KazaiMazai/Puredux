@@ -11,7 +11,7 @@ public typealias Dispatch<Action: Sendable> = @Sendable (_ action: Action) -> Vo
 
 typealias Subscribe<State> = @Sendable (_ observer: Observer<State>) -> Void
 
-typealias ReferencedStore<State, Action> = ReferencedObject<AnyStoreObject<State, Action>>
+typealias ReferencedStore<State, Action> = Referenced<AnyStoreObject<State, Action>>
 
 /**
  A type-erased store that conforms to the `Store` protocol. `AnyStore` allows for the abstraction of a specific store's state and actions, providing a general interface to interact with any store.
@@ -53,7 +53,7 @@ public extension AnyStore {
      - Parameter transform: A closure that takes the current state of type `State` and returns a new state of type `T`.
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
     */
-    func map<T>(_ transform: @Sendable @escaping (State) -> T) -> AnyStore<T, Action> {
+    func map<T>(state transform: @Sendable @escaping (State) -> T) -> AnyStore<T, Action> {
         AnyStore<T, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
@@ -62,7 +62,7 @@ public extension AnyStore {
                     return localStateObserver.send(localState)
                 })
             },
-            referenced: referencedStore.map { $0.map(transform) }
+            referenced: referencedStore.map { $0.map(state: transform) }
         )
     }
     
@@ -94,7 +94,7 @@ public extension AnyStore {
      - Parameter transform: A closure that takes the current state of type `State` and returns an optional new state of type `T?`.
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
     */
-    func flatMap<T>(_ transform: @Sendable @escaping (State) -> T?) -> AnyStore<T?, Action> {
+    func flatMap<T>(state transform: @Sendable @escaping (State) -> T?) -> AnyStore<T?, Action> {
         AnyStore<T?, Action>(
             dispatcher: dispatchHandler,
             subscribe: { localStateObserver in
@@ -103,7 +103,7 @@ public extension AnyStore {
                     return localStateObserver.send(localState)
                 })
             },
-            referenced: referencedStore.map { $0.map(transform) }
+            referenced: referencedStore.map { $0.map(state: transform) }
         )
     }
 }
@@ -122,7 +122,7 @@ public extension AnyStore {
      - Returns: A new `Store` with the transformed state of type `T` and the same action type `Action`.
      - Note: This method allows you to create a store focused on a specific property of the original state using a key path, simplifying access to that property.
      */
-    func map<T>(_ keyPath: KeyPath<State, T>) -> AnyStore<T, Action> {
+    func map<T>(state keyPath: KeyPath<State, T>) -> AnyStore<T, Action> {
         map { $0[keyPath: keyPath] }
     }
 
@@ -136,7 +136,7 @@ public extension AnyStore {
      - Parameter keyPath: A key path that specifies the optional property of type `T?` to extract from the current state of type `State`.
      - Returns: A new `Store` with the transformed state of type `T?` (optional) and the same action type `Action`.
     */
-    func flatMap<T>(_ keyPath: KeyPath<State, T?>) -> AnyStore<T?, Action> {
+    func flatMap<T>(state keyPath: KeyPath<State, T?>) -> AnyStore<T?, Action> {
         flatMap { $0[keyPath: keyPath] }
     }
 }
@@ -268,27 +268,6 @@ public extension AnyStore {
 
 // swiftlint:enable large_tuple identifier_name
 
-// MARK: - Actions Transformations
-
-/*
- extension Store {
-    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
-        let store = instance
-        let weakStore = weakStore()
-        return AnyStore<State, A>(
-            dispatcher: { action in weakStore.dispatch(transform(action)) },
-            subscribe: weakStore.subscribeHandler,
-            storeObject: store.getStoreObject
-        )
-    }
- }
-
- extension StateStore {
-    func map<A>(action transform: @escaping (A) -> Action) -> AnyStore<State, A> {
-        instance.map(action: transform)
-    }
- }
-*/
 
 //MARK: - Internal
 
