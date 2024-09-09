@@ -30,8 +30,8 @@ public extension Equating {
         }
     }
 
-    static func keyPath<Value: Equatable>(_ keyPath: @Sendable @autoclosure @escaping() -> KeyPath<T, Value>) -> Equating<T> {
-        .equal(value: { $0[keyPath: keyPath()]})
+    static func keyPath<Value: Equatable>(_ keyPath: KeyPath<T, Value>) -> Equating<T> {
+        .equal(value: { $0[keyPath: keyPath]})
     }
 }
 
