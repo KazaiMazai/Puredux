@@ -11,7 +11,7 @@ public typealias Dispatch<Action: Sendable> = @Sendable (_ action: Action) -> Vo
 
 typealias Subscribe<State> = @Sendable (_ observer: Observer<State>) -> Void
 
-typealias ReferencedStore<State, Action> = ReferencedObject<AnyStoreObject<State, Action>>
+typealias ReferencedStore<State, Action> = Referenced<AnyStoreObject<State, Action>>
 
 /**
  A type-erased store that conforms to the `Store` protocol. `AnyStore` allows for the abstraction of a specific store's state and actions, providing a general interface to interact with any store.
