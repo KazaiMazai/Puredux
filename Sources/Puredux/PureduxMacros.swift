@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import PureduxMacros
 
 @attached(accessor)
 @attached(peer, names: arbitrary)
