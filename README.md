@@ -40,18 +40,64 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ### Basics
 
-- State is a type describing the whole application state or a part of it
-- Actions describe events that may happen in the system and mutate the state
-- Reducer is a function, that describes how Actions mutate the state
-- Store is the heart of the whole thing. It takes Initial State and Reducer, performs mutations when Actions dispatched and deilvers new State to Observers
+At its core, Puredux follows a predictable state management pattern that consists of the following key components:
 
+- State: A type that represents the entire application state or a portion of it.
+- Actions: Events that describe possible changes in the system, which lead to state mutations.
+- Reducer: A function that dictates how state changes in response to specific actions.
+- Store: The central hub where:
+    - Initial state and reducers are defined.
+    - Actions are dispatched to trigger state changes.
+    - New state values are propagated to any observers or views.
+  
+<details><summary>Click to expand</summary>
+<p>   
+ 
+```text
+ 
+                +-----------------------------------------+
+                |                  Store                  |
+                |                                         |
+                |  +-----------+   +-------------------+  |
+                |  |  Reducer  |<--|   Current State   |  |
+      New State |  +-----------+   +-------------------+  |  Actions
+    <-----------+      |                            A     |<----------+
+    |           |      |                            |     |           A
+    |           |      V                            |     |           |
+    |           |  +-------------------+            |     |           |
+    |           |  |     New State     |------------+     |           |
+    |           |  +-------------------+                  |           |
+    |           |                                         |           |
+    |           +-----------------------------------------+           |
+    |                                                                 |
+    |                                                                 |
+    |                                                                 |
+    |           +----------------+                +---+----+          |
+    V Observer  |                |   Async Work   |        |          |
+    +---------->|  Side Effects  |--------------->| Action |--------->|
+    |           |                |     Result     |        |          |
+    |           +----------------+                +----+---+          |
+    |                                                                 |
+    |           +----------------+                   +---+----+       |
+    V Observer  |                |       User        |        |       |
+    +---------->|       UI       |------------------>| Action |------>+
+                |                |   Interactions    |        |
+                +----------------+                   +----+---+
+        
+```
+</p>
+</details>    
+    
+    
 ### Store Definitions
 
 ```swift
 // Let's cover actions with a protocol
 
-protocol Action {
+protocol Action { }
 
+struct IncrementCounter: Action {
+    // ...
 }
 
 // Define root AppState
@@ -60,7 +106,12 @@ struct AppState {
     // ...
     
     mutating func reduce(_ action: Action) {
-        // ...
+        switch action {
+        case let action as IncrementCounter:
+            // ...
+        default:
+            break
+        }
     }
 }
 
@@ -75,6 +126,8 @@ extension Injected {
 
 ### UI Bindings
 
+Puredux can integrate with SwiftUI to manage both global app state and local states. 
+
 ```swift
 
 // View might need a local state that we don't need to share with the whole app 
@@ -86,6 +139,9 @@ struct ViewState {
         // ...
     }
 }
+
+// In your SwiftUI View, you can combine the app's root store with local view-specific states.
+// This allows the view to respond dynamically to both app-level and view-level state changes.
 
 struct ContentView: View  {
     // We can take an injected root store,
@@ -121,7 +177,7 @@ struct MyScreenState {
     }
 }
 
-class MyViewController: ViewController  {
+final class MyViewController: ViewController {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
         state.reduce(action) 
     }
@@ -155,7 +211,6 @@ while state updates flow downstream from the root store to child stores and, ult
 The store tree hierarchy ensures that business logic is completely decoupled from the UI layer. This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
 
 Make your app driven by business logic, not by the view hierarchy.
-
 
 ```swift
 
@@ -216,11 +271,23 @@ We can connect UI to any of the stores and will end up with the following hierar
 
 ## Side Effects
 
-In UDF world we call "side effects" async work: network requests, database fetches and other I/O operations, timer events, location service callbacks, etc.
+In the context of UDF architecture, "side effects" refer to asynchronous operations that interact with external systems or services. These can include:
 
-In Puredix it can be done with Async Actions.
+- Network Requests: Fetching data from web services or APIs.
+- Database Fetches: Retrieving or updating information in a database.
+- I/O Operations: Reading from or writing to files, streams, or other I/O devices.
+- Timer Events: Handling delays, timeouts, or scheduled tasks.
+- Location Service Callbacks: Responding to changes in location data or retrieving location-specific information.
+
+In the Puredix framework, managing these side effects is achieved through two main mechanisms:
+- Async Actions
+- State-Driven Side Effects
 
 ### Async Actions
+
+Async Actions are designed for straightforward, fire-and-forget scenarios. They allow you to initiate asynchronous operations and integrate them seamlessly into your application logic. These actions handle tasks such as network requests or database operations, enabling your application to respond to the outcomes of these operations.
+Define actions that perform asynchronous work and then use them within your app.
+
 
 ```swift
 
@@ -256,6 +323,67 @@ store.dispatch(FetchDataAction())
 
 ```
 
+### State-Driven Side Effects
+
+State-driven Side Effects offer more advanced capabilities for handling asynchronous operations. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and synchronization with the UI or other parts of the application. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
+ 
+  
+ ```swift
+// Add effect state to the state
+struct AppState {
+    private(set) var theJob: Effect.State = .idle()
+}
+ 
+// Add related actions**
+ 
+enum Action {
+    case jobSuccess(Something)
+    case startJob
+    case cancelJob
+    case jobFailure(Error)
+}
+ 
+// Handle actions in the reducer
+  
+extension AppState {
+    mutating func reduce(_ action: Action) {
+        switch action {
+        case .jobSuccess:
+            theJob.succeed()
+        case .startJob:
+            theJob.run()
+        case .cancelJob:
+            theJob.cancel()
+        case .jobFailure(let error):
+            theJob.retryOrFailWith(error)
+        }
+    }
+}
+ 
+// Add SideEffect to the store:
+  
+let store = StateStore<AppState, Action>(AppState()) { state, action in 
+    state.reduce(action) 
+}
+.effect(\.theJob, on: .main) { appState, dispatch in
+    Effect {
+        do {
+            let result = try await apiService.fetch()
+            dispatch(.jobSuccess(result))
+        } catch {
+            dispatch(.jobFailure(error))
+        }
+    }
+}
+
+// Dispatch action to run the job:
+
+store.dispatch(.startJob)
+
+```
+
+A powerful feature of State-driven Side Effects is that their scope and lifetime are defined by the store they are connected to. This makes them especially beneficial in complex store hierarchies, such as app-level stores, feature-scoped stores, and per-screen stores, as their side effects automatically align with the lifecycle of each store.
+
 ## Performance
 
 Puredux offers a robust strategy for addressing the performance challenges commonly faced in iOS applications. It provides several key optimizations to enhance app responsiveness and efficiency, including:
@@ -278,9 +406,7 @@ synchronization with dependencies.
 
 As the result reducers operate in background leaving the main thread exclusively for the UI.
 
-
 ### QoS Tuning
-
 
 When creating the root store, you can choose the quality of service for the queue it will operate on.
 
@@ -319,7 +445,7 @@ struct MyView: View {
 <p>
 
  ```swift
- class MyViewController: ViewController  {
+ final class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
         state.reduce(action) 
     }
@@ -373,7 +499,7 @@ struct MyView: View {
 <p>
 
  ```swift
- class MyViewController: ViewController  {
+ final class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
         state.reduce(action) 
     }
@@ -430,7 +556,7 @@ struct MyView: View {
 <p>
 
  ```swift
- class MyViewController: ViewController  {
+ final class MyViewController: ViewController  {
     var store: StoreOf(\.root).with(MyScreenState()) { state, action in 
         state.reduce(action) 
     }
