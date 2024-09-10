@@ -17,6 +17,10 @@ streamline state management with a focus on unidirectional data flow and separat
 - **Separation of Concerns**: Emphasizes separating business logic and side effects from UI components.
 - **Performance Optimization**: Offers granular performance tuning with state deduplication, debouncing, and offloading heavy UI-related work to the background.
 
+## Why
+
+Develop an iOS app with a UDF Puredux engine using only clean UI, state, actions, and reducers, while handling side effects separately.
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
