@@ -650,8 +650,8 @@ https://github.com/KazaiMazai/Puredux
 
 - [Documentation](https://swiftpackageindex.com/KazaiMazai/Puredux/main/documentation/puredux)
 - [Documentation v1.9.x](https://swiftpackageindex.com/KazaiMazai/Puredux/1.9.2/documentation/puredux)
-- [Documentation Archive]([https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/Archive](https://swiftpackageindex.com/kazaimazai/puredux/main/documentation/puredux/archive))
-- [Migration Guides]([https://github.com/KazaiMazai/Puredux/blob/main/Sources/Puredux/Documentation.docc/MigrationGuides.md](https://swiftpackageindex.com/kazaimazai/puredux/main/documentation/puredux/migrationguides))
+- [Documentation Archive](https://swiftpackageindex.com/kazaimazai/puredux/main/documentation/puredux/archive)
+- [Migration Guides](https://swiftpackageindex.com/kazaimazai/puredux/main/documentation/puredux/migrationguides)
 
 ## Licensing
 
