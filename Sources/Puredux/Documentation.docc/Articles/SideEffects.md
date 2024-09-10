@@ -14,7 +14,7 @@ In the context of UDF architecture, "side effects" refer to asynchronous operati
 
 ## Handling Side Effects in Puredux
 
-In the Puredix framework, managing these side effects is achieved through two main mechanisms:
+In the Puredux framework, managing these side effects is achieved through two main mechanisms:
 - Async Actions
 - State-Driven Side Effects
 

@@ -202,30 +202,73 @@ final class MyViewController: ViewController {
 
 ## Hierarchical Stores Tree Architecture
 
-Puredux allows you to build a hierarchical store tree. This architecture facilitates building applications where state can be shared or isolated, while state mutations remain predictable.
+Puredux allows you to build a hierarchical store tree, facilitating the development of applications where state can be either shared or isolated, while keeping state mutations predictable.
 
-Actions are propagated upstream from child stores to the root store,
-while state updates flow downstream from the root store to child stores and, ultimately, to store observers.
+Actions propagate upstream from child stores to the root store, while state updates flow downstream from the root store to child stores, and ultimately to store observers.
 
-
-The store tree hierarchy ensures that business logic is completely decoupled from the UI layer. This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
+The store tree hierarchy ensures that business logic is fully decoupled from the UI layer. This allows for a deep, isolated business logic tree, while maintaining a shallow UI layer focused solely on its responsibilities.
 
 Make your app driven by business logic, not by the view hierarchy.
 
+Puredux provides flexibility in structuring your app with the following options:
+
+- Single Store
+- Multiple Independent Stores
+- Multiple Store Tree
+
+The multiple store tree is a flexible design that handles complex applications by organizing stores in a hierarchical structure. This approach offers several benefits:
+
+- **Feature scope isolation**: Each feature or module has its own dedicated store, preventing cross-contamination of state.
+- **Performance optimization**: Stores can be made pluggable and isolated, reducing the overhead of managing a large, monolithic state and improving performance.
+- **Scalable application growth**: You can start with a simple structure and add more stores as your application grows, making this approach sustainable for long-term development.
+
+
 ```swift
+// Root Store Config
 
-// Root Store Configuration
-let root = StateStore<AppState, Action>(AppState()) { state, action in state.reduce(action) }
+let root = StateStore<AppState, Action>(AppState()) { state, action in 
+    state.reduce(action) 
+} 
+.effect(\.effectState) { state, dispatch in
+    Effect {
+        // ...
+    }
+}
 
-// FeatureOne Store Configuration
-let featureOne = root.with(FeatureOne()) { state, action in state.reduce(action) }
+// Feature One Config
 
-// FeatureTwo Stores Configuration
-let featureTwo = root.with(FeatureTwo()) { state, action in state.reduce(action) }
+let featureOne = root.with(FeatureOne()) { appState, action in 
+    state.reduce(action) 
+}
+.effect(\.effectState) { state, dispatch in
+    Effect {
+        // ...
+    }
+}
 
-let screenOne = featureTwo.with(ScreenOne()) { state, action in state.reduce(action) }
+// Feature Two Config with 2 screen stores
 
-let screenTwo = featureTwo.with(ScreenTwo()) { state, action in state.reduce(action) }
+let featureTwo = root.with(FeatureTwo()) { state, action in
+    state.reduce(action)
+}
+.effect(\.effectState) { state, dispatch in
+    Effect {
+        // ...
+    }
+}
+
+let screenOne = featureTwo.with(ScreenOne()) { state, action in 
+    state.reduce(action) 
+}
+.effect(\.effectState) { state, dispatch in
+    Effect {
+        // ...
+    }
+}
+
+let screenTwo = featureTwo.with(ScreenTwo()) { state, action in 
+    state.reduce(action) 
+}
 
 ```
 
@@ -234,37 +277,36 @@ We can connect UI to any of the stores and will end up with the following hierar
 <details><summary>Click to expand</summary>
 <p>
 
- ```text
-                   +----------------+    
-                   | AppState Store |
-                   +-------+--------+    
-                           |
-                           |  
-                           | 
-        +------------------+-------------------+
-        |                                      |
-        |                                      |  
-        |                                      |
-        |                                      |
-  +------------------+                +------------------+   
-  | FeatureOne Store |                | FeatureTwo Store | 
-  +------------------+                +--------+---------+   
-    |                                          |
-  +----+                                       |
-  | UI |                          +------------+------------+
-  +----+                          |                         |
-                                  |                         |
-                                  |                         |
-                                  |                         |
-                           +------+----------+       +------+----------+
-                           | ScreenOne Store |       | ScreenTwo Store |
-                           +-----------------+       +-----------------+
-                             |                         |
-                           +----+                    +----+
-                           | UI |                    | UI |
-                           +----+                    +----+
+ 
+```text
+              +----------------+    +--------------+
+              | AppState Store | -- | Side Effects |
+              +----------------+    +--------------+
+                    |
+                    |
+       +------------+-------------------------+
+       |                                      |
+       |                                      |
+       |                                      |
+       |                                      |
+ +------------------+                     +------------------+    +--------------+
+ | FeatureOne Store |                     | FeatureTwo Store | -- | Side Effects |
+ +------------------+                     +------------------+    +--------------+
+    |         |                               |
+ +----+  +--------------+                     |
+ | UI |  | Side Effects |        +------------+------------+
+ +----+  +--------------+        |                         |
+                                 |                         |
+                                 |                         |
+                                 |                         |
+                          +-----------------+         +-----------------+
+                          | ScreenOne Store |         | ScreenTwo Store |
+                          +-----------------+         +-----------------+
+                             |         |                 |
+                          +----+  +--------------+    +----+
+                          | UI |  | Side Effects |    | UI |
+                          +----+  +--------------+    +----+
 ```
-
 
 </p>
 </details>
@@ -279,7 +321,7 @@ In the context of UDF architecture, "side effects" refer to asynchronous operati
 - Timer Events: Handling delays, timeouts, or scheduled tasks.
 - Location Service Callbacks: Responding to changes in location data or retrieving location-specific information.
 
-In the Puredix framework, managing these side effects is achieved through two main mechanisms:
+In the Puredux framework, managing these side effects is achieved through two main mechanisms:
 - Async Actions
 - State-Driven Side Effects
 

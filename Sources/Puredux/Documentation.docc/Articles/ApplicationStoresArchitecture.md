@@ -3,9 +3,9 @@
 Puredux allows you to build a hierarchical store tree. This architecture facilitates building applications where state can be shared or isolated, while state mutations remain predictable.
 
 ## Overview
+
 Actions are propagated upstream from child stores to the root store,
 while state updates flow downstream from the root store to child stores and, ultimately, to store observers.
-
 
 The store tree hierarchy ensures that business logic is completely decoupled from the UI layer. This allows for a deep, isolated business logic tree while maintaining a shallow UI layer focused solely on its responsibilities.
 
@@ -62,7 +62,7 @@ Here is a tree hierarchy example below.
 let root = StateStore<AppState, Action>(AppState()) { state, action in 
     state.reduce(action) 
 } 
-.effect(\.effectState) { appState, dispatch in
+.effect(\.effectState) { state, dispatch in
     Effect {
         // ...
     }
@@ -75,7 +75,7 @@ let root = StateStore<AppState, Action>(AppState()) { state, action in
 let featureOne = root.with(FeatureOne()) { appState, action in 
     state.reduce(action) 
 }
-.effect(\.effectState) { appState, dispatch in
+.effect(\.effectState) { state, dispatch in
     Effect {
         // ...
     }
@@ -89,7 +89,7 @@ let featureOne = root.with(FeatureOne()) { appState, action in
 let featureTwo = root.with(FeatureTwo()) { state, action in
     state.reduce(action)
 }
-.effect(\.effectState) { appState, dispatch in
+.effect(\.effectState) { state, dispatch in
     Effect {
         // ...
     }
@@ -98,7 +98,7 @@ let featureTwo = root.with(FeatureTwo()) { state, action in
 let screenOne = featureTwo.with(ScreenOne()) { state, action in 
     state.reduce(action) 
 }
-.effect(\.effectState) { appState, dispatch in
+.effect(\.effectState) { state, dispatch in
     Effect {
         // ...
     }
@@ -112,9 +112,9 @@ let screenTwo = featureTwo.with(ScreenTwo()) { state, action in
 
 At this point, we've built an app structure consisting of a shared state, two independent features, and added two screen states to the second feature. We've also connected side effects to them, integrating everything together.
 
-Puredix essentially allows us to build a fully functioning app and control it by dispatching actions—all without the need for an actual UI or even a single mock.
+Puredux essentially allows us to build a fully functioning app and control it by dispatching actions—all without the need for an actual UI or even a single mock.
 
-This is a powerful Puredix feature, enabling the testing of interactions between different modules and components of an application to ensure they work correctly at almost any scope: the whole app, a specific feature, or even an individual screen.
+This is a powerful Puredux feature, enabling the testing of interactions between different modules and components of an application to ensure they work correctly at almost any scope: the whole app, a specific feature, or even an individual screen.
 
 For the real app, we would also connect the UI to stores, transforming it into an app with the following architecture:
 
