@@ -11,7 +11,7 @@ import Foundation
 public struct Injected {
 
     /** This is only used as an accessor to the computed properties within extensions of `InjectedValues`. */
-    nonisolated(unsafe) private static var current = Injected()
+    private static var current = Injected()
 
     /** A static subscript for updating the `currentValue` of `InjectionKey` instances. */
     static subscript<K>(key: K.Type) -> K.Value where K: InjectionKey {
