@@ -12,5 +12,5 @@ import PureduxMacros
 @attached(peer, names: arbitrary)
 public macro InjectEntry() =
   #externalMacro(
-    module: "PureduxMacrosPlugin", type: "InjectedStoreMacro"
+    module: "PureduxMacros", type: "InjectedStoreMacro"
   )

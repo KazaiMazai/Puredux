@@ -18,14 +18,12 @@ let package = Package(
             targets: ["Puredux"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
-        .package(name: "PureduxMacros", path: "Packages/PureduxMacros")
+        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
     ],
     targets: [
         .macro(
-            name: "PureduxMacrosPlugin",
+            name: "PureduxMacros",
             dependencies: [
-                "PureduxMacros",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
@@ -33,8 +31,7 @@ let package = Package(
         .target(
             name: "Puredux",
             dependencies: [
-                "PureduxMacros",
-                "PureduxMacrosPlugin"
+                "PureduxMacros"
             ]
         ),
         .testTarget(
