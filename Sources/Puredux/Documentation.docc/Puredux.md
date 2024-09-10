@@ -16,7 +16,7 @@ streamline state management with a focus on unidirectional data flow and separat
 ### Essentials
 
 - <doc:GettingStarted>
-- <doc:StoresTreeArchitecture>
+- <doc:ApplicationStoresArchitecture>
 - <doc:SideEffects>
 - <doc:Performance>
 

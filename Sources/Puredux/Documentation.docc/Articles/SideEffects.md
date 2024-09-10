@@ -125,3 +125,7 @@ let store = StateStore<AppState, Action>(AppState()) { state, action in
 
 store.dispatch(.startJob)
 ```
+
+A powerful feature of State-driven Side Effects is that their scope and lifetime are defined by the store they are connected to. This makes them especially beneficial in complex store hierarchies, such as app-level stores, feature-scoped stores, and per-screen stores, as their side effects automatically align with the lifecycle of each store.
+
+Read more about stores hierarchy in: <doc:ApplicationStoresArchitecture>
