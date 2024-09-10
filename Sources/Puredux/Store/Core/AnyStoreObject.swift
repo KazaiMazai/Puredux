@@ -58,7 +58,7 @@ extension AnyStoreObject {
         let store = boxed.map(transformState: transform)
         return AnyStoreObject<T, Action>(store)
     }
-    
+
     func map<A>(actions transform: @Sendable @escaping (A) -> Action) -> AnyStoreObject<State, A> {
         let store = boxed.map(transformActions: transform)
         return AnyStoreObject<State, A>(store)

@@ -79,7 +79,7 @@ public extension Observer {
      The `Observer` is initialized with the given `id` and an `observe` closure. The `keepPrevState` parameter is set to `false`, and the `observe` closure is called with the current state and the previous state (which is ignored).
      */
     init(id: UUID = UUID(), observe: @escaping StateHandler) {
-        self.init(id: id, keepPrevState: false) { state,_ in
+        self.init(id: id, keepPrevState: false) { state, _ in
             (observe(state), state)
         }
     }

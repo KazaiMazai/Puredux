@@ -40,7 +40,7 @@ extension StoreObjectProtocol {
         stateMapping: @Sendable @escaping (Self.State, LocalState) -> ResultState,
         actionMapping: @Sendable @escaping (LocalAction) -> Action,
         reducer: @escaping Reducer<LocalState, LocalAction>) -> any StoreObjectProtocol<ResultState, LocalAction>
-    
+
     where
     LocalState: Sendable,
     ResultState: Sendable,
@@ -48,7 +48,7 @@ extension StoreObjectProtocol {
 
             StoreNode<Self, LocalState, ResultState, LocalAction>(
                 initialState: initialState,
-                stateMapping: stateMapping, 
+                stateMapping: stateMapping,
                 actionMapping: actionMapping,
                 parentStore: self,
                 reducer: reducer
@@ -59,7 +59,7 @@ extension StoreObjectProtocol {
         initialState: LocalState,
         transform: @Sendable @escaping (State) -> T,
         reducer: @escaping Reducer<LocalState, Action>) -> any StoreObjectProtocol<(T, LocalState), Action>
-        
+
     where
     LocalState: Sendable,
     T: Sendable {
@@ -82,7 +82,7 @@ extension StoreObjectProtocol {
                 reducer: { _, _ in }
             )
         }
-    
+
     func map<A: Sendable>(transformActions: @Sendable @escaping (A) -> Action) -> any StoreObjectProtocol<State, A> {
             StoreNode<Self, Void, State, A>(
                 initialState: Void(),

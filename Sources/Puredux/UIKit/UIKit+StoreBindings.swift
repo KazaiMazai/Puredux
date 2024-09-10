@@ -83,12 +83,12 @@ public extension UIStateObserver {
         removeStateDuplicates equating: Equating<State>? = nil,
         debounceFor timeInterval: TimeInterval = .uiDebounce,
         observe: @Sendable @MainActor @escaping (Props) -> Void)
-    
-    where 
+
+    where
     State: Sendable,
     Action: Sendable,
     Props: Sendable {
-        
+
         store.effect(
             cancellable,
             withDelay: timeInterval,
@@ -160,8 +160,7 @@ public extension UIStateObserver {
     where
     State: Sendable,
     Action: Sendable,
-    Props: Sendable 
-    {
+    Props: Sendable {
         subscribe(
             store: store,
             props: { state, store in props(state, store.dispatch) },
@@ -272,7 +271,7 @@ public extension UIStateObserver {
                                   removeStateDuplicates equating: Equating<State>? = nil,
                                   debounceFor timeInterval: TimeInterval  = .uiDebounce,
                                   observe: @MainActor @Sendable @escaping (State, Dispatch<Action>) -> Void) where State: Sendable,
-                                                                                                        Action: Sendable  {
+                                                                                                        Action: Sendable {
 
         subscribe(
             store: store,

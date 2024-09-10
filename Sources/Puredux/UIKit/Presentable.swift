@@ -38,7 +38,7 @@ public protocol Presentable: UIStateObserver, Sendable {
 
      - Parameter props: The properties to be set for the UI component.
      */
-   
+
     func setProps(_ props: Props)
 }
 
@@ -152,4 +152,3 @@ private struct Presenter: PresenterProtocol, Sendable {
         subscribe()
     }
 }
-

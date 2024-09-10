@@ -17,7 +17,7 @@ extension View {
         on queue: DispatchQueue = .main,
         create: @escaping CreateForEachEffect<ViewState>) -> some View
 
-    where 
+    where
     Effects: Collection & Hashable,
     Effects.Element == Effect.State {
 
