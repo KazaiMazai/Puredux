@@ -17,7 +17,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
     State: Sendable,
     Action: Sendable,
     ParentStore: StoreObjectProtocol {
-    
+
     private let localStore: CoreStore<LocalState, Action>
     private let parentStore: ParentStore
 
@@ -35,7 +35,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
         self.parentStore = parentStore
         self.actionMapping = actionMapping
         self.stateMapping = stateMapping
-        
+
         localStore = CoreStore(
             queue: parentStore.queue,
             initialState: initialState,
@@ -47,7 +47,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
     }
 
     private lazy var parentObserver: Observer<ParentStore.State> = {
-        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] parentState,_  in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] parentState, _  in
             guard let self else {
                 return (.dead, parentState)
             }
@@ -57,7 +57,7 @@ final class StoreNode<ParentStore, LocalState, State, Action>: @unchecked Sendab
     }()
 
     private lazy var localObserver: Observer<LocalState> = {
-        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] localState,_ in
+        Observer(self, removeStateDuplicates: .neverEqual) { [weak self] localState, _ in
             guard let self else {
                 return (.dead, localState)
             }
@@ -76,7 +76,7 @@ extension StoreNode where LocalState == State, ParentStore.Action == Action {
 
         RootStoreNode<State, Action>(
             initialState: initialState,
-            stateMapping: { _, state in return state }, 
+            stateMapping: { _, state in return state },
             actionMapping: { $0 },
             parentStore: VoidStore<Action>(
                 queue: DispatchQueue(label: "com.puredux.store", qos: qos),
@@ -154,7 +154,7 @@ private extension StoreNode {
     }
 
     func send(_ state: State, to observer: Observer<State>) {
-        let status = observer.send(state) 
+        let status = observer.send(state)
         guard status == .dead else {
             return
         }

@@ -8,5 +8,5 @@
 import Foundation
 
 extension KeyPath: @unchecked Sendable {
-    
+
 }

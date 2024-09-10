@@ -55,7 +55,7 @@ public typealias Reducer<State, Action> = (inout State, Action) -> Void
  */
 public struct StateStore<State, Action>: Sendable where State: Sendable,
                                                         Action: Sendable {
-    
+
     let storeObject: AnyStoreObject<State, Action>
 
     /**
@@ -121,7 +121,7 @@ public extension StateStore {
 extension StateStore: Store {
     public typealias State = State
     public typealias Action = Action
-    
+
     public func eraseToAnyStore() -> AnyStore<State, Action> {
         AnyStore<State, Action>(
             dispatcher: { [weak storeObject] in storeObject?.dispatch($0) },
@@ -193,7 +193,7 @@ public extension StateStore {
         StateStore<(State, T), Action>(
             storeObject: storeObject.createChildStore(
                 initialState: initialState,
-                stateMapping: { ($0, $1) }, 
+                stateMapping: { ($0, $1) },
                 actionMapping: { $0 },
                 reducer: reducer
             )
@@ -201,7 +201,7 @@ public extension StateStore {
     }
 }
 
-//MARK: - AsyncActionsExecutor
+// MARK: - AsyncActionsExecutor
 
 extension StateStore: AsyncActionsExecutor {
     func executeAsyncAction(_ action: Action) {
@@ -232,13 +232,13 @@ extension StateStore {
         StateStore<T, Action>(
             storeObject: storeObject.createChildStore(
                 initialState: Void(),
-                stateMapping: { state, _ in transformation(state) }, 
+                stateMapping: { state, _ in transformation(state) },
                 actionMapping: { $0 },
                 reducer: {_, _ in }
             )
         )
     }
-    
+
     /**
      Maps the a new store with actions of type `A`
 

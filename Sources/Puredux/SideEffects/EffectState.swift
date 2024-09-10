@@ -18,10 +18,10 @@ public extension Effect {
     struct State: Codable, Equatable, Hashable {
         /**A typealias for a universally unique identifier (`UUID`). */
         typealias ID = UUID
-        
+
         /**The unique identifier for the `State` instance. */
         private(set) var id = ID()
-            
+
          /**    The internal state of the `Effect`. */
         private var state = InternalState()
     }
@@ -44,13 +44,13 @@ public extension Effect.State {
         effect.run(maxAttempts: maxAttempts, delay: delay)
         return effect
     }
-    
+
     /**
      Creates a new `Effect.State` instance in the idle state.
      
      - Returns: A new `Effect.State` instance in an idle state.
     */
-       
+
     static func idle() -> Effect.State {
         Effect.State()
     }
@@ -67,7 +67,7 @@ public extension Effect.State {
     var isInProgress: Bool {
         status.isInProgress
     }
-    
+
     /**
      A property indicating whether the effect has completed successfully.
      
@@ -76,7 +76,7 @@ public extension Effect.State {
     var isSuccess: Bool {
         status.isSuccess
     }
-    
+
     /**
      A property indicating whether the effect has been cancelled.
      
@@ -85,7 +85,7 @@ public extension Effect.State {
     var isCancelled: Bool {
         status.isCancelled
     }
-    
+
     /**
      A property indicating whether the effect is idle.
      
@@ -94,7 +94,7 @@ public extension Effect.State {
     var isIdle: Bool {
         status.isIdle
     }
-    
+
     /**
      A property indicating whether the effect has failed.
      
@@ -103,7 +103,7 @@ public extension Effect.State {
     var isFailed: Bool {
         status.isFailed
     }
-    
+
     /**
      A property returning the associated error  in case effect has failed.
      
@@ -112,7 +112,7 @@ public extension Effect.State {
     var error: Error? {
         state.error
     }
-    
+
     /**
      A property returning the current attempt number of the effect if it is in progress.
      
@@ -121,7 +121,7 @@ public extension Effect.State {
     var currentAttempt: Int? {
         state.currentAttempt?.attempt
     }
-    
+
     /**
      A property returning the delay for the current attempt of the effect  if it is in progress.
      
@@ -130,7 +130,7 @@ public extension Effect.State {
     var delay: TimeInterval? {
         state.currentAttempt?.delay
     }
-    
+
     /**
      A property representing the current status of the effect.
      
@@ -419,7 +419,7 @@ extension Effect.State.InternalState {
         var hasMoreAttempts: Bool {
             attempt < lastAttempt
         }
-        
+
         private var lastAttempt: Int {
             maxAttempts - 1
         }

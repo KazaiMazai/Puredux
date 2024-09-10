@@ -29,7 +29,7 @@ public struct AnyStore<State, Action>: Store where State: Sendable,
 
 public extension AnyStore {
     func eraseToAnyStore() -> AnyStore<State, Action> { self }
-    
+
     @Sendable func dispatch(_ action: Action) {
         dispatchHandler(action)
         executeAsyncAction(action)
@@ -65,7 +65,7 @@ public extension AnyStore {
             referenced: referencedStore.map { $0.map(state: transform) }
         )
     }
-    
+
     /**
      Maps the a new store with actions of type `A`
 
@@ -268,19 +268,18 @@ public extension AnyStore {
 
 // swiftlint:enable large_tuple identifier_name
 
-
-//MARK: - Internal
+// MARK: - Internal
 
 extension AnyStore {
     init(dispatcher: @escaping Dispatch<Action>,
-         subscribe: @escaping Subscribe<State> ,
+         subscribe: @escaping Subscribe<State>,
          referenced storeObject: ReferencedStore<State, Action>) {
 
         dispatchHandler = { dispatcher($0) }
         subscriptionHandler = { subscribe($0) }
         referencedStore = storeObject
     }
-    
+
     func referencedStoreObject() -> AnyStoreObject<State, Action>? {
         referencedStore.object()
     }
@@ -294,7 +293,7 @@ extension AnyStore {
     }
 }
 
-//MARK: - AsyncActionsExecutor
+// MARK: - AsyncActionsExecutor
 
 extension AnyStore {
     func executeAsyncAction(_ action: Action) {
