@@ -112,9 +112,7 @@ struct AppState {
 ```
 **2. Define the Store and Inject it**:
 
-Using the root AppState, we create a store that integrates actions and the state. 
-
-The store’s role is to manage actions and apply the reducer function whenever an action is dispatched.
+We create a store that integrates actions and the state for the root AppState. Then we use built-in DI:
 
 ```swift
 
@@ -143,7 +141,7 @@ struct ViewState {
 }
 ```
 
-In your SwiftUI VIew, you can combine the app's root store with local view-specific states.
+In your SwiftUI View, you can combine the app's root store with local view-specific states.
 This allows the view to respond dynamically to both app-level and view-level state changes.
 
 ```swift
