@@ -14,7 +14,7 @@ public struct Injected {
     private static var current = Injected()
 
     /** A static subscript for updating the `currentValue` of `InjectionKey` instances. */
-    static subscript<K>(key: K.Type) -> K.Value where K: InjectionKey {
+    public static subscript<K>(key: K.Type) -> K.Value where K: InjectionKey {
         get { key.currentValue }
         set { key.currentValue = newValue }
     }
