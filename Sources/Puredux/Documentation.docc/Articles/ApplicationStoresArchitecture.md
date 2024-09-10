@@ -112,9 +112,9 @@ let screenTwo = featureTwo.with(ScreenTwo()) { state, action in
 
 At this point, we've built an app structure consisting of a shared state, two independent features, and added two screen states to the second feature. We've also connected side effects to them, integrating everything together.
 
-Puredix essentially allows us to build a fully functioning app and control it by dispatching actions—all without the need for an actual UI or even a single mock.
+Puredux essentially allows us to build a fully functioning app and control it by dispatching actions—all without the need for an actual UI or even a single mock.
 
-This is a powerful Puredix feature, enabling the testing of interactions between different modules and components of an application to ensure they work correctly at almost any scope: the whole app, a specific feature, or even an individual screen.
+This is a powerful Puredux feature, enabling the testing of interactions between different modules and components of an application to ensure they work correctly at almost any scope: the whole app, a specific feature, or even an individual screen.
 
 For the real app, we would also connect the UI to stores, transforming it into an app with the following architecture:
 

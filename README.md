@@ -279,7 +279,7 @@ In the context of UDF architecture, "side effects" refer to asynchronous operati
 - Timer Events: Handling delays, timeouts, or scheduled tasks.
 - Location Service Callbacks: Responding to changes in location data or retrieving location-specific information.
 
-In the Puredix framework, managing these side effects is achieved through two main mechanisms:
+In the Puredux framework, managing these side effects is achieved through two main mechanisms:
 - Async Actions
 - State-Driven Side Effects
 
