@@ -1,5 +1,7 @@
 # Getting Started
 
+Making your first steps with Puredux
+
 ## Installation
 
 ### Swift Package Manager
@@ -60,22 +62,35 @@ At its core, Puredux follows a predictable state management pattern that consist
                 +----------------+                   +----+---+
         
  ```
+
+## Actions Definitions
+
+Puredux is very flexible in how actions are defined.
+
+See more the examples here: 
+<doc:ActionsDesignTips>
+
+Let's define an action as plain protocol:
  
-## Store Definitions
-
-Let's break down a typical store setup using Puredux.
-
-**1. Define the Action Protocol**:
-
-Actions in Puredux follow a protocol that ensures they can be handled uniformly.
-
 ```swift
 protocol Action {
     // Define specific actions in your app by conforming to this protocol
 }
 ```
+Then, all app actions can be defined as structs conforming to the protocol:
 
-**2. Define the AppState**:
+```swift
+struct IncrementCounter: Action {
+    // ...
+}
+```
+
+## Store Definitions
+
+Let's break down a typical store setup using Puredux.
+
+
+**1. Define the AppState**:
 
 The application’s state can be represented by a struct, which will store the data relevant to your app. 
 The reduce method defines how the state will change in response to an action.
@@ -86,11 +101,16 @@ struct AppState {
     // Define your app's state properties here
 
     mutating func reduce(_ action: Action) {
-        // Logic for how the state should update when an action is dispatched
+        switch action {
+        case let action as IncrementCounter:
+            // ...
+        default:
+            break
+        }
     }
 }
 ```
-**3. Define the Store and Inject it**:
+**2. Define the Store and Inject it**:
 
 Using the root AppState, we create a store that integrates actions and the state. 
 

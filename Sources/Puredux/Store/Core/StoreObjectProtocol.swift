@@ -73,23 +73,23 @@ extension StoreObjectProtocol {
             )
         }
 
-    func map<T: Sendable>(transform: @Sendable @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
+    func map<T: Sendable>(transformState: @Sendable @escaping (State) -> T) -> any StoreObjectProtocol<T, Action> {
             StoreNode(
                 initialState: Void(),
-                stateMapping: { state, _ in transform(state) },
+                stateMapping: { state, _ in transformState(state) },
                 actionMapping: { $0 },
                 parentStore: self,
-                reducer: {_, _ in }
+                reducer: { _, _ in }
             )
         }
     
-    func map<A: Sendable>(actionsTransform: @Sendable @escaping (A) -> Action) -> any StoreObjectProtocol<State, A> {
-            StoreNode(
+    func map<A: Sendable>(transformActions: @Sendable @escaping (A) -> Action) -> any StoreObjectProtocol<State, A> {
+            StoreNode<Self, Void, State, A>(
                 initialState: Void(),
                 stateMapping: { state, _ in state },
-                actionMapping: actionsTransform,
+                actionMapping: transformActions,
                 parentStore: self,
-                reducer: {_, _ in }
+                reducer: { _, _ in }
             )
         }
 }

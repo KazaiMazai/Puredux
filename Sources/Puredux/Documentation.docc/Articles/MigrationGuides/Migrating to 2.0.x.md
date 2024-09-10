@@ -37,7 +37,7 @@ let store = StateStore(...)
 
 It's important to note that previously, `store()` was mainly used to create a weak reference to avoid creating a reference cycle, which was a concern in the old API.
 
-However, the new `eraseToAnyStore(`)` method works differently. It keeps a regular reference to the store, and the new API and internals ensures that reference cycles are not created by mistake.
+However, the new `eraseToAnyStore()` method works differently. It keeps a regular reference to the store, and the new API and internals ensures that reference cycles are not created by mistake.
 
 ### Observer Changes
 

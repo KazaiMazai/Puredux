@@ -52,8 +52,8 @@ Now there is no need in Action Interceptor any more, built-in `AsyncActions` pro
 -        DispatchQueue.main.async {
 -            action.execute(completeHandler: dispatch)
 -        }
--    },
--   reducer: reducer
+-     },
+-     reducer: reducer
 -)
 
 + let store = StateStore(
@@ -67,18 +67,18 @@ Now there is no need in Action Interceptor any more, built-in `AsyncActions` pro
 
 ```diff
 - let childStore: StateStore<(AppState, LocalState), Action> = storeFactory.childStore(
--   initialState: LocalState(),
+-    initialState: LocalState(),
 -    reducer: { localState, action  in
--        localState.reduce(action: action)
--    }
+-       localState.reduce(action: action)
+-    }   
 - )
 
 
 + let childStore: StateStore<(AppState, LocalState), Action> = rootStore.with(
-+       LocalState(),
-+       reducer: { localState, action  in
-+           localState.reduce(action: action)
-+       }
++    LocalState(),
++    reducer: { localState, action  in
+        localState.reduce(action: action)
++    }  
 + )
  
 ```
@@ -105,13 +105,11 @@ Follow deprecation notices documentation for more details.
  2. Inject root store with `@InjectEntry`:
 
  ```diff
- 
 + extension Injected {
 +     @InjectEntry var appState = StateStore<AppState, Action>(AppState()) { state, action in
 +         state.reduce(action)
 +     }
 +  }
- 
  ```
 
  3. Wrap your `FancyView` in a container view with  a`@State` store of a proper configuration
@@ -143,7 +141,7 @@ The Presentable API is still available, so only minor changes are needed.
      
 +    myViewController.setPresenter(
 +         store: store,
-+        props: { state, store in
++         props: { state, store in
 +             // ...
 +         },
 +         presentationQueue: .sharedPresentationQueue,
