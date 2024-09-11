@@ -217,7 +217,7 @@ extension StateStore: AsyncActionsExecutor {
 
 // MARK: - Basic Transformations
 
-extension StateStore {
+public extension StateStore {
     /**
      Maps the state of the store to a new state of type `T`.
 
