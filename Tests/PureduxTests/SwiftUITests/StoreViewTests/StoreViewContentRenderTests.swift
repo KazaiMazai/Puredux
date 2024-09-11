@@ -15,7 +15,7 @@ final class StoreViewContentRenderTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
 
-    @StoreOf(\.rootStore) var store
+    let store = StateStore<Int, Int>(0) { state, action in state += action }
 
     @discardableResult func setupWindowForTests(contentRenderedExpectation: XCTestExpectation) -> UIWindow {
 

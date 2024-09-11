@@ -14,7 +14,8 @@ import Dispatch
 final class StoreViewPresentationQueueTest: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.2
-    @StoreOf(\.rootStore) var store
+    
+    let store = StateStore<Int, Int>(0) { state, action in state += action }
 
     func test_WhenUseMainPresentationQueue_ThenPropsEvaluatedOnMainThread() {
         let expectation = expectation(description: "view rendered")
