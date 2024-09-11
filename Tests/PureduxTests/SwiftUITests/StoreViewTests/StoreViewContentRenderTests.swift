@@ -105,7 +105,7 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
     func test_WhenViewInitiallySetupWithRootStore_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
-        let store = StoreOf(\.rootStore).store()
+        let store = StateStore<Int, Int>(0) { state, action in state += action }
 
         UIWindow.setupForSwiftUITests(
             rootView: StoreView(
@@ -126,7 +126,7 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
     func test_WhenViewInitiallySetupWithChildStore_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
-        let store = StoreOf(\.rootStore)
+        let store = StateStore<Int, Int>(0) { state, action in state += action }
             .with("text") {_, _ in }
 
         UIWindow.setupForSwiftUITests(
@@ -148,7 +148,7 @@ final class StoreViewContentInitialRenderTests: XCTestCase {
     func test_WhenViewInitiallySetup_ThenViewIsRenderedOnce() {
         let contentRendered = expectation(description: "contentRendered")
         contentRendered.expectedFulfillmentCount = 1
-        let store = StoreOf(\.rootStore)
+        let store = StateStore<Int, Int>(0) { state, action in state += action }
             .with("text") {_, _ in }
             .map { $0.0 }
 
