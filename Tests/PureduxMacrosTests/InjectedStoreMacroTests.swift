@@ -5,6 +5,7 @@
 //  Created by Sergey Kazakov on 25/08/2024.
 //
 
+#if canImport(PureduxMacros)
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
@@ -42,3 +43,4 @@ final class InjectedStoreMacroTests: XCTestCase {
         )
     }
 }
+#endif
