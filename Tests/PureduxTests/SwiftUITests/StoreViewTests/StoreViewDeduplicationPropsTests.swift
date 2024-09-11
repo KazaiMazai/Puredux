@@ -14,7 +14,8 @@ import Dispatch
 final class StoreViewDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.2
-    @StoreOf(\.rootStore) var store
+    
+    let store = StateStore<Int, Int>(0) { state, action in state += action }
 
     @discardableResult func setupWindowForTests(propsEvaluatedExpectation: XCTestExpectation) -> UIWindow {
 
