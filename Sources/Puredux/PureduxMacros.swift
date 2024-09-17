@@ -13,3 +13,10 @@ public macro InjectEntry() =
   #externalMacro(
     module: "PureduxMacros", type: "InjectedStoreMacro"
   )
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro DependencyEntry() =
+  #externalMacro(
+    module: "PureduxMacros", type: "InjectedStoreMacro"
+  )

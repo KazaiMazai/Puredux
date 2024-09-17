@@ -32,6 +32,7 @@ let package = Package(
             name: "Puredux",
             dependencies: [
                 "PureduxMacros"
+            ]
         ),
         .testTarget(
             name: "PureduxTests",
