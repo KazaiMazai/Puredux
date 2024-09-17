@@ -8,7 +8,7 @@ A few breaking changes related to the replacement of StoreObject with a StateSto
 StoreObject used to be a class, StateStore is a struct.
 
 StoreObject that were weakly referenced wll require a fix.
-Since is StoreObjectnow a typealias of StateStore the compiler will point you to all the places that require a fix:
+Since is StoreObject now a typealias of StateStore the compiler will point you to all the places that require a fix:
 
 ```diff
 - let storeObject: StoreObject = ....
