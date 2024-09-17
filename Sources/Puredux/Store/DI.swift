@@ -6,23 +6,33 @@
 //
 
 import Foundation
+import Dispatch
 
 /** Provides access to injected dependencies. */
 public struct Injected {
+     private static let queue = DispatchQueue(label: "com.puredux.injected")
 
     /** This is only used as an accessor to the computed properties within extensions of `InjectedValues`. */
     private static var current = Injected()
 
     /** A static subscript for updating the `currentValue` of `InjectionKey` instances. */
     public static subscript<K>(key: K.Type) -> K.Value where K: InjectionKey {
-        get { key.currentValue }
-        set { key.currentValue = newValue }
+        get {
+            queue.sync { key.currentValue }
+        }
+        set {
+            queue.async(flags: .barrier) { key.currentValue = newValue }
+        }
     }
 
     /** A static subscript accessor for updating and references dependencies directly. */
     public static subscript<T>(_ keyPath: WritableKeyPath<Injected, T>) -> T {
-        get { current[keyPath: keyPath] }
-        set { current[keyPath: keyPath] = newValue }
+        get {
+            queue.sync { current[keyPath: keyPath] }
+        }
+        set {
+            queue.async(flags: .barrier) { current[keyPath: keyPath] = newValue }
+        }
     }
 }
 
@@ -38,3 +48,4 @@ public protocol InjectionKey {
     /** The default value for the dependency injection key. */
     static var currentValue: Self.Value { get set }
 }
+
