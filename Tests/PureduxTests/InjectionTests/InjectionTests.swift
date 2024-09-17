@@ -11,16 +11,16 @@ import XCTest
 @testable import Puredux
 
 #if canImport(PureduxMacros)
-extension Injected {
+extension Stores {
     @InjectEntry var intValue: Int = 1
 }
  
 final class InjectionTests: XCTestCase {
     func test_whenReadAndWriteToInjectedValue_NoDeadlockOccurs() {
-        Injected[\.intValue] = 1
+        Stores[\.intValue] = 1
         
-        Injected[\.intValue] = Injected[\.intValue] + 1
-        XCTAssertEqual(Injected[\.intValue], 2)
+        Stores[\.intValue] = Stores[\.intValue] + 1
+        XCTAssertEqual(Stores[\.intValue], 2)
          
     }
 }

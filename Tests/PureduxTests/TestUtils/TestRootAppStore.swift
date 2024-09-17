@@ -11,7 +11,7 @@ import SwiftUI
 import UIKit
 import PureduxMacros
 
-extension Injected {
+extension Stores {
     @InjectEntry var rootStore = StateStore<Int, Int>(0) { state, action in state += action }
 }
 #endif

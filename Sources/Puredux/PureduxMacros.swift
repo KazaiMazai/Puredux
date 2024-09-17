@@ -11,12 +11,19 @@ import Foundation
 @attached(peer, names: arbitrary)
 public macro InjectEntry() =
   #externalMacro(
-    module: "PureduxMacros", type: "InjectedStoreMacro"
+    module: "PureduxMacros", type: "DependencyInjectionMacro"
   )
 
 @attached(accessor)
 @attached(peer, names: arbitrary)
 public macro DependencyEntry() =
   #externalMacro(
-    module: "PureduxMacros", type: "InjectedStoreMacro"
+    module: "PureduxMacros", type: "DependencyInjectionMacro"
+  )
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro StoreEntry() =
+  #externalMacro(
+    module: "PureduxMacros", type: "DependencyInjectionMacro"
   )

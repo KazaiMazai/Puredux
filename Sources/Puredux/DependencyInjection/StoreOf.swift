@@ -42,17 +42,17 @@ Example usage:
 
 @propertyWrapper
 public struct StoreOf<T> {
-    private let keyPath: WritableKeyPath<Injected, T>
+    private let keyPath: WritableKeyPath<Stores, T>
 
     public var wrappedValue: T {
-        get { Injected[keyPath] }
+        get { Stores[keyPath] }
     }
 
-    public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action> {
+    public init<State, Action>(_ keyPath: WritableKeyPath<Stores, T>) where T == StateStore<State, Action> {
         self.keyPath = keyPath
     }
 
-    public init<State, Action>(_ keyPath: WritableKeyPath<Injected, T>) where T == StateStore<State, Action>? {
+    public init<State, Action>(_ keyPath: WritableKeyPath<Stores, T>) where T == StateStore<State, Action>? {
         self.keyPath = keyPath
     }
 

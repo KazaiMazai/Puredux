@@ -13,13 +13,13 @@ import XCTest
 
 final class InjectedStoreMacroTests: XCTestCase {
     
-    private let macros = ["InjectEntry": InjectedStoreMacro.self]
+    private let macros = ["StoreEntry": DependencyInjectionMacro.self]
 
     func testEnvironmentValue() {
         assertMacroExpansion(
               """
               extension Injected {
-                  @InjectEntry var root = StateStore<Int, Int>(10) {_,_ in }
+                  @StoreEntry var root = StateStore<Int, Int>(10) {_,_ in }
               }
               """,
               expandedSource:
@@ -34,7 +34,7 @@ final class InjectedStoreMacroTests: XCTestCase {
                         }
                     }
 
-                    private enum _RootKey: InjectionKey {
+                    private enum _RootKey: DependencyKey {
                         nonisolated (unsafe) static var currentValue = StateStore<Int, Int>(10) { _, _ in
                         }
                     }

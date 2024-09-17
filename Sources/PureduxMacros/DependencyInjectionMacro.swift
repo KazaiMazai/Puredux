@@ -10,7 +10,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 
 @available(iOS 13.0, *)
-public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
+public struct DependencyInjectionMacro: AccessorMacro, PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
@@ -45,7 +45,7 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
 
         return [
         """
-        private enum _\(raw: propertiesAttributes.keyName): InjectionKey {
+        private enum _\(raw: propertiesAttributes.keyName): DependencyKey {
             nonisolated(unsafe) static var currentValue \(propertiesAttributes.initializerClauseSyntax)
         }
         """

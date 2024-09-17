@@ -1,22 +1,35 @@
 # Migrating to 2.1.x
  
-Minor changes not even breaking ones.
+Minor breaking changes
 
 ## Overview
 
 Previously, `Injected` was intended to use only for Stores DI which were accessed on the UI on the main thread. So access to it was not syncronized. 
 
-Now Injected is being upgraded for a more broad set of DI use cases, so it's becoming thread safe.
+Dependency injection was being upgraded for a more broad set of DI use cases, so it's becoming thread safe.
 
-This requires a few changes to be made.
+Now it also provives a bit of separation of concerns for Stores injection and Dependency injection.
 
-## Injection Changes
+## Dependency Injection Changes
+
+### InjectionKey 
+
+`InjectionKey` which was generated when `@InjectEntry` macro was applied became private to avoid any possibility of direct access to the underlying dependency container storage.
+
+`InjectionKey` was renamed to `DependencyKey`
 
 
-Injected now provides a threadsafe access to underlying DI container. 
+### Injected and InjectEntry replacement for Stores injection
 
-### InjectionKey and InjectEntry 
+Injected and InjectEntry were renamed:
 
-InjectionKey which is generated when `@InjectEntry` macro is applied is now private to avoid any possibility of direct access to the underlying storage.
+```diff
+-extension Injected {
+-   @InjectEntry var rootState = StateStore<AppRootState, Action>(...)  
+-}
 
-However, this shouldn't be a breaking change because it was never intended to be used directly.
++extension Stores {
++   @StoreEntry var rootState = StateStore<AppRootState, Action>(...) 
++}
+```
+
