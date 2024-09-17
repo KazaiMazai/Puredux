@@ -10,7 +10,7 @@ import SwiftUI
 /**
 A property wrapper that implements a Dependency Injection (DI) pattern by providing access to an injected instance of `StateStore`.
 
-The `StoreOf` property wrapper is used to access and manage an instance of `StateStore` (or an optional `StateStore`) that is injected into the `Injected` type. This pattern facilitates dependency management by allowing components to retrieve dependencies directly through property wrappers.
+The `StoreOf` property wrapper is used to access and manage an instance of `StateStore` (or an optional `StateStore`) that is injected into the `SharedStores` type. This pattern facilitates dependency management by allowing components to retrieve dependencies directly through property wrappers.
 - Note: This property wrapper can be initialized with key paths to injected `StateStore` or optional `StateStore` types.
 - Parameter T: The type of the `StateStore` or optional `StateStore` being accessed.
  
@@ -18,10 +18,10 @@ Example usage:
  
  ```swift
  
- // Use InjectEntry to inject the instance
+ // Use StoreEntry to inject the store instance
  
- extension Injected {
-    @InjectEntry var rootState = StateStore<AppRootState, Action>(AppRootState()) { state, action in
+ extension Stores {
+    @StoreEntry var rootState = StateStore<AppRootState, Action>(AppRootState()) { state, action in
         // Here is a reducer used to mutate the state
     }
  }
@@ -42,22 +42,34 @@ Example usage:
 
 @propertyWrapper
 public struct StoreOf<T> {
-    private let keyPath: WritableKeyPath<Stores, T>
+    private let keyPath: WritableKeyPath<SharedStores, T>
 
     public var wrappedValue: T {
-        get { Stores[keyPath] }
+        get { SharedStores[keyPath] }
     }
 
-    public init<State, Action>(_ keyPath: WritableKeyPath<Stores, T>) where T == StateStore<State, Action> {
+    public init<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) where T == StateStore<State, Action> {
         self.keyPath = keyPath
     }
 
-    public init<State, Action>(_ keyPath: WritableKeyPath<Stores, T>) where T == StateStore<State, Action>? {
+    public init<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) where T == StateStore<State, Action>? {
         self.keyPath = keyPath
     }
 
     public func store() -> T {
         wrappedValue
+    }
+    
+    public static subscript<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) -> T where T == StateStore<State, Action>  {
+        get {
+            SharedStores[keyPath]
+        }
+    }
+    
+    public static subscript<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) -> T where T == StateStore<State, Action>?  {
+        get {
+            SharedStores[keyPath]
+        }
     }
 }
 

@@ -1,8 +1,17 @@
 # Migrating to 2.1.x
  
-Minor breaking changes
+Minor not so breaking changes
 
 ## Overview
+
+- Swift tools min requirement bump to 5.10
+- Dependency Injection Feature
+
+## Swift Tools v5.10 
+
+Minimum supported Swift version is now 5.10
+
+## Dependency Injection Changes
 
 Previously, `Injected` was intended to use only for Stores DI which were accessed on the UI on the main thread. So access to it was not syncronized. 
 
@@ -10,7 +19,6 @@ Dependency injection was being upgraded for a more broad set of DI use cases, so
 
 Now it also provives a bit of separation of concerns for Stores injection and Dependency injection.
 
-## Dependency Injection Changes
 
 ### InjectionKey 
 
@@ -28,7 +36,7 @@ Injected and InjectEntry were renamed:
 -   @InjectEntry var rootState = StateStore<AppRootState, Action>(...)  
 -}
 
-+extension Stores {
++extension SharedStores {
 +   @StoreEntry var rootState = StateStore<AppRootState, Action>(...) 
 +}
 ```

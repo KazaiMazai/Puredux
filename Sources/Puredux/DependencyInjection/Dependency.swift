@@ -39,7 +39,7 @@ extension Dependencies {
     @DependencyEntry var intValue = 1
     
     @DependencyEntry var uuid = { UUID() }
-    
+    @DependencyEntry var now = { Date() }
     
 }
 
@@ -48,7 +48,9 @@ class Foo {
     
     var uuidValue = Dependency[\.uuid]
     
-     
+    func ffofofo() {
+        Dependencies[\.now] = { .distantPast }
+    }
 }
 
  

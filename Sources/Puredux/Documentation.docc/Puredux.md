@@ -18,6 +18,7 @@ streamline state management with a focus on unidirectional data flow and separat
 - <doc:GettingStarted>
 - <doc:ApplicationStoresArchitecture>
 - <doc:SideEffects>
+- <doc:DependencyInjection>
 - <doc:Performance>
 
 ### Migration guides

@@ -18,13 +18,13 @@ final class InjectedStoreMacroTests: XCTestCase {
     func testEnvironmentValue() {
         assertMacroExpansion(
               """
-              extension Injected {
+              extension SharedStores {
                   @StoreEntry var root = StateStore<Int, Int>(10) {_,_ in }
               }
               """,
               expandedSource:
                 """
-                extension Injected {
+                extension SharedStores {
                     var root {
                         get {
                             self [_RootKey.self]
