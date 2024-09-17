@@ -46,8 +46,7 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
         return [
         """
         private enum _\(raw: propertiesAttributes.keyName): InjectionKey {
-            nonisolated(unsafe)
-            static var currentValue \(propertiesAttributes.initializerClauseSyntax)
+            nonisolated(unsafe) static var currentValue \(propertiesAttributes.initializerClauseSyntax)
         }
         """
         ]
