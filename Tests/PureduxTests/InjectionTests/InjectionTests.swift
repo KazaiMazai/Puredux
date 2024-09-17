@@ -10,6 +10,7 @@ import Foundation
 import XCTest
 @testable import Puredux
 
+#if canImport(PureduxMacros)
 extension Injected {
     @InjectEntry var intValue: Int = 1
 }
@@ -23,3 +24,4 @@ final class InjectionTests: XCTestCase {
          
     }
 }
+#endif
