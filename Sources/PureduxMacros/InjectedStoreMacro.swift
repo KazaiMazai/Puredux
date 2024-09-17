@@ -24,10 +24,10 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
 
         return [
           """
-          get { Self[\(raw: propertiesAttributes.keyName).self] }
+          get { self[_\(raw: propertiesAttributes.keyName).self] }
           """,
           """
-          set { Self[\(raw: propertiesAttributes.keyName).self] = newValue }
+          set { self[_\(raw: propertiesAttributes.keyName).self] = newValue }
           """
         ]
     }
@@ -45,7 +45,8 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
 
         return [
         """
-        enum \(raw: propertiesAttributes.keyName): InjectionKey {
+        private enum _\(raw: propertiesAttributes.keyName): InjectionKey {
+            nonisolated(unsafe)
             static var currentValue \(propertiesAttributes.initializerClauseSyntax)
         }
         """
