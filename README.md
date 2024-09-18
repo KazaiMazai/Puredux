@@ -31,6 +31,9 @@ Develop an iOS app with a UDF Puredux engine using only clean UI, state, actions
 - [Side Effects](#side-effects)
   * [Async Actions](#async-actions)
   * [State-Driven Side Effects](#state-driven-side-effects)
+- [Dependency Injection](#dependency-injection)
+  * [Store Injection](#store-injection)
+  * [Dependency Injection](#dependency-injection-1)
 - [Performance](#performance)
   * [Reducers Execution](#reducers-execution)
   * [QoS Tuning](#qos-tuning)
@@ -432,6 +435,68 @@ store.dispatch(.startJob)
 ```
 
 A powerful feature of State-driven Side Effects is that their scope and lifetime are defined by the store they are connected to. This makes them especially beneficial in complex store hierarchies, such as app-level stores, feature-scoped stores, and per-screen stores, as their side effects automatically align with the lifecycle of each store.
+
+## Dependency Injection
+
+Puredux splits dependencies into two categories:
+
+- Store Injection
+- Dependency Injection
+
+Although both are essentially dependencies, they are handled separately because they serve different purposes, and Puredux ensures they remain distinct.
+
+- **Store Injection** is used to conveniently obtain store instances in the UI layer of the application.
+- **Dependency Injection** is used inside the store's reducers to power the application's core logic.
+
+### Store Injection
+
+Use `@StoreEntry` in the `SharedStores` extension to inject the store instance:
+
+```swift
+extension SharedStores {
+   @StoreEntry var root = StateStore<AppRootState, Action>(....)  
+}
+ 
+
+// The `@StoreOf` property wrapper can be used to obtain the injected store instance:
+ 
+struct MyView: View {
+    @State @StoreOf(\.root)
+    var store: StateStore<AppRootState, Action>
+    
+    var body: some View {
+       // ...
+    }
+}
+```
+
+### Dependency Injection
+
+Use `@DependencyEntry` in the `Dependencies` extension to inject the dependency instance:
+
+```swift
+extension Dependencies {
+   @DependencyEntry var now = { Date() }  
+}
+ 
+
+// Then it can be used in the app reducer:
+ 
+struct AppState {
+    private var currentTime: Date?
+
+    mutating func reduce(_ action: Action) {
+        switch action {
+        case let action as UpdateTime:
+            let now = Dependency[\.now]
+            currentTime = now()
+        default:
+            break
+        }
+    }
+}
+
+```
 
 ## Performance
 
