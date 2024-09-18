@@ -8,7 +8,6 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-import UIKit
 import Dispatch
 
 final class StoreViewContentRenderTests: XCTestCase {

@@ -8,10 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-import UIKit
 import PureduxMacros
 
-extension Stores {
+extension SharedStores {
     @InjectEntry var rootStore = StateStore<Int, Int>(0) { state, action in state += action }
 }
 #endif

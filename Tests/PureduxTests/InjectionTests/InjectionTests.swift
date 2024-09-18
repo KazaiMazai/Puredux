@@ -6,26 +6,31 @@
 //
 
 import Foundation
-
 import XCTest
 @testable import Puredux
 
-#if canImport(PureduxMacros)
 extension SharedStores {
-    @StoreEntry var intValue: Int = 1
+    @StoreEntry var theStore = StateStore<Int, Int>(1) { _,_ in }
 }
 
 extension Injected {
     @InjectEntry var anotherIntValue: Int = 1
 }
  
-final class InjectionTests: XCTestCase {
+final class SharedStoresTests: XCTestCase {
     func test_whenReadAndWriteToSharedStoresValue_NoDeadlockOccurs() {
-        SharedStores[\.intValue] = 1
+        let exp = expectation(description: "wait for store state")
+        SharedStores[\.theStore] = StateStore(2) {_,_ in }
+       
         
-        SharedStores[\.intValue] = SharedStores[\.intValue] + 1
-        XCTAssertEqual(SharedStores[\.intValue], 2)
-         
+        let store =  SharedStores[\.theStore]
+        store.subscribe(observer: Observer { state in
+            XCTAssertEqual(state, 2)
+            exp.fulfill()
+            return .active
+        })
+       
+        wait(for: [exp], timeout: 3.0)
     }
     
     func test_whenReadAndWriteToInjectedValue_NoDeadlockOccurs() {
@@ -36,4 +41,17 @@ final class InjectionTests: XCTestCase {
          
     }
 }
-#endif
+
+extension Dependencies {
+    @DependencyEntry var intValue: Int = 1
+}
+ 
+final class DependenciesTests: XCTestCase {
+    func test_whenReadAndWriteToSharedStoresValue_NoDeadlockOccurs() {
+        XCTAssertEqual(Dependency[\.intValue], 1)
+        
+        Dependencies[\.intValue] = Dependencies[\.intValue] + 1
+        XCTAssertEqual(Dependencies[\.intValue], 2)
+    }
+}
+ 
