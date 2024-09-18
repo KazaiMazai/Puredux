@@ -26,5 +26,5 @@ public macro DependencyEntry() =
 @attached(peer, names: arbitrary)
 public macro StoreEntry() =
   #externalMacro(
-    module: "PureduxMacros", type: "DependencyInjectionMacro"
+    module: "PureduxMacros", type: "StoreInjectionMacro"
   )
