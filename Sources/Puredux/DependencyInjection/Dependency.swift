@@ -25,32 +25,3 @@ public struct Dependency<T> {
         }
     }
 }
-
-
-protocol Service {
-    
-}
-
-struct ServiceImp: Service {
-    
-}
-
-extension Dependencies {
-    @DependencyEntry var intValue = 1
-    
-    @DependencyEntry var uuid = { UUID() }
-    @DependencyEntry var now = { Date() }
-    
-}
-
-class Foo {
-    @Dependency(\.intValue) var value
-    
-    var uuidValue = Dependency[\.uuid]
-    
-    func ffofofo() {
-        Dependencies[\.now] = { .distantPast }
-    }
-}
-
- 
