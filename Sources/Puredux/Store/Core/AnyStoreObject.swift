@@ -66,7 +66,7 @@ extension AnyStoreObject {
 }
 
 private extension AnyStoreObject {
-    final class Box<StoreObject: StoreObjectProtocol>: BaseBox
+    final class Box<StoreObject: StoreObjectProtocol>: BaseBox, @unchecked Sendable
     where
     StoreObject.State == State,
     StoreObject.Action == Action {
