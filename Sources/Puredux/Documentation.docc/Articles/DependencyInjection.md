@@ -60,7 +60,7 @@ If you need to bypass the store's entry point and set the store dependency direc
 
 ```swift
 
-SharedStores[\.root] = StateStore<AppRootState, Action>(....)
+SharedStores[\.root] = StateStore<AppRootState, Action>(...)
 
 ```
 
