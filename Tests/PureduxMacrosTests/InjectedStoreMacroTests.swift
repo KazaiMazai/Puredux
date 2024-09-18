@@ -12,29 +12,60 @@ import XCTest
 @testable import PureduxMacros
 
 final class InjectedStoreMacroTests: XCTestCase {
-    private let macros = ["InjectEntry": InjectedStoreMacro.self]
-
-    func testEnvironmentValue() {
+    func test_WhenStoreEntry_StoreInjectionKeyGenerated() {
+        let macros = ["StoreEntry": StoreInjectionMacro.self]
+        
         assertMacroExpansion(
               """
-              extension InjectedStores {
-                  @InjectEntry var root = StateStore<Int, Int>(10) {_,_ in }
+              extension SharedStores {
+                  @StoreEntry var root = StateStore<Int, Int>(10) {_,_ in }
               }
               """,
               expandedSource:
                 """
-                extension InjectedStores {
-                    var root = StateStore<Int, Int>(10) {_,_ in } {
+                extension SharedStores {
+                    var root {
                         get {
-                            Self [RootKey.self]
+                            self [_RootKey.self]
                         }
                         set {
-                            Self [RootKey.self] = newValue
+                            self [_RootKey.self] = newValue
                         }
                     }
 
-                    enum RootKey: InjectionKey {
-                        static var currentValue = StateStore<Int, Int>(10) { _, _ in
+                    private enum _RootKey: DependencyKey {
+                        nonisolated (unsafe) static var currentValue = StateStore<Int, Int>(10) { _, _ in
+                        }
+                    }
+                }
+                """,
+              macros: macros
+        )
+    }
+    
+    func test_WhenDependencyEntry_DepenencyInjectionKeyGenerated() {
+        let macros = ["DependencyEntry": DependencyInjectionMacro.self]
+            
+        assertMacroExpansion(
+              """
+              extension Dependencies {
+                  @DependencyEntry var value = 10
+              }
+              """,
+              expandedSource:
+                """
+                extension SharedStores {
+                    var root {
+                        get {
+                            self [_ValueKey.self]
+                        }
+                        set {
+                            self [_ValueKey.self] = newValue
+                        }
+                    }
+
+                    private enum _ValueKey: DependencyKey {
+                        nonisolated (unsafe) static var currentValue = 10
                         }
                     }
                 }

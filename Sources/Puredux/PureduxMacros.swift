@@ -9,7 +9,22 @@ import Foundation
 
 @attached(accessor)
 @attached(peer, names: arbitrary)
+@available(*, deprecated, message: "use StoreEntry instead", renamed: "StoreEntry")
 public macro InjectEntry() =
   #externalMacro(
-    module: "PureduxMacros", type: "InjectedStoreMacro"
+    module: "PureduxMacros", type: "DependencyInjectionMacro"
+  )
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro DependencyEntry() =
+  #externalMacro(
+    module: "PureduxMacros", type: "DependencyInjectionMacro"
+  )
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro StoreEntry() =
+  #externalMacro(
+    module: "PureduxMacros", type: "StoreInjectionMacro"
   )

@@ -122,10 +122,10 @@ struct AppState {
     }
 }
 
-// Injected root store
+// Inject root store
 
-extension Injected {
-    @InjectEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
+extension SharedStores {
+    @StoreEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
         state.reduce(action)
     }
 }

@@ -9,8 +9,7 @@ import Foundation
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-@available(iOS 13.0, *)
-public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
+public struct StoreInjectionMacro: AccessorMacro, PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
@@ -24,10 +23,10 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
 
         return [
           """
-          get { Self[\(raw: propertiesAttributes.keyName).self] }
+          get { self[_\(raw: propertiesAttributes.keyName).self] }
           """,
           """
-          set { Self[\(raw: propertiesAttributes.keyName).self] = newValue }
+          set { self[_\(raw: propertiesAttributes.keyName).self] = newValue }
           """
         ]
     }
@@ -45,15 +44,57 @@ public struct InjectedStoreMacro: AccessorMacro, PeerMacro {
 
         return [
         """
-        enum \(raw: propertiesAttributes.keyName): InjectionKey {
-            static var currentValue \(propertiesAttributes.initializerClauseSyntax)
+        private enum _\(raw: propertiesAttributes.keyName): StoreInjectionKey {
+            nonisolated(unsafe) static var currentValue \(propertiesAttributes.initializerClauseSyntax)
         }
         """
         ]
     }
 }
 
-@available(iOS 13.0, *)
+public struct DependencyInjectionMacro: AccessorMacro, PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingAccessorsOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [AccessorDeclSyntax] {
+        guard let variableDeclaration = declaration.as(VariableDeclSyntax.self),
+              let propertiesAttributes = variableDeclaration.propertiesAttributes()
+        else {
+            return []
+        }
+
+        return [
+          """
+          get { self[_\(raw: propertiesAttributes.keyName).self] }
+          """,
+          """
+          set { self[_\(raw: propertiesAttributes.keyName).self] = newValue }
+          """
+        ]
+    }
+
+    public static func expansion(
+        of node: SwiftSyntax.AttributeSyntax,
+        providingPeersOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
+        in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
+
+        guard let variableDeclaration = declaration.as(VariableDeclSyntax.self),
+              let propertiesAttributes = variableDeclaration.propertiesAttributes()
+        else {
+            return []
+        }
+
+        return [
+        """
+        private enum _\(raw: propertiesAttributes.keyName): DependencyKey {
+            nonisolated(unsafe) static var currentValue \(propertiesAttributes.initializerClauseSyntax)
+        }
+        """
+        ]
+    }
+}
+
 struct PropertyAttributes {
     let propertyName: String
     let initializerClauseSyntax: InitializerClauseSyntax
@@ -61,7 +102,6 @@ struct PropertyAttributes {
     var keyName: String { "\(propertyName.capitalized)Key" }
 }
 
-@available(iOS 13.0, *)
 extension VariableDeclSyntax {
     func propertiesAttributes() -> PropertyAttributes? {
         guard modifiers.first?.name.text != "static" else {
