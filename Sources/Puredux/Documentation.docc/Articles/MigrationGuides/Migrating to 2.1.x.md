@@ -1,6 +1,6 @@
 # Migrating to 2.1.x
  
-Minor not so breaking changes
+Dependency Injection Feature and minor not so breaking changes
 
 ## Overview
 
@@ -13,18 +13,19 @@ Minimum supported Swift version is now 5.10
 
 ## Dependency Injection Changes
 
-Previously, `Injected` was intended to use only for Stores DI which were accessed on the UI on the main thread. So access to it was not syncronized. 
+Previously, Injected was intended for use only with Stores DI that were accessed on the main thread in the UI. Consequently, access to it was not synchronized.
 
-Dependency injection was being upgraded for a more broad set of DI use cases, so it's becoming thread safe.
+Dependency injection has been upgraded to support a broader range of use cases and is now thread-safe.
 
-Now it also provives a bit of separation of concerns for Stores injection and Dependency injection.
+Additionally, there is now a clearer separation of concerns between Stores injection and general Dependency Injection.
 
+Read more in the <doc:DependencyInjection>.
 
 ### InjectionKey 
 
 `InjectionKey` which was generated when `@InjectEntry` macro was applied became private to avoid any possibility of direct access to the underlying dependency container storage.
 
-`InjectionKey` was renamed to `DependencyKey`
+`InjectionKey` was renamed to `DependencyKey` and `StoreInjectionKey` depending on `@DependencyEntry` or `@StoreEntry` macro is used.
 
 
 ### Injected and InjectEntry replacement for Stores injection

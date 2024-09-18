@@ -56,6 +56,7 @@ public struct StoreOf<T> {
         self.keyPath = keyPath
     }
 
+    @available(*, deprecated, message: "use StoreOf[keyPath:] instead")
     public func store() -> T {
         wrappedValue
     }
