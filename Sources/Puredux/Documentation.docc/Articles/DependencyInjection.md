@@ -112,6 +112,6 @@ By implementing a clear separation of concerns between store injection and depen
 
 - Read-Only Access with `Dependency` and `StoreOf`: These mechanisms provide controlled, read-only access to the dependency injection containers. By restricting modification capabilities, they help maintain the integrity of the state and dependencies throughout the app, reducing the risk of unintended misuse
 
-- Specialization of `StoreO`f: This property wrapper is specifically designed to support only `StateStore` types, which are responsible for owning the state. 
+- Specialization of `StoreOf`: This property wrapper is specifically designed to support only `StateStore` types, which are responsible for owning the state. `@StoreEntry` only supports values of `any Store` type.
 
 - Controlled Access with `Dependencies` and `SharedStores`: These tools offer read and write access to the dependency injection containers, but within a confined scope of the application. This limitation ensures that modifications to dependencies and stores are kept localized, reducing the risk of unintended changes.

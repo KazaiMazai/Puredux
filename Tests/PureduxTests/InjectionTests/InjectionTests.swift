@@ -11,6 +11,7 @@ import XCTest
 
 extension SharedStores {
     @StoreEntry var theStore = StateStore<Int, Int>(1) { _,_ in }
+    
 }
 
 extension Injected {

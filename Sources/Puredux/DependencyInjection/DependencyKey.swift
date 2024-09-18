@@ -28,7 +28,4 @@ public protocol DependencyKey {
 public protocol StoreInjectionKey: DependencyKey where Value: Store {
     /** The associated type representing the type of the dependency injection key's value. */
     
-//
-//    /** The default value for the dependency injection key. */
-//    static var currentValue: Self.Value { get set }
 }

@@ -8,12 +8,6 @@
 import Foundation
 import Dispatch
 
-
-
-extension DispatchQueue {
-    static let di = DispatchQueue(label: "com.puredux.dependencies", attributes: .concurrent)
-}
-
 public protocol DependencyContainer: Sendable {
     init()
 }
@@ -43,4 +37,6 @@ extension DependencyContainer {
     }
 }
 
-
+fileprivate extension DispatchQueue {
+    static let di = DispatchQueue(label: "com.puredux.dependencies", attributes: .concurrent)
+}
