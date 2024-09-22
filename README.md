@@ -19,7 +19,7 @@ streamline state management with a focus on unidirectional data flow and separat
 
 ## Why
 
-Develop an iOS app with a UDF Puredux engine using only clean UI, state, actions, and reducers, while handling side effects separately.
+Develop an application using Puredux, incorporating pure state, actions, and reducers, with a clean stateless UI, while managing side effects separately.
 
 ## Table of Contents
 
