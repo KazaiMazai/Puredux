@@ -10,6 +10,7 @@ import XCTest
 import SwiftUI
 import Dispatch
 
+#if canImport(UIKit)
 final class StoreViewPresentationQueueTest: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.2
@@ -84,3 +85,4 @@ final class StoreViewPresentationQueueTest: XCTestCase {
         waitForExpectations(timeout: timeout)
     }
 }
+#endif

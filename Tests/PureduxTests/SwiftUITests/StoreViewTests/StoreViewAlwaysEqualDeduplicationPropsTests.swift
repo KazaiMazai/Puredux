@@ -8,9 +8,9 @@
 import XCTest
 @testable import Puredux
 import SwiftUI
-
 import Dispatch
 
+#if canImport(UIKit)
 final class StoreViewAlwaysEqualDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.1
@@ -65,3 +65,4 @@ extension StoreViewAlwaysEqualDeduplicationPropsTests {
         waitForExpectations(timeout: timeout)
     }
 }
+#endif
