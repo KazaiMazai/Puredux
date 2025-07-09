@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Crocodil
 
 /**
 A property wrapper that implements a Dependency Injection (DI) pattern by providing access to an injected instance of `StateStore`.
@@ -40,41 +41,9 @@ Example usage:
  ```
 */
 
-@propertyWrapper
-public struct StoreOf<T> {
-    private let keyPath: WritableKeyPath<SharedStores, T>
-
-    public var wrappedValue: T {
-        get { SharedStores[keyPath] }
-    }
-
-    public init<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) where T == StateStore<State, Action> {
-        self.keyPath = keyPath
-    }
-
-    public init<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) where T == StateStore<State, Action>? {
-        self.keyPath = keyPath
-    }
-
-    @available(*, deprecated, message: "use StoreOf[keyPath:] instead")
-    public func store() -> T {
-        wrappedValue
-    }
-    
-    public static subscript<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) -> T where T == StateStore<State, Action>  {
-        get {
-            SharedStores[keyPath]
-        }
-    }
-    
-    public static subscript<State, Action>(_ keyPath: WritableKeyPath<SharedStores, T>) -> T where T == StateStore<State, Action>?  {
-        get {
-            SharedStores[keyPath]
-        }
-    }
-}
-
-public extension StoreOf {
+public typealias StoreOf<T> = InjectableKeyPath<SharedStores, T>
+ 
+public extension InjectableKeyPath  {
     /**
      Initializes a new child StateStore with initial state
      - Parameter initialState: The initial state for the store
@@ -96,9 +65,9 @@ public extension StoreOf {
      - AsyncAction dispatches result actions to ChildStore
      */
 
-    func with<Root, Local, Action>(
+    func with<Local, Action>(
         _ initialState: Local,
-        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action> where T == StateStore<Root, Action> {
+        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action> where Value == StateStore<Root, Action> {
 
         wrappedValue.with(
             initialState,
@@ -106,9 +75,9 @@ public extension StoreOf {
         )
     }
 
-    func with<Root, Local, Action>(
+    func with<Local, Action>(
         _ initialState: Local,
-        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action>? where T == StateStore<Root, Action>? {
+        reducer: @escaping Reducer<Local, Action>) -> StateStore<(Root, Local), Action>? where Value == StateStore<Root, Action>? {
 
         wrappedValue?.with(
             initialState,

@@ -6,10 +6,15 @@
 //
 
 import Foundation
+import Crocodil
 
-public struct Dependencies: Sendable, DependencyContainer {
-    public init() {
-        
-    }
+public typealias Dependencies = Crocodil.Dependencies
+
+public typealias Dependency = Crocodil.Dependency
+
+@available(*, deprecated, message: "use SharedStores instead", renamed: "SharedStores")
+public typealias Injected = SharedStores
+ 
+public struct SharedStores: Container, Sendable {
+    public init() { }
 }
-
