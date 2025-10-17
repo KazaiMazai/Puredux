@@ -13,8 +13,9 @@ streamline state management with a focus on unidirectional data flow and separat
 
 - **Unidirectional MVI Architecture**: Supports a unidirectional data flow to ensure predictable state management and consistency.
 - **SwiftUI and UIKit Compatibility**: Works seamlessly with both SwiftUI and UIKit, offering bindings for easy integration.
-- **Single Store/Multiple Stores Design**: Supports both single and multiple store setups for flexible state management of apps of any size and complexity.
-- **Separation of Concerns**: Emphasizes separating business logic and side effects from UI components.
+- **Single Store/Multiple Stores Design**: Supports both single and multiple store setups, as well as tree-of-stores architectures for flexible state management in apps of any size and complexity.
+- **Separation of Concerns**: Emphasizes separating core business logic, side effects, and UI.
+- **Declarative Side Effects**: Separating **what** should be done from **how** it should be done.
 - **Performance Optimization**: Offers granular performance tuning with state deduplication, debouncing, and offloading heavy UI-related work to the background.
 
 ## Why
@@ -30,7 +31,7 @@ Develop an iOS app with a UDF Puredux engine using only clean UI, state, actions
 - [Hierarchical Stores Tree Architecture](#hierarchical-stores-tree-architecture)
 - [Side Effects](#side-effects)
   * [Async Actions](#async-actions)
-  * [State-Driven Side Effects](#state-driven-side-effects)
+  * [Declarative Side Effects](#declarative-side-effects)
 - [Dependency Injection](#dependency-injection)
   * [Store Injection](#store-injection)
   * [Dependency Injection](#dependency-injection-1)
@@ -375,66 +376,156 @@ store.dispatch(FetchDataAction())
 
 ```
 
-### State-Driven Side Effects
+### Declarative Side Effects
 
-State-driven Side Effects offer more advanced capabilities for handling asynchronous operations. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and synchronization with the UI or other parts of the application. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
- 
+Declarative Side Effects offer more advanced capabilities for handling asynchronous operations by making them state-driven. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and othrestration them together and with the UI. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
+
+Think of your app as a state machine where effects are just another reaction to state transitions:
+
+You're not writing low-level execution logic. You're describing intent.
+
+"What" you want is declared in state.
+"How" it happens is handled by the Puredux Effects engine.
+
   
  ```swift
-// Add effect state to the state
-struct AppState {
-    private(set) var theJob: Effect.State = .idle()
-}
- 
-// Add related actions**
- 
-enum Action {
-    case jobSuccess(Something)
-    case startJob
-    case cancelJob
-    case jobFailure(Error)
-}
- 
-// Handle actions in the reducer
-  
-extension AppState {
-    mutating func reduce(_ action: Action) {
+
+// Let's add a generic Effect's Action and reducer 
+public extension Effect {
+     
+    enum Action<T> {
+        case run
+        case restart
+        case success(T)
+        case failure(CodableError)
+        case cancel
+
+        var result: T? {
+            switch self {
+            case .success(let result):
+                return result
+            default:
+                return nil
+            }
+        }
+    }
+
+    mutating func reduce<T>(_ action: Effect.Action<T>) {
         switch action {
-        case .jobSuccess:
-            theJob.succeed()
-        case .startJob:
-            theJob.run()
-        case .cancelJob:
-            theJob.cancel()
-        case .jobFailure(let error):
-            theJob.retryOrFailWith(error)
+        case .run:
+            run()
+        case .restart:
+            restart()
+        case .success:
+            succeed()
+        case .failure(let error):
+            fail(error.error)
+        case .cancel:
+            cancel()
+        }
+    }
+}
+
+// Add effect state to the state, and handle actions in the reducer:
+
+struct AppState {
+    private(set) var fetchMessagesEffect: Effect.State = .idle()
+    private(set) var messages: [Message]
+
+    enum AppAction {
+        case fetchMessages(Effect.Action<[Message]>)
+    }
+
+    mutating func reduce(_ action: AppAction) {
+        switch action {
+        case let .fetchMessages(action):
+            fetchMessagesEffect.reduce(action)
+            messages = action.result ?? messages
         }
     }
 }
  
-// Add SideEffect to the store:
+ 
+// Connect Side Effect handler
   
 let store = StateStore<AppState, Action>(AppState()) { state, action in 
     state.reduce(action) 
 }
-.effect(\.theJob, on: .main) { appState, dispatch in
+.effect(\.fetchMessagesEffect, on: .main) { appState, dispatch in
     Effect {
         do {
             let result = try await apiService.fetch()
-            dispatch(.jobSuccess(result))
+            dispatch(.fetchMessages(.success(result)))
         } catch {
-            dispatch(.jobFailure(error))
+            dispatch(.fetchMessages(.failure(error)))
         }
     }
 }
 
 // Dispatch action to run the job:
 
-store.dispatch(.startJob)
+store.dispatch(.fetchMessages(.run))
 
 ```
 
-A powerful feature of State-driven Side Effects is that their scope and lifetime are defined by the store they are connected to. This makes them especially beneficial in complex store hierarchies, such as app-level stores, feature-scoped stores, and per-screen stores, as their side effects automatically align with the lifecycle of each store.
+Declarative side effects are a powerful architectural pattern that separate what should happen from how it’s executed. This distinction unlocks a range of benefits for modern apps, especially when dealing with asynchronous logic like networking, retries, and cancellations.
+ 
+#### Predictability
+Side effects are driven by state transitions. You always know when and why something runs—because it's a direct result of a state change (e.g., .run, .restart, .cancel).
+
+> No more guessing why an API call triggered twice or never stopped—side effects are entirely deterministic.
+
+
+#### Lifecycle Safety
+Effects are scoped to the lifetime of the store they're connected to. If a store is deinitialized (e.g., a view disappears), the associated side effects cancel automatically.
+
+This avoids memory leaks, dangling async operations, or race conditions from orphaned tasks.
+
+```swift
+.effect(\.authEffect) { ... }
+.effect(\.messagesEffect) { ... }
+
+```
+
+
+#### Testability
+You can test effect behavior by inspecting state transitions, without needing to run actual async code, spy mocking, etc.
+
+```swift
+state.reduce(.fetchMessages(.run))
+XCTAssertTrue(state.fetchMessagesEffect.isRunning)
+
+```
+
+
+#### Control Over Retry, Cancel, Orchestration
+Handling advanced flows like retries, cancellations, or delayed execution becomes trivial:
+
+```
+/// 
+
+mutating func reduce<T>(_ action: Effect.Action<T>) {
+    switch action {
+    case .run:
+        run(maxAttempts: 3, delay: 3.0)
+    case .success:
+        succeed()
+    case .failure(let error):
+        retryOrFailWith(error) 
+    // ...
+    }
+}
+
+```
+
+#### UI Alignment
+
+Declarative side effects naturally align with state-driven UI frameworks like SwiftUI, React, or Jetpack Compose.
+
+Views respond to state changes, and effects follow the same rule—making the whole system coherent.
+ 
+
+
 
 ## Dependency Injection
 
