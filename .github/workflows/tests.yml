@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build and test
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild test -scheme Puredux -destination "platform=iOS Simulator,name=iPhone 16" | xcpretty
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild test -skipMacroValidation -scheme Puredux -destination "platform=iOS Simulator,name=iPhone 16" | xcpretty
