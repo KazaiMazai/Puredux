@@ -117,7 +117,7 @@ We create a store that integrates actions and the state for the root AppState. T
 ```swift
 
 extension SharedStores {
-    @StoreEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
+    @DependencyEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
         state.reduce(action)
     }
 }

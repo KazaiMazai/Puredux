@@ -10,6 +10,7 @@ import XCTest
 import SwiftUI
 import Dispatch
 
+#if canImport(UIKit)
 final class StoreViewDeduplicationPropsTests: XCTestCase {
     let timeout: TimeInterval = 4
     let actionDelay: TimeInterval = 0.2
@@ -99,3 +100,4 @@ extension StoreViewDeduplicationPropsTests {
         waitForExpectations(timeout: timeout)
     }
 }
+#endif

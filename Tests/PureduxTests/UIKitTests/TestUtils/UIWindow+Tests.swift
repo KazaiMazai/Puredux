@@ -5,8 +5,11 @@
 //  Created by Sergey Kazakov on 01.12.2021.
 //
 
-import UIKit
 import SwiftUI
+
+#if canImport(UIKit)
+
+import UIKit
 
 extension UIWindow {
 
@@ -54,3 +57,4 @@ extension UIWindow {
         return window
     }
 }
+#endif
