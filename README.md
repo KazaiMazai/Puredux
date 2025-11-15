@@ -378,7 +378,7 @@ store.dispatch(FetchDataAction())
 
 ### Declarative Side Effects
 
-Declarative Side Effects offer more advanced capabilities for handling asynchronous operations by making them state-driven. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and othrestration them together and with the UI. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
+Declarative Side Effects offer more advanced capabilities for handling asynchronous operations by making them state-driven. This mechanism is particularly useful when you need precise control over execution, including retry logic, cancellation, and orchestration them together and with the UI. Despite its advanced features, it is also suitable for simpler use cases due to its minimal boilerplate code.
 
 Think of your app as a state machine where effects are just another reaction to state transitions:
 
