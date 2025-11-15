@@ -129,7 +129,7 @@ struct AppState {
 // Inject root store
 
 extension SharedStores {
-    @StoreEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
+    @DependencyEntry var root = StateStore<AppState, Action>(AppState()) { state, action in
         state.reduce(action)
     }
 }
@@ -541,11 +541,11 @@ Although both are essentially dependencies, they are handled separately because 
 
 ### Store Injection
 
-Use `@StoreEntry` in the `SharedStores` extension to inject the store instance:
+Use `@DependencyEntry` in the `SharedStores` extension to inject the store instance:
 
 ```swift
 extension SharedStores {
-   @StoreEntry var root = StateStore<AppRootState, Action>(....)  
+   @DependencyEntry var root = StateStore<AppRootState, Action>(....)  
 }
  
 
