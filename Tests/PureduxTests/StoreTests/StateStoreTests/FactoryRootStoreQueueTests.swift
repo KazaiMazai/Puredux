@@ -77,7 +77,7 @@ final class FactoryStateStoreQueueTests: XCTestCase {
             asyncExpectation.fulfill()
         }
 
-        action.dispatchQueue = .global(qos: .background)
+        action.dispatchQueue = .global(qos: .default)
 
         store.dispatch(action)
 

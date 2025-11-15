@@ -98,7 +98,7 @@ final class StateStoreQueueTests: XCTestCase {
             XCTAssertFalse(Thread.isMainThread)
             asyncExpectation.fulfill()
         }
-        action.dispatchQueue = .global(qos: .background)
+        action.dispatchQueue = .global(qos: .default)
         store.dispatch(action)
 
         waitForExpectations(timeout: timeout)
