@@ -25,6 +25,8 @@ Although both are essentially dependencies, they are handled separately because 
 
 **Dependency Injection** is used inside the store's reducers to power the application's core logic.
 
+
+
 ### Stores Injection
 
 Use `@StoreEntry` in the `SharedStores` extension to inject the store instance:
@@ -115,3 +117,5 @@ By implementing a clear separation of concerns between store injection and depen
 - Specialization of `StoreOf`: This property wrapper is specifically designed to support only `StateStore` types, which are responsible for owning the state. `@StoreEntry` only supports values of `any Store` type.
 
 - Controlled Access with `Dependencies` and `SharedStores`: These tools offer read and write access to the dependency injection containers, but within a confined scope of the application. This limitation ensures that modifications to dependencies and stores are kept localized, reducing the risk of unintended changes.
+
+Puredux dependency injection relies on [Crocodil](https://github.com/KazaiMazai/Crocodil) DI lib.
