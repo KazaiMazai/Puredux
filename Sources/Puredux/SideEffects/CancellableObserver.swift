@@ -8,9 +8,9 @@
 import Foundation
 
 final class CancellableObserver {
-    private class AnyStateObserver { }
+    private final class AnyStateObserver: Sendable { }
 
-    var observer: AnyObject = AnyStateObserver()
+    var observer: AnyObject & Sendable = AnyStateObserver()
 
     init(_ observer: AnyObject) {
         self.observer = observer
