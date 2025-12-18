@@ -31,6 +31,17 @@ struct AsyncResultAction: Action & AsyncAction {
     }
 }
 
+struct NestedAsyncResultAction: Action & AsyncAction {
+    let index: Int
+    var dispatchQueue: DispatchQueue  = .main
+
+    let executionCallback: @Sendable (@escaping (AsyncResultAction) -> Void) -> Void
+
+    func execute(completeHandler: @escaping (AsyncResultAction) -> Void) {
+        executionCallback(completeHandler)
+    }
+}
+
 struct AsyncIndexAction: Action & AsyncAction {
     let index: Int
 
