@@ -115,7 +115,7 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
         }
 
         let actions = (0..<actionsCount).map { idx in
-            /**NestedAsyncResultAction  action produces another AsyncResultAction  action**/
+            /** NestedAsyncResultAction produces another AsyncResultAction action **/
             NestedAsyncResultAction(index: idx) { handler in
                 handler(AsyncResultAction(index: idx) { handler in
                     handler(ResultAction(index: idx))
