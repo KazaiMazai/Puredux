@@ -208,10 +208,7 @@ extension StateStore: AsyncActionsExecutor {
         guard let action = action as? (any AsyncAction) else {
             return
         }
-
-        action.execute { [weak storeObject] in
-            storeObject?.dispatch($0)
-        }
+        action.execute(dispatch)
     }
 }
 

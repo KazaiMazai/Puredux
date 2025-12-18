@@ -301,6 +301,6 @@ extension AnyStore {
             return
         }
 
-        action.execute(self.dispatchHandler)
+        action.execute(dispatch)
     }
 }

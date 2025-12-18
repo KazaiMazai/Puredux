@@ -86,6 +86,46 @@ final class ActionsOnChildStoreInterceptionTests: XCTestCase {
 
         wait(for: expectations, timeout: timeout, enforceOrder: true)
     }
+    
+    func test_WhenNestedAsyncActionsDispatchAndIntercepted_ThenResultReducedOnMainStore() {
+        let actionsCount = 100
+        let expectations = (0..<actionsCount).map {
+            XCTestExpectation(description: "index \($0)")
+        }
+
+        let store = StateStore<TestState, Action>(
+            TestState(currentIndex: 0),
+            reducer: { state, action  in
+                state.reduce(action: action)
+                guard let resultAction = (action as? ResultAction) else {
+                    return
+                }
+
+                expectations[resultAction.index].fulfill()
+            }
+        )
+
+        let childStore = store.with(
+            ChildTestState(currentIndex: 0),
+            reducer: { state, action  in
+                state.reduce(action: action)
+            }
+        ).map { rootState, childState in
+            StateComposition(state: rootState, childState: childState)
+        }
+
+        let actions = (0..<actionsCount).map { idx in
+            /** NestedAsyncResultAction produces another AsyncResultAction action **/
+            NestedAsyncResultAction(index: idx) { handler in
+                handler(AsyncResultAction(index: idx) { handler in
+                    handler(ResultAction(index: idx))
+                })
+            }
+        }
+        actions.forEach { childStore.dispatch($0) }
+
+        wait(for: expectations, timeout: timeout, enforceOrder: true)
+    }
 }
 
 final class ActionsOnMainStoreInterceptionTests: XCTestCase {
